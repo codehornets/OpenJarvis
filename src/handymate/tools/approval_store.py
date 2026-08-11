@@ -19,6 +19,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from handymate.core.events import EventType, get_event_bus
 from handymate.core.paths import get_config_dir
 
 # ---------------------------------------------------------------------------
@@ -229,6 +230,22 @@ class ApprovalStore:
             ),
         )
         self._conn.commit()
+
+        # Tell live subscribers (WS bridge → HUD) a human decision is owed.
+        # ``agent_id`` only exists when the caller put it in the payload —
+        # queue_action itself is agent-agnostic.
+        data: Dict[str, Any] = {
+            "action_id": action.id,
+            "action_type": action.action_type,
+            "permission_key": action.permission_key,
+            "tier": action.tier,
+        }
+        agent_id = payload.get("agent_id") if isinstance(payload, dict) else None
+        if isinstance(agent_id, str) and agent_id:
+            data["agent_id"] = agent_id
+        bus = get_event_bus()
+        bus.publish(EventType.APPROVAL_REQUESTED, data)
+
         return action
 
     def get_action(self, action_id: str) -> Optional[PendingAction]:

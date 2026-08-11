@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from handymate.core.events import EventType, get_event_bus
 from handymate.tools.approval_store import (
     STATUS_APPROVED,
     STATUS_DENIED,
@@ -12,6 +13,7 @@ from handymate.tools.approval_store import (
     TIER_LOW,
     TIER_MEDIUM,
     ApprovalStore,
+    PendingAction,
 )
 
 try:
@@ -51,8 +53,8 @@ def client(approval_store):  # noqa: ARG001 — triggers store injection as a si
     return TestClient(app)
 
 
-def _queue(store: ApprovalStore, **kwargs) -> str:
-    """Helper — queue an action and return its id."""
+def _queue_action(store: ApprovalStore, **kwargs) -> PendingAction:
+    """Helper — queue an action and return it."""
     defaults = dict(
         action_type="file_write",
         description="Write a report to ~/Desktop/report.txt",
@@ -61,8 +63,12 @@ def _queue(store: ApprovalStore, **kwargs) -> str:
         tier=TIER_MEDIUM,
     )
     defaults.update(kwargs)
-    action = store.queue_action(**defaults)
-    return action.id
+    return store.queue_action(**defaults)
+
+
+def _queue(store: ApprovalStore, **kwargs) -> str:
+    """Helper — queue an action and return its id."""
+    return _queue_action(store, **kwargs).id
 
 
 def _expire(store: ApprovalStore, action_id: str) -> None:
@@ -355,3 +361,40 @@ class TestApprovalStoreIntegration:
         resp = client.get("/v1/approvals/pending")
         tiers = {a["tier"] for a in resp.json()["actions"]}
         assert tiers == {"trivial", "low", "medium", "high"}
+
+
+class TestApprovalRequestedEvent:
+    """Queuing an action announces itself on the bus (WS bridge → HUD)."""
+
+    @pytest.fixture
+    def store(self, tmp_path):
+        store = ApprovalStore(db_path=str(tmp_path / "approvals.db"))
+        yield store
+        store.close()
+
+    @pytest.fixture
+    def published(self):
+        bus = get_event_bus()
+        events = []
+
+        def _on_event(event):
+            events.append(event)
+
+        bus.subscribe(EventType.APPROVAL_REQUESTED, _on_event)
+        yield events
+        bus.unsubscribe(EventType.APPROVAL_REQUESTED, _on_event)
+
+    def test_queue_action_publishes_event(self, store, published):
+        action = _queue_action(store)
+
+        assert len(published) == 1
+        assert published[0].data == {
+            "action_id": action.id,
+            "action_type": "file_write",
+            "permission_key": "file_write:path:~/Desktop",
+            "tier": TIER_MEDIUM,
+        }
+
+    def test_agent_id_forwarded_when_the_payload_carries_it(self, store, published):
+        _queue_action(store, payload={"agent_id": "agent-7"})
+        assert published[0].data["agent_id"] == "agent-7"

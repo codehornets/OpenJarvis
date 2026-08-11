@@ -150,6 +150,15 @@ function reduceEvent(prev: AgentStatus, event: AgentEventLike, now: number): Age
     return enter(prev, 'blocked', now, { flags: { newTurn: false }, errorText: 'Budget exceeded' });
   }
 
+  if (type === 'approval_requested') {
+    // The agent queued an action a human must decide on. Same "needs you"
+    // state as an escalation, but nothing failed — no error text.
+    return enter(prev, 'waiting', now, {
+      flags: { newTurn: false, awaitingInput: true },
+      errorText: undefined,
+    });
+  }
+
   if (type === 'agent_stall_detected') {
     return enter(prev, 'blocked', now, {
       flags: { newTurn: false, interrupted: true },

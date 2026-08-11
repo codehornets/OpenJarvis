@@ -17,8 +17,13 @@ export function ContextMeter({ compact = false }: { compact?: boolean }) {
   const messages = useAppStore((s) => s.messages);
   const selectedModel = useAppStore((s) => s.selectedModel);
   const serverModel = useAppStore((s) => s.serverInfo?.model);
+  const models = useAppStore((s) => s.models);
 
-  const state = meterState(messages, selectedModel || serverModel || '');
+  const modelId = selectedModel || serverModel || '';
+  // /v1/models carries the backend catalog's window — it outranks the local table.
+  const serverLimit = models.find((m) => m.id === modelId)?.context_length;
+
+  const state = meterState(messages, modelId, serverLimit);
   if (state.status !== 'ok') return null;
 
   const { used, limit, pct, level } = state.data;

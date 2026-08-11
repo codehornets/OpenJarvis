@@ -162,6 +162,8 @@ export interface ModelInfo {
   object: string;
   created: number;
   owned_by: string;
+  /** Catalog context window. Null/absent for models the backend doesn't know. */
+  context_length?: number | null;
 }
 
 export interface ProviderSavings {

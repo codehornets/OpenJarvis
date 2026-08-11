@@ -111,6 +111,10 @@ class ModelObject(BaseModel):
     object: str = "model"
     created: int = Field(default_factory=lambda: int(time.time()))
     owned_by: str = "handymate"
+    # Non-standard extension: the catalog context window, so the UI can size
+    # its context meter without shipping its own copy of the limits table.
+    # ``None`` for models absent from the builtin catalog.
+    context_length: Optional[int] = None
 
 
 class ModelListResponse(BaseModel):

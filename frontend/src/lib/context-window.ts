@@ -2,8 +2,8 @@
 // Pure module — no React, no DOM.
 //
 // Limits mirror the backend catalog (src/handymate/intelligence/model_catalog.py).
-// The server does not expose context_length on /v1/models yet; when it does,
-// pass it as `serverLimit` and it wins over this table.
+// /v1/models reports context_length for catalog models; pass it as
+// `serverLimit` and it wins over this table, which covers the rest.
 
 import type { ChatMessage } from '../types';
 

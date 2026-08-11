@@ -883,6 +883,20 @@ class TestModelsEndpoint:
         data = resp.json()
         assert len(data["data"]) == 3
 
+    def test_context_length_comes_from_the_catalog(self):
+        """Catalog models advertise their window; unknown ones stay null."""
+        from handymate.intelligence.model_catalog import BUILTIN_MODELS
+
+        known = BUILTIN_MODELS[0]
+        engine = _make_engine(models=[known.model_id, "not-in-catalog"])
+        app = create_app(engine, known.model_id, config=_test_config())
+        client = TestClient(app)
+
+        resp = client.get("/v1/models")
+        by_id = {m["id"]: m for m in resp.json()["data"]}
+        assert by_id[known.model_id]["context_length"] == known.context_length
+        assert by_id["not-in-catalog"]["context_length"] is None
+
     def test_configured_litellm_model_is_listed(self):
         """Regression for #713: LiteLLM models must reach the Web UI."""
         model = "groq/llama-3.3-70b-versatile"

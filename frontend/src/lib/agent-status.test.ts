@@ -152,6 +152,26 @@ describe('waiting survives turn end', () => {
     expect(s.activity).toBe('waiting');
     expect(s.flags.awaitingInput).toBe(true);
   });
+
+  it('approval_requested → waiting with awaitingInput and no errorText', () => {
+    const s = run([
+      [ev('agent_tick_start', { agent_id: 'a1' }), T0],
+      [ev('approval_requested', { agent_id: 'a1', action_id: 'x1', tier: 'medium' }), T0 + 100],
+    ]);
+    expect(s.activity).toBe('waiting');
+    expect(s.flags.awaitingInput).toBe(true);
+    expect(s.errorText).toBeUndefined();
+  });
+
+  it('approval_requested + tick_end → still waiting', () => {
+    const s = run([
+      [ev('agent_tick_start', { agent_id: 'a1' }), T0],
+      [ev('approval_requested', { agent_id: 'a1', action_id: 'x1' }), T0 + 100],
+      [ev('agent_tick_end', { agent_id: 'a1', status: 'ok' }), T0 + 200],
+    ]);
+    expect(s.activity).toBe('waiting');
+    expect(s.flags.awaitingInput).toBe(true);
+  });
 });
 
 describe('failure states never stick on working', () => {

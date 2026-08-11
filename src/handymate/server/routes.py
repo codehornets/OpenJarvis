@@ -12,6 +12,7 @@ from fastapi.responses import StreamingResponse
 
 from handymate.core.paths import get_config_dir
 from handymate.core.types import Message, Role
+from handymate.intelligence.model_catalog import BUILTIN_MODELS
 from handymate.server.model_capabilities import is_embed_only_model
 from handymate.server.models import (
     ChatCompletionChunk,
@@ -869,6 +870,17 @@ async def _handle_stream(
     )
 
 
+# Catalog context windows keyed by model id, built once from the static
+# builtin list. ``ModelRegistry`` is not used here: it is only populated once
+# ``register_builtin_models()`` has run, and discovery merges entries with
+# context_length 0, which would report a bogus limit to the UI.
+_CATALOG_CONTEXT_LENGTHS: dict[str, int] = {
+    spec.model_id: spec.context_length
+    for spec in BUILTIN_MODELS
+    if spec.context_length > 0
+}
+
+
 @router.get("/v1/models")
 async def list_models(request: Request) -> ModelListResponse:
     """List selectable engine models for the installed-model picker.
@@ -907,6 +919,7 @@ async def list_models(request: Request) -> ModelListResponse:
                     if _engine_key_for_model(engine, mid) == "litellm"
                     else "handymate"
                 ),
+                context_length=_CATALOG_CONTEXT_LENGTHS.get(mid),
             )
             for mid in model_ids
         ],
