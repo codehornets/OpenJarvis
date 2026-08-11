@@ -54,7 +54,12 @@ function CodeBlockPre({ children, ...props }: any) {
   return (
     <div
       className="code-block-wrapper relative my-3"
-      style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden' }}
+      style={{
+        borderRadius: 'var(--radius-md)',
+        overflow: 'hidden',
+        border: '1px solid var(--color-border)',
+        boxShadow: '0 1px 3px color-mix(in srgb, var(--color-text) 8%, transparent)',
+      }}
     >
       <div
         className="flex items-center justify-between px-4 py-1.5 text-xs"
@@ -107,10 +112,11 @@ export function MessageBubble({ message, isLive = false }: Props) {
     return (
       <div className="flex justify-end mb-4">
         <div
-          className="max-w-[85%] px-4 py-2.5 text-sm leading-relaxed"
+          className="max-w-[85%] px-4 py-2.5 text-sm leading-relaxed animate-in fade-in slide-in-from-right-4 duration-300"
           style={{
             background: 'var(--color-user-bubble)',
             color: 'var(--color-user-bubble-text)',
+            border: '1px solid color-mix(in srgb, var(--color-accent) 25%, transparent)',
             borderRadius: 'var(--radius-xl) var(--radius-xl) var(--radius-sm) var(--radius-xl)',
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
@@ -141,7 +147,7 @@ export function MessageBubble({ message, isLive = false }: Props) {
   }, [sourcesMap]);
 
   return (
-    <div className="group mb-6">
+    <div className="group mb-6 animate-in fade-in slide-in-from-left-4 duration-300">
       {/* Deep Research timeline (steps + status) */}
       {(message.isResearch || (message.researchTraces && message.researchTraces.length > 0)) && (
         <ResearchTimeline
@@ -175,6 +181,12 @@ export function MessageBubble({ message, isLive = false }: Props) {
           >
             {cleanContent}
           </ReactMarkdown>
+          {isLive && (
+            <span
+              className="inline-block w-1.5 h-4 ml-0.5 align-middle animate-pulse"
+              style={{ background: 'var(--color-accent)', borderRadius: '1px' }}
+            />
+          )}
         </div>
       )}
 

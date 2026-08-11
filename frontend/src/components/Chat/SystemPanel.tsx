@@ -279,20 +279,35 @@ function MiniStat({
   label,
   value,
   unit,
+  index = 0,
+  barPercent,
+  barColor = 'var(--color-accent)',
 }: {
   icon: typeof Zap;
   label: string;
   value: string;
   unit?: string;
+  index?: number;
+  barPercent?: number;
+  barColor?: string;
 }) {
   return (
     <div
-      className="rounded-lg px-2.5 py-2"
-      style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)' }}
+      className="rounded-lg px-2.5 py-2 animate-in fade-in slide-in-from-left-1"
+      style={{
+        background: 'var(--color-bg-secondary)',
+        border: '1px solid var(--color-border)',
+        animationDelay: `${index * 60}ms`,
+        animationDuration: '300ms',
+        animationFillMode: 'both',
+      }}
     >
       <div className="flex items-center gap-1 mb-0.5">
         <Icon size={10} style={{ color: 'var(--color-accent)' }} />
-        <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
+        <span
+          className="text-[8px] font-mono tracking-[0.15em] uppercase font-light"
+          style={{ color: 'var(--color-text-tertiary)', fontFamily: 'var(--font-hud)' }}
+        >
           {label}
         </span>
       </div>
@@ -304,8 +319,64 @@ function MiniStat({
           </span>
         )}
       </div>
+      {barPercent != null && <NeonBar percent={barPercent} color={barColor} />}
     </div>
   );
+}
+
+function NeonBar({ percent, color }: { percent: number; color: string }) {
+  const safe = Math.min(100, Math.max(0, percent));
+  return (
+    <div
+      className="relative h-[3px] w-full overflow-hidden rounded-full mt-1.5"
+      style={{ background: 'var(--color-bg-tertiary)' }}
+    >
+      <div
+        className="absolute left-0 top-0 h-full w-full rounded-full origin-left transition-transform duration-500 ease-out will-change-transform"
+        style={{
+          transform: `scaleX(${safe / 100})`,
+          background: color,
+          boxShadow: `0 0 6px color-mix(in srgb, ${color} 70%, transparent)`,
+        }}
+      />
+    </div>
+  );
+}
+
+function StatusBadge({
+  label,
+  tone,
+}: {
+  label: string;
+  tone: 'accent' | 'error' | 'neutral';
+}) {
+  const toneColor =
+    tone === 'accent' ? 'var(--color-accent)' : tone === 'error' ? 'var(--color-error)' : 'var(--color-text-tertiary)';
+  return (
+    <span
+      className="px-1.5 py-0.5 rounded border text-[7px] font-mono tracking-widest uppercase font-semibold shrink-0"
+      style={{
+        borderColor: `color-mix(in srgb, ${toneColor} 40%, transparent)`,
+        background: `color-mix(in srgb, ${toneColor} 10%, transparent)`,
+        color: toneColor,
+        fontFamily: 'var(--font-hud)',
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+function tempPercent(tempC: number): number {
+  // Map ~20-90C onto a 0-100% bar, matching the reference HUD's temp scaling.
+  return Math.min(100, Math.max(0, ((tempC - 20) / 70) * 100));
+}
+
+function tempStatus(tempC: number | null): string {
+  if (tempC == null) return 'var(--color-accent)';
+  if (tempC > 85) return 'var(--color-error)';
+  if (tempC > 70) return 'var(--color-warning)';
+  return 'var(--color-accent)';
 }
 
 function formatNumber(n: number): string {

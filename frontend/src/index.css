@@ -438,6 +438,24 @@
     border-color: color-mix(in srgb, var(--color-text) 14%, transparent);
   }
 
+  /* Chat composer shell — glass surface with an accent glow on focus,
+     modeled on the jarvis-cv LocationSearch focus treatment. */
+  .chat-input-shell {
+    background: color-mix(in srgb, var(--color-input-bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--color-input-border);
+    box-shadow: var(--shadow-sm);
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+
+  .chat-input-shell:focus-within {
+    border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent) 25%, transparent),
+      0 0 20px -4px var(--color-accent-glow);
+  }
+
   .data-skeleton {
     position: relative;
     overflow: hidden;

@@ -7,9 +7,27 @@ interface Props {
 }
 
 const statusConfig = {
-  running: { icon: Loader2, color: 'var(--color-accent)' },
-  success: { icon: CheckCircle2, color: 'var(--color-success)' },
-  error: { icon: XCircle, color: 'var(--color-error)' },
+  running: {
+    icon: Loader2,
+    label: 'Running',
+    color: 'var(--color-accent)',
+    bg: 'color-mix(in srgb, var(--color-accent) 10%, transparent)',
+    border: 'color-mix(in srgb, var(--color-accent) 30%, transparent)',
+  },
+  success: {
+    icon: CheckCircle2,
+    label: 'Done',
+    color: 'var(--color-success)',
+    bg: 'color-mix(in srgb, var(--color-success) 10%, transparent)',
+    border: 'color-mix(in srgb, var(--color-success) 30%, transparent)',
+  },
+  error: {
+    icon: XCircle,
+    label: 'Error',
+    color: 'var(--color-error)',
+    bg: 'color-mix(in srgb, var(--color-error) 10%, transparent)',
+    border: 'color-mix(in srgb, var(--color-error) 30%, transparent)',
+  },
 };
 
 function previewArgs(raw: string): string {

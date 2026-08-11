@@ -25,6 +25,7 @@ export function MicButton({ state, onClick, disabled, reason }: MicButtonProps) 
               : 'Voice input';
 
   const isInactive = disabled || state === 'transcribing';
+  const isRecording = state === 'recording';
 
   return (
     <div
@@ -32,22 +33,32 @@ export function MicButton({ state, onClick, disabled, reason }: MicButtonProps) 
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
+      {isRecording && (
+        <span
+          className="absolute inset-0 rounded-xl animate-ping pointer-events-none"
+          style={{ background: 'color-mix(in srgb, var(--color-error) 40%, transparent)' }}
+        />
+      )}
       <button
         onClick={onClick}
         disabled={isInactive}
-        className="p-2 rounded-xl transition-all shrink-0"
+        className="relative p-2 rounded-xl transition-all duration-300 ease-out shrink-0"
         style={{
-          background: state === 'recording'
+          background: isRecording
             ? 'var(--color-error)'
             : 'transparent',
-          color: state === 'recording'
+          color: isRecording
             ? 'white'
             : isInactive
               ? 'var(--color-text-tertiary)'
               : 'var(--color-text-secondary)',
           cursor: isInactive ? 'default' : 'pointer',
           opacity: isInactive ? 0.35 : 1,
-          animation: state === 'recording' ? 'pulse 1.5s ease-in-out infinite' : 'none',
+          transform: isRecording ? 'scale(1.08)' : 'scale(1)',
+          boxShadow: isRecording
+            ? '0 0 12px color-mix(in srgb, var(--color-error) 50%, transparent)'
+            : '0 0 0 transparent',
+          animation: isRecording ? 'pulse 1.5s ease-in-out infinite' : 'none',
         }}
       >
         {state === 'transcribing' ? (

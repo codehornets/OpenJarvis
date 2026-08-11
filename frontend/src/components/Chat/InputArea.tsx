@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Send, Square, Paperclip, Search } from 'lucide-react';
+import { Send, Square, Paperclip, Search, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAppStore, generateId } from '../../lib/store';
 import { streamChat, streamResearch } from '../../lib/sse';
@@ -585,14 +585,7 @@ export function InputArea() {
           </div>
         )}
       </div>
-      <div
-        className="flex items-center gap-2 rounded-2xl px-4 py-3 transition-shadow"
-        style={{
-          background: 'var(--color-input-bg)',
-          border: '1px solid var(--color-input-border)',
-          boxShadow: 'var(--shadow-sm)',
-        }}
-      >
+      <div className="chat-input-shell flex items-center gap-2 rounded-2xl px-4 py-3">
         <textarea
           ref={textareaRef}
           value={input}
@@ -631,7 +624,7 @@ export function InputArea() {
                 color: input.trim() ? 'white' : 'var(--color-text-tertiary)',
               }}
             >
-              <Send size={16} />
+              {modelLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
             </button>
           </div>
         )}
