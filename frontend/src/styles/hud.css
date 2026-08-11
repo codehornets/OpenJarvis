@@ -176,6 +176,14 @@
       0 0 20px -4px var(--color-accent-glow);
   }
 
+  /* Composer placeholder speaks telemetry in dark, plain sans in light. */
+  .dark .hud-input-mono::placeholder {
+    font-family: var(--font-hud);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
   /* ── Loaders / shimmer ─────────────────────────────────────────────── */
 
   .data-skeleton {
@@ -361,6 +369,133 @@
     background: var(--color-accent);
     vertical-align: text-bottom;
     animation: hud-blink 1.1s steps(1, end) infinite;
+  }
+
+  /* ── AI core orb (CSS renderer) ────────────────────────────────────── */
+
+  /* These two hues are hardcoded rather than pulled from --color-accent /
+     --color-accent-2 on purpose: the CSS orb substitutes for the WebGL orb
+     (OrbScene.tsx), so the two must be the same object. The scene renders
+     with additive blending, which needs the hot, fully-saturated versions —
+     the muted UI accents wash out to grey once blended. Both renderers keep
+     the token *meaning*: green = alive, cyan = speaking.
+     Size comes in as --orb-size (set inline by the component). */
+
+  @keyframes orb-css-breathe {
+    0%, 100% { transform: scale(0.96); opacity: 0.85; }
+    50%      { transform: scale(1.03); opacity: 1; }
+  }
+
+  @keyframes orb-css-pulse {
+    0%, 100% { transform: scale(0.94); opacity: 0.9; }
+    50%      { transform: scale(1.08); opacity: 1; }
+  }
+
+  @keyframes orb-css-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .orb-css {
+    --orb-core: #39ff14;
+    --orb-rim: #00ffff;
+    position: relative;
+    width: var(--orb-size);
+    height: var(--orb-size);
+    border-radius: 9999px;
+    flex-shrink: 0;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.7) 0%, transparent 20%),
+      radial-gradient(
+        circle at 50% 46%,
+        color-mix(in srgb, var(--orb-core) 85%, white) 0%,
+        var(--orb-core) 18%,
+        color-mix(in srgb, var(--orb-core) 30%, transparent) 46%,
+        transparent 66%
+      ),
+      radial-gradient(
+        circle at 50% 50%,
+        transparent 56%,
+        color-mix(in srgb, var(--orb-rim) 50%, transparent) 80%,
+        transparent 100%
+      );
+    box-shadow:
+      0 0 calc(var(--orb-size) * 0.28) color-mix(in srgb, var(--orb-core) 30%, transparent),
+      inset 0 0 calc(var(--orb-size) * 0.18) color-mix(in srgb, var(--orb-rim) 22%, transparent);
+  }
+
+  .orb-css--speaking {
+    --orb-core: #00ffff;
+    --orb-rim: #7dffea;
+  }
+
+  .orb-css--offline {
+    opacity: 0.5;
+    filter: saturate(0.3);
+  }
+
+  /* Orbit ring — asymmetric border so the spin actually reads, same trick as
+     .hud-reticle. */
+  .orb-css-ring {
+    position: absolute;
+    inset: calc(var(--orb-size) * -0.08);
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--orb-rim) 40%, transparent);
+    border-top-color: transparent;
+    border-left-color: color-mix(in srgb, var(--orb-core) 30%, transparent);
+    opacity: 0.7;
+  }
+
+  .orb-css--animated {
+    animation: orb-css-breathe 3s ease-in-out infinite;
+  }
+
+  .orb-css--animated.orb-css--speaking {
+    animation: orb-css-pulse 1.2s ease-in-out infinite;
+  }
+
+  .orb-css--animated .orb-css-ring {
+    animation: orb-css-spin 8s linear infinite;
+  }
+
+  .orb-css--animated.orb-css--speaking .orb-css-ring {
+    animation-duration: 3s;
+  }
+
+  /* Mini orb (OrbDot) — flatter stack; the layered rim turns to mud at 20px. */
+  .orb-dot {
+    --orb-core: #39ff14;
+    --orb-rim: #00ffff;
+    display: inline-block;
+    width: var(--orb-size);
+    height: var(--orb-size);
+    border-radius: 9999px;
+    flex-shrink: 0;
+    background:
+      radial-gradient(circle at 50% 36%, rgba(255, 255, 255, 0.85) 0%, transparent 32%),
+      radial-gradient(
+        circle at 50% 50%,
+        var(--orb-core) 0%,
+        color-mix(in srgb, var(--orb-core) 70%, transparent) 46%,
+        color-mix(in srgb, var(--orb-rim) 60%, transparent) 74%,
+        transparent 100%
+      );
+    box-shadow: 0 0 calc(var(--orb-size) * 0.5) color-mix(in srgb, var(--orb-core) 45%, transparent);
+  }
+
+  .orb-dot--idle {
+    animation: orb-css-breathe 3s ease-in-out infinite;
+  }
+
+  .orb-dot--speaking {
+    --orb-core: #00ffff;
+    --orb-rim: #7dffea;
+    animation: orb-css-pulse 1.2s ease-in-out infinite;
+  }
+
+  .orb-dot--offline {
+    opacity: 0.5;
+    filter: saturate(0.3);
   }
 
   /* ── Reduced motion ────────────────────────────────────────────────── */

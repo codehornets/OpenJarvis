@@ -47,6 +47,7 @@ export default defineConfig({
           markdown: ['react-markdown', 'rehype-highlight', 'remark-gfm'],
           charts: ['recharts'],
           router: ['react-router'],
+          three: ['three', '@react-three/fiber'],
         },
       },
     },
