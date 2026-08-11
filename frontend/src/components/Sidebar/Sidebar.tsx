@@ -85,8 +85,9 @@ export function Sidebar() {
         `}
         style={{
           background: 'var(--color-sidebar)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          // 12px, not 20px: WebKitGTK compositing chokes on large blurs.
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           borderRight: sidebarOpen ? '1px solid var(--color-border)' : 'none',
         }}
       >
@@ -102,6 +103,10 @@ export function Sidebar() {
             >
               <PanelLeftClose size={18} />
             </button>
+            <span className="hud-label hud-text-glow select-none" style={{ color: 'var(--color-text-secondary)' }}>
+              Jarvis // Neural OS
+              <span className="hud-caret" aria-hidden="true" />
+            </span>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => updateSettings({ theme: nextTheme })}
@@ -140,12 +145,22 @@ export function Sidebar() {
           >
             {modelLoading ? (
               <Loader2 size={14} className="animate-spin" style={{ color: 'var(--color-accent)' }} />
+            ) : serverInfo ? (
+              // Emerald heartbeat = backend alive (color contract: emerald = online)
+              <span
+                className="hud-heartbeat"
+                aria-hidden="true"
+                style={{
+                  background: 'var(--color-accent-2)',
+                  ['--color-accent-glow' as string]: 'var(--color-accent-2-glow)',
+                }}
+              />
             ) : (
               <Cpu size={14} />
             )}
             <div className="flex-1 min-w-0">
               <span
-                className="truncate block text-left"
+                className="truncate block text-left hud-mono"
                 style={{ color: deepResearch ? 'var(--color-accent)' : 'var(--color-text)' }}
               >
                 {deepResearch
@@ -199,9 +214,10 @@ export function Sidebar() {
                 <button
                   key={item.path}
                   onClick={() => navigate(item.path)}
-                  className="relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full text-left cursor-pointer"
+                  className="group relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full text-left cursor-pointer"
                   style={{
-                    background: isActive ? 'var(--color-accent-subtle)' : 'transparent',
+                    // Active nav = emerald pill (emerald = alive/active surface)
+                    background: isActive ? 'var(--color-accent-2-subtle)' : 'transparent',
                     color: isActive ? 'var(--color-text)' : 'var(--color-text-secondary)',
                     fontWeight: isActive ? 500 : 400,
                   }}
@@ -217,13 +233,22 @@ export function Sidebar() {
                       aria-hidden="true"
                       className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-full"
                       style={{
-                        background: 'var(--color-accent)',
-                        boxShadow: '0 0 8px var(--color-accent-glow)',
+                        background: 'var(--color-accent-2)',
+                        boxShadow: '0 0 8px var(--color-accent-2-glow)',
                       }}
                     />
                   )}
-                  <item.icon size={16} style={isActive ? { color: 'var(--color-accent)' } : undefined} />
-                  {item.label}
+                  <item.icon
+                    size={16}
+                    className="transition-transform group-hover:scale-110"
+                    style={isActive ? { color: 'var(--color-accent-2)' } : undefined}
+                  />
+                  <span
+                    className="hud-label"
+                    style={{ color: 'inherit', fontWeight: 'inherit' }}
+                  >
+                    {item.label}
+                  </span>
                 </button>
               );
             })}

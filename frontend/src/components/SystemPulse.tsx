@@ -4,18 +4,24 @@ import { fetchManagedAgents } from '../lib/api';
 
 type PulseState = 'idle' | 'inferencing' | 'agent-active' | 'hidden';
 
-const PULSE_CONFIG: Record<Exclude<PulseState, 'hidden'>, { color: string; animation: string }> = {
+// Color contract: emerald = system alive (idle), cyan = data flowing
+// (inference), purple = agent autonomy. Glow only exists in dark mode via
+// the accent glow tokens resolving to stronger values there.
+const PULSE_CONFIG: Record<Exclude<PulseState, 'hidden'>, { color: string; animation: string; glow: string }> = {
   idle: {
-    color: 'color-mix(in srgb, var(--color-accent) 22%, transparent)',
+    color: 'color-mix(in srgb, var(--color-accent-2) 30%, transparent)',
     animation: 'none',
+    glow: 'none',
   },
   inferencing: {
     color: 'var(--color-accent)',
     animation: 'pulse-glow 2s ease-in-out infinite',
+    glow: '0 0 12px var(--color-accent-glow)',
   },
   'agent-active': {
     color: 'var(--color-accent-purple)',
     animation: 'pulse-travel 3s linear infinite',
+    glow: '0 0 12px var(--color-accent-purple-subtle)',
   },
 };
 
@@ -54,6 +60,7 @@ export function SystemPulse({ apiReachable }: { apiReachable: boolean | null }) 
           : `linear-gradient(90deg, transparent 5%, ${config.color} 30%, ${config.color} 70%, transparent 95%)`,
         backgroundSize: isTravel ? '200% 100%' : '100% 100%',
         animation: config.animation,
+        boxShadow: config.glow,
       }}
     />
   );

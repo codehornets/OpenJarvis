@@ -26,7 +26,12 @@ export function Layout() {
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden relative" style={{ paddingTop: '3px' }}>
-      <div className="hud-backdrop" aria-hidden="true" />
+      <div className="hud-backdrop" aria-hidden="true">
+        {/* Neural OS ambience — dark-only via .hud-* scoping, zero cost in light */}
+        <div className="hud-scanline" />
+        <div className="hud-bloom" style={{ top: '-12vw', left: '-8vw' }} />
+        <div className="hud-bloom hud-bloom--emerald" style={{ bottom: '-14vw', right: '-10vw' }} />
+      </div>
       <SystemPulse apiReachable={apiReachable} />
       <ApprovalBell />
 
