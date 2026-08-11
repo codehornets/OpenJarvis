@@ -16,6 +16,8 @@ import { fetchModels, fetchServerInfo, fetchSavings, submitSavings, isTauri } fr
 import { OptInModal } from './components/OptInModal';
 import { UpdateChecker } from './components/Desktop/UpdateChecker';
 import { track, hashId } from './lib/analytics';
+import { MotionConfig } from 'motion/react';
+import { sfx, unlockAudio } from './lib/sfx';
 
 export default function App() {
   const [setupDone, setSetupDone] = useState(!isTauri());
@@ -166,11 +168,20 @@ export default function App() {
 
   const toggleSystemPanel = useAppStore((s) => s.toggleSystemPanel);
 
+  // Unlock the Web Audio context on the first real user gesture so SFX cues
+  // can fire without being blocked by autoplay policy.
+  useEffect(() => {
+    const unlock = () => unlockAudio();
+    window.addEventListener('pointerdown', unlock, { once: true });
+    return () => window.removeEventListener('pointerdown', unlock);
+  }, []);
+
   // Global keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
+        if (!commandPaletteOpen) sfx.select();
         setCommandPaletteOpen(!commandPaletteOpen);
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'i') {
@@ -188,7 +199,7 @@ export default function App() {
   }
 
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       <UpdateChecker />
       <Routes>
         <Route element={<Layout />}>
@@ -206,6 +217,6 @@ export default function App() {
       {optInModalOpen && (
         <OptInModal onClose={() => setOptInModalOpen(false)} />
       )}
-    </>
+    </MotionConfig>
   );
 }

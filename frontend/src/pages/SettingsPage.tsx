@@ -703,6 +703,27 @@ export function SettingsPage() {
             </SettingRow>
           </Section>
 
+          {/* Interface */}
+          <Section title="Interface">
+            <SettingRow label="UI sounds" description="Subtle synthesized cues for send, completion, errors, and agent alerts">
+              <button
+                onClick={() => { updateSettings({ sfxEnabled: !settings.sfxEnabled }); showSaved(); }}
+                className="relative w-11 h-6 rounded-full transition-colors cursor-pointer"
+                style={{
+                  background: settings.sfxEnabled ? 'var(--color-accent)' : 'var(--color-bg-tertiary)',
+                }}
+              >
+                <span
+                  className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform bg-white"
+                  style={{
+                    transform: settings.sfxEnabled ? 'translateX(20px)' : 'translateX(0)',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }}
+                />
+              </button>
+            </SettingRow>
+          </Section>
+
           {/* Speech */}
           <Section title="Speech">
             <SettingRow label="Speech-to-Text" description="Enable microphone input for voice dictation">

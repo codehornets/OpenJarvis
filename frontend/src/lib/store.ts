@@ -81,6 +81,8 @@ interface Settings {
   temperature: number;
   maxTokens: number;
   speechEnabled: boolean;
+  /** UI sound effects (Web Audio synth, no assets). Master toggle for lib/sfx.ts. */
+  sfxEnabled: boolean;
 }
 
 function loadSettings(): Settings {
@@ -96,6 +98,9 @@ function loadSettings(): Settings {
     temperature: 0.7,
     maxTokens: 4096,
     speechEnabled: false,
+    // On by default: synth-only, whisper-quiet, no permissions needed —
+    // and it's part of the product's personality. One-click off in Settings.
+    sfxEnabled: true,
   };
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
