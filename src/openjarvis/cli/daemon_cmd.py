@@ -1,4 +1,4 @@
-"""``jarvis start|stop|restart|status`` — daemon management commands."""
+"""``handy start|stop|restart|status`` — daemon management commands."""
 
 from __future__ import annotations
 
@@ -107,14 +107,14 @@ def start(
     existing = _read_pid()
     if existing is not None:
         console.print(f"[yellow]Server already running (PID {existing}).[/yellow]")
-        console.print("Use 'jarvis stop' to stop it first, or 'jarvis restart'.")
+        console.print("Use 'handy stop' to stop it first, or 'handy restart'.")
         sys.exit(1)
 
     config = load_config()
     bind_host = host or config.server.host
     bind_port = port or config.server.port
 
-    # Build command to run jarvis serve
+    # Build command to run handy serve
     cmd = [sys.executable, "-m", "openjarvis.cli", "serve"]
     if host:
         cmd.extend(["--host", host])

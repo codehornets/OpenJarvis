@@ -184,7 +184,7 @@ exposure.
 
 ## Bug fix bundled with this release
 
-`src/openjarvis/evals/backends/jarvis_agent.py` previously hardcoded
+`src/openjarvis/evals/backends/handy_agent.py` previously hardcoded
 `builder.telemetry(telemetry).traces(True).build()`, ignoring the
 `telemetry` parameter. This silently caused every agent-backend
 evaluation to write to `~/.openjarvis/traces.db` regardless of caller

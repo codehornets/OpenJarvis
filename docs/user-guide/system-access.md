@@ -85,9 +85,9 @@ What that translates to depends entirely on how you launched the agent:
 
 | Entry point | Behaviour |
 |-------------|-----------|
-| `jarvis chat` | Prompts before each call. |
-| `jarvis ask` | Auto-approves. |
-| `jarvis agent ask` | Auto-approves. Pass `--no-yes` if you want prompts. |
+| `handy chat` | Prompts before each call. |
+| `handy ask` | Auto-approves. |
+| `handy agent ask` | Auto-approves. Pass `--no-yes` if you want prompts. |
 | HTTP server, desktop app | Auto-approves. Tools you added to an agent's toolkit count as pre-approved. |
 | Embedded via `SystemBuilder` | No callback is wired, so these tools fail closed. |
 
@@ -114,14 +114,14 @@ inherit it:
 
 | How you run OpenJarvis | Grant access to |
 |------------------------|-----------------|
-| CLI (`jarvis ask`, `jarvis chat`) | Your terminal (Terminal, iTerm, Warp) |
-| Desktop app | `OpenJarvis.app`, which spawns `jarvis serve` beneath it |
-| launchd (`deploy/launchd/com.openjarvis.plist`) | The `jarvis` binary, as its own entry |
+| CLI (`handy ask`, `handy chat`) | Your terminal (Terminal, iTerm, Warp) |
+| Desktop app | `OpenJarvis.app`, which spawns `handy serve` beneath it |
+| launchd (`deploy/launchd/com.openjarvis.plist`) | The `handy` binary, as its own entry |
 
 System Settings, then Privacy & Security, then Full Disk Access, then **+**.
 
 A launchd daemon gets its own TCC context, so granting access to Terminal does
-nothing for it. Add `/usr/local/bin/jarvis` separately.
+nothing for it. Add `/usr/local/bin/handy` separately.
 
 To check whether the grant took:
 

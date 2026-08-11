@@ -1,4 +1,4 @@
-"""Tests for ``jarvis chat`` interactive REPL command."""
+"""Tests for ``handy chat`` interactive REPL command."""
 
 from __future__ import annotations
 

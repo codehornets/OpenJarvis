@@ -7,7 +7,7 @@
     deploy/launchd/com.openjarvis.plist.
 
     Registers a per-user scheduled task named "OpenJarvis" that starts
-    `jarvis serve` at logon and restarts on failure. Loopback default
+    `handy serve` at logon and restarts on failure. Loopback default
     (127.0.0.1) so no API key is required — matches launchd parity.
 
     Subcommands:
@@ -25,9 +25,9 @@
       -ListenPort <int>    default: 8000
 
     Usage:
-      powershell -ExecutionPolicy Bypass -File jarvis-service.ps1 install
-      powershell -ExecutionPolicy Bypass -File jarvis-service.ps1 uninstall
-      powershell -ExecutionPolicy Bypass -File jarvis-service.ps1 status
+      powershell -ExecutionPolicy Bypass -File handy-service.ps1 install
+      powershell -ExecutionPolicy Bypass -File handy-service.ps1 uninstall
+      powershell -ExecutionPolicy Bypass -File handy-service.ps1 status
 #>
 
 [CmdletBinding()]
@@ -90,10 +90,10 @@ function Install-Task {
     if (-not $isLoopback -and -not $env:OPENJARVIS_API_KEY) {
         Write-Fail @"
 ListenHost is $ListenHost (non-loopback) but `$env:OPENJARVIS_API_KEY is
-not set. An unauthenticated non-loopback bind is refused by jarvis serve
+not set. An unauthenticated non-loopback bind is refused by handy serve
 and would also create a security hole. Set the env var first:
 
-    `$env:OPENJARVIS_API_KEY = (uv run jarvis auth generate-key)
+    `$env:OPENJARVIS_API_KEY = (uv run handy auth generate-key)
 
 then re-run with -ListenHost 0.0.0.0.
 "@
@@ -102,7 +102,7 @@ then re-run with -ListenHost 0.0.0.0.
     # CRITICAL: scheduled tasks do NOT inherit the registering session's
     # environment. If we registered the task now and stopped here, the
     # task would launch at logon with a clean env, find no API key, and
-    # `jarvis serve` would refuse to bind 0.0.0.0 — failing silently every
+    # `handy serve` would refuse to bind 0.0.0.0 — failing silently every
     # logon. Persist the key to the User env scope so the task's logon
     # session picks it up. (Loopback path doesn't need the key, so this
     # only runs for the explicit LAN-exposed case.)
@@ -129,7 +129,7 @@ then re-run with -ListenHost 0.0.0.0.
 
     $action = New-ScheduledTaskAction `
         -Execute $uvPath `
-        -Argument "run jarvis serve --host $ListenHost --port $ListenPort" `
+        -Argument "run handy serve --host $ListenHost --port $ListenPort" `
         -WorkingDirectory $srcDir
 
     $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME

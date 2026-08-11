@@ -101,14 +101,14 @@ OpenJarvis is that stack. It is a framework for local-first personal AI, built a
 === "CLI"
 
     ```bash
-    jarvis ask "What is the capital of France?"
+    handy ask "What is the capital of France?"
 
-    jarvis ask --agent orchestrator --tools calculator "What is 137 * 42?"
+    handy ask --agent orchestrator --tools calculator "What is 137 * 42?"
 
-    jarvis serve --port 8000
+    handy serve --port 8000
 
-    jarvis memory index ./docs/
-    jarvis memory search "configuration options"
+    handy memory index ./docs/
+    handy memory search "configuration options"
     ```
 
 ---
@@ -157,7 +157,7 @@ OpenJarvis is built around five composable layers. Each has a clean interface an
 
     ---
 
-    `jarvis serve` starts a FastAPI server with SSE streaming. Drop-in replacement for OpenAI clients.
+    `handy serve` starts a FastAPI server with SSE streaming. Drop-in replacement for OpenAI clients.
 
 -   **Energy & Cost Tracking**
 

@@ -24,19 +24,19 @@ Every skill is a tool. Skills appear in a lightweight catalog in the agent's sys
 
 ```bash
 # List installed skills
-jarvis skill list
+handy skill list
 
 # Install a skill from Hermes Agent
-jarvis skill install hermes:apple-notes
+handy skill install hermes:apple-notes
 
 # Bulk install a category
-jarvis skill sync hermes --category research
+handy skill sync hermes --category research
 
 # Run a skill directly
-jarvis skill run math-solver -a expression="41 + 82"
+handy skill run math-solver -a expression="41 + 82"
 
 # See skill details
-jarvis skill info research-and-summarize
+handy skill info research-and-summarize
 ```
 
 ## Skill Definition Format
@@ -124,28 +124,28 @@ The YAML frontmatter follows the [agentskills.io](https://agentskills.io/specifi
 
 ```bash
 # Single skill
-jarvis skill install hermes:apple-notes
+handy skill install hermes:apple-notes
 
 # Bulk install by category
-jarvis skill sync hermes --category research
-jarvis skill sync hermes --category coding
-jarvis skill sync hermes  # everything (~150 skills)
+handy skill sync hermes --category research
+handy skill sync hermes --category coding
+handy skill sync hermes  # everything (~150 skills)
 ```
 
 ### From OpenClaw
 
 ```bash
 # Single skill (owner/slug format)
-jarvis skill install openclaw:0xv4l3nt1n3/etherscan
+handy skill install openclaw:0xv4l3nt1n3/etherscan
 
 # Bulk install with search filter
-jarvis skill sync openclaw --search "web3|crypto"
+handy skill sync openclaw --search "web3|crypto"
 ```
 
 ### From Any GitHub Repo
 
 ```bash
-jarvis skill install github:user/repo/path/to/skill --url https://github.com/user/repo
+handy skill install github:user/repo/path/to/skill --url https://github.com/user/repo
 ```
 
 For example, install the Hermes Tweet skill when you want an agent to search
@@ -153,7 +153,7 @@ Twitter/X, read tweet replies, monitor tweets, export followers, and run
 gated post, reply, or DM workflows:
 
 ```bash
-jarvis skill install github:Xquik-dev/hermes-tweet/skills/hermes-tweet --url https://github.com/Xquik-dev/hermes-tweet
+handy skill install github:Xquik-dev/hermes-tweet/skills/hermes-tweet --url https://github.com/Xquik-dev/hermes-tweet
 ```
 
 ### Config-Driven Auto Import
@@ -181,10 +181,10 @@ When `auto_sync = true`, the SkillManager checks source freshness on each sessio
 
 ```bash
 # List configured sources
-jarvis skill sources
+handy skill sources
 
 # Update all configured sources
-jarvis skill update
+handy skill update
 ```
 
 ## How Agents Use Skills
@@ -233,13 +233,13 @@ OpenJarvis can automatically mine your trace history for recurring tool sequence
 
 ```bash
 # Preview discovered patterns without writing
-jarvis skill discover --dry-run --min-frequency 3
+handy skill discover --dry-run --min-frequency 3
 
 # Write discovered skills to ~/.openjarvis/skills/discovered/
-jarvis skill discover
+handy skill discover
 ```
 
-Discovered skills land in `~/.openjarvis/skills/discovered/` and automatically appear in `jarvis skill list` on the next session.
+Discovered skills land in `~/.openjarvis/skills/discovered/` and automatically appear in `handy skill list` on the next session.
 
 ## Skill Optimization
 
@@ -249,16 +249,16 @@ The skills learning loop uses your trace history to optimize skill descriptions 
 
 ```bash
 # Preview what would be optimized
-jarvis optimize skills --dry-run
+handy optimize skills --dry-run
 
 # Run DSPy optimization
-jarvis optimize skills --policy dspy --min-traces 3
+handy optimize skills --policy dspy --min-traces 3
 
 # Run GEPA evolutionary optimization
-jarvis optimize skills --policy gepa --min-traces 3
+handy optimize skills --policy gepa --min-traces 3
 
 # Inspect what optimization produced
-jarvis skill show-overlay research-and-summarize
+handy skill show-overlay research-and-summarize
 ```
 
 Optimization results are stored as sidecar overlays at `~/.openjarvis/learning/skills/<skill-name>/optimized.toml`. They override the skill's description and add few-shot examples to the agent's system prompt. The original skill files are never modified.
@@ -282,13 +282,13 @@ Measure whether skills improve agent performance:
 
 ```bash
 # Full sweep: 4 conditions × 3 seeds
-jarvis bench skills
+handy bench skills
 
 # Smoke test: 4 conditions × 1 seed × 5 tasks
-jarvis bench skills --max-samples 5 --seeds 42
+handy bench skills --max-samples 5 --seeds 42
 
 # Single condition
-jarvis bench skills --condition skills_optimized_dspy
+handy bench skills --condition skills_optimized_dspy
 ```
 
 The four benchmark conditions are:
@@ -330,7 +330,7 @@ Skills declaring dangerous capabilities (`shell:execute`, `network:listen`, `fil
 Imported skills may include `scripts/` directories with executable code. These are **skipped by default** for security. Use `--with-scripts` to opt in:
 
 ```bash
-jarvis skill install hermes:arxiv --with-scripts
+handy skill install hermes:arxiv --with-scripts
 ```
 
 ## Skill Composition
@@ -398,16 +398,16 @@ When the same skill name exists in multiple locations, closest scope wins:
 
 | Command | Description |
 |---------|-------------|
-| `jarvis skill list` | List installed skills |
-| `jarvis skill info <name>` | Show detailed skill information |
-| `jarvis skill run <name> [-a key=value]` | Execute a skill directly |
-| `jarvis skill install <source>:<name>` | Install from Hermes, OpenClaw, or GitHub |
-| `jarvis skill sync [<source>] [--category C]` | Bulk install + update from sources |
-| `jarvis skill sources` | List configured skill sources |
-| `jarvis skill update` | Pull latest from configured sources |
-| `jarvis skill remove <name>` | Remove an installed skill |
-| `jarvis skill search <query>` | Search the skill index |
-| `jarvis skill discover [--dry-run]` | Mine traces for recurring tool patterns |
-| `jarvis skill show-overlay <name>` | Inspect optimization output for a skill |
-| `jarvis optimize skills [--policy dspy\|gepa]` | Optimize skill descriptions + few-shot examples |
-| `jarvis bench skills [--condition C]` | Run the PinchBench skills benchmark |
+| `handy skill list` | List installed skills |
+| `handy skill info <name>` | Show detailed skill information |
+| `handy skill run <name> [-a key=value]` | Execute a skill directly |
+| `handy skill install <source>:<name>` | Install from Hermes, OpenClaw, or GitHub |
+| `handy skill sync [<source>] [--category C]` | Bulk install + update from sources |
+| `handy skill sources` | List configured skill sources |
+| `handy skill update` | Pull latest from configured sources |
+| `handy skill remove <name>` | Remove an installed skill |
+| `handy skill search <query>` | Search the skill index |
+| `handy skill discover [--dry-run]` | Mine traces for recurring tool patterns |
+| `handy skill show-overlay <name>` | Inspect optimization output for a skill |
+| `handy optimize skills [--policy dspy\|gepa]` | Optimize skill descriptions + few-shot examples |
+| `handy bench skills [--condition C]` | Run the PinchBench skills benchmark |

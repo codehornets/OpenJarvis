@@ -356,7 +356,7 @@ class TestSystemBuilder:
 
 
 class TestSystemBuilderEngineInstance:
-    """Explicit engine injection (jarvis eval --base-url path)."""
+    """Explicit engine injection (handy eval --base-url path)."""
 
     @staticmethod
     def _fake_engine(healthy: bool = True) -> MagicMock:

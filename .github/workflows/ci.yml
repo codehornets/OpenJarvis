@@ -149,7 +149,7 @@ jobs:
       - name: Smoke-test CLI
         shell: bash
         run: |
-          uv run jarvis --version
+          uv run handy --version
 
   rust:
     runs-on: ubuntu-latest

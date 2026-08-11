@@ -1,4 +1,4 @@
-"""Tests for ``jarvis ask --agent`` CLI integration."""
+"""Tests for ``handy ask --agent`` CLI integration."""
 
 from __future__ import annotations
 
@@ -216,7 +216,7 @@ class TestAskAgentOption:
         """When --agent is omitted, ``config.agent.default_agent`` is used.
 
         The default ``JarvisConfig`` sets ``default_agent = "simple"``, so
-        ``jarvis ask "..."`` should route through SimpleAgent rather than
+        ``handy ask "..."`` should route through SimpleAgent rather than
         the direct-to-engine path. Without this fallback, persona settings
         (``default_system_prompt`` and SOUL.md/MEMORY.md/USER.md) would be
         silently bypassed.
@@ -350,7 +350,7 @@ class TestPersonaFilesReachModel:
 
         # Write a SOUL.md with a unique sentinel string we can grep for
         soul = tmp_path / "SOUL.md"
-        soul.write_text("PERSONA_SENTINEL_zh_jarvis", encoding="utf-8")
+        soul.write_text("PERSONA_SENTINEL_zh_handy", encoding="utf-8")
         memory = tmp_path / "MEMORY.md"
         memory.write_text("MEMORY_SENTINEL", encoding="utf-8")
         user = tmp_path / "USER.md"
@@ -392,7 +392,7 @@ class TestPersonaFilesReachModel:
         assert system_messages, f"No SYSTEM message in {messages!r}"
         joined = "\n".join(m.content for m in system_messages)
         assert "BASELINE_TEMPLATE" in joined
-        assert "PERSONA_SENTINEL_zh_jarvis" in joined
+        assert "PERSONA_SENTINEL_zh_handy" in joined
         assert "MEMORY_SENTINEL" in joined
         assert "USER_SENTINEL" in joined
 

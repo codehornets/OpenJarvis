@@ -87,7 +87,7 @@ dropped. Tests covering the patterns: [`tests/analytics/test_redaction.py`](../t
 
 - Default retention: **365 days**, then events are deleted by PostHog
   automatically.
-- `jarvis analytics reset-id` lets you orphan all of your past events
+- `handy analytics reset-id` lets you orphan all of your past events
   by generating a fresh anonymous ID for future events.
 
 ## How identity works

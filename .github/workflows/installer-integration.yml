@@ -62,21 +62,21 @@ jobs:
             test -d ~/.openjarvis/.venv
             test -f ~/.openjarvis/config.toml
             test -f ~/.openjarvis/.state/install-state.json
-            test -L ~/.local/bin/jarvis
+            test -L ~/.local/bin/handy
           '
 
-      - name: Verify jarvis --version
-        run: su testuser -c '~/.local/bin/jarvis --version'
+      - name: Verify handy --version
+        run: su testuser -c '~/.local/bin/handy --version'
 
-      - name: Verify jarvis doctor exits 0
-        run: su testuser -c '~/.local/bin/jarvis doctor'
+      - name: Verify handy doctor exits 0
+        run: su testuser -c '~/.local/bin/handy doctor'
 
       - name: Verify uninstall is clean
         run: |
           su testuser -c '
-            ~/.local/bin/jarvis-uninstall
+            ~/.local/bin/handy-uninstall
             test ! -d ~/.openjarvis
-            test ! -L ~/.local/bin/jarvis
+            test ! -L ~/.local/bin/handy
           '
 
   macos:
@@ -103,16 +103,16 @@ jobs:
           test -d ~/.openjarvis/src
           test -d ~/.openjarvis/.venv
           test -f ~/.openjarvis/config.toml
-          test -L ~/.local/bin/jarvis
+          test -L ~/.local/bin/handy
 
-      - name: Verify jarvis --version
-        run: ~/.local/bin/jarvis --version
+      - name: Verify handy --version
+        run: ~/.local/bin/handy --version
 
-      - name: Verify jarvis doctor exits 0
-        run: ~/.local/bin/jarvis doctor
+      - name: Verify handy doctor exits 0
+        run: ~/.local/bin/handy doctor
 
       - name: Verify uninstall is clean
         run: |
-          ~/.local/bin/jarvis-uninstall
+          ~/.local/bin/handy-uninstall
           test ! -d ~/.openjarvis
-          test ! -L ~/.local/bin/jarvis
+          test ! -L ~/.local/bin/handy

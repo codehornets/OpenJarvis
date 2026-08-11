@@ -4,11 +4,11 @@ OpenJarvis includes a launchd property list (plist) for running the API server a
 
 ## Prerequisites
 
-Before installing the service, ensure that OpenJarvis is installed and the `jarvis` command is available at `/usr/local/bin/jarvis`. If you installed via `uv` or `pip` with a different prefix, adjust the path in the plist accordingly.
+Before installing the service, ensure that OpenJarvis is installed and the `handy` command is available at `/usr/local/bin/handy`. If you installed via `uv` or `pip` with a different prefix, adjust the path in the plist accordingly.
 
 ```bash
 git clone https://github.com/open-jarvis/OpenJarvis.git && cd OpenJarvis && uv sync --extra server
-which jarvis  # Verify the installation path
+which handy  # Verify the installation path
 ```
 
 Also ensure that an inference engine (such as Ollama) is running and accessible on the machine.
@@ -29,7 +29,7 @@ The service starts immediately (due to `RunAtLoad`) and will automatically resta
     the right default for a personal device, and no API key is needed. To
     expose it on your LAN, change the host to `0.0.0.0` **and** uncomment the
     `EnvironmentVariables` block to set `OPENJARVIS_API_KEY`
-    (`jarvis auth generate-key`); an unauthenticated `0.0.0.0` server refuses
+    (`handy auth generate-key`); an unauthenticated `0.0.0.0` server refuses
     to start.
 
 Verify it is running:
@@ -60,7 +60,7 @@ The provided plist file at `deploy/launchd/com.openjarvis.plist`:
     <string>com.openjarvis</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/local/bin/jarvis</string>
+        <string>/usr/local/bin/handy</string>
         <string>serve</string>
         <string>--host</string>
         <string>127.0.0.1</string>
@@ -91,7 +91,7 @@ The provided plist file at `deploy/launchd/com.openjarvis.plist`:
 | Key                  | Value                          | Description                                                                                          |
 |----------------------|--------------------------------|------------------------------------------------------------------------------------------------------|
 | `Label`              | `com.openjarvis`               | Unique identifier for the service. Used with `launchctl` commands to manage the service.             |
-| `ProgramArguments`   | `["/usr/local/bin/jarvis", "serve", "--host", "127.0.0.1", "--port", "8000"]` | The command and arguments to execute. Binds loopback by default; see the note above to expose on the LAN with an API key. |
+| `ProgramArguments`   | `["/usr/local/bin/handy", "serve", "--host", "127.0.0.1", "--port", "8000"]` | The command and arguments to execute. Binds loopback by default; see the note above to expose on the LAN with an API key. |
 | `RunAtLoad`          | `true`                         | Start the service immediately when the plist is loaded (and on each login).                          |
 | `KeepAlive`          | `true`                         | Automatically restart the service if it exits for any reason. launchd monitors the process and relaunches it. |
 | `StandardOutPath`    | `/tmp/openjarvis.stdout.log`   | File where standard output is written. Contains server startup messages and access logs.             |
@@ -175,7 +175,7 @@ Edit the `ProgramArguments` array in the plist. Each argument must be a separate
 ```xml
 <key>ProgramArguments</key>
 <array>
-    <string>/usr/local/bin/jarvis</string>
+    <string>/usr/local/bin/handy</string>
     <string>serve</string>
     <string>--host</string>
     <string>127.0.0.1</string>
@@ -191,7 +191,7 @@ Add additional arguments to the array:
 ```xml
 <key>ProgramArguments</key>
 <array>
-    <string>/usr/local/bin/jarvis</string>
+    <string>/usr/local/bin/handy</string>
     <string>serve</string>
     <string>--host</string>
     <string>0.0.0.0</string>
@@ -218,14 +218,14 @@ Add an `EnvironmentVariables` dictionary to the plist:
 </dict>
 ```
 
-### Using a Different `jarvis` Binary Path
+### Using a Different `handy` Binary Path
 
-If `jarvis` is installed in a virtual environment or a non-standard location, update the first element of `ProgramArguments`:
+If `handy` is installed in a virtual environment or a non-standard location, update the first element of `ProgramArguments`:
 
 ```xml
 <key>ProgramArguments</key>
 <array>
-    <string>/Users/yourname/.local/bin/jarvis</string>
+    <string>/Users/yourname/.local/bin/handy</string>
     <string>serve</string>
     <string>--host</string>
     <string>0.0.0.0</string>

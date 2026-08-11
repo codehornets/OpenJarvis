@@ -1,4 +1,4 @@
-.PHONY: setup build test lint format start stop cleanup
+.PHONY: setup build test lint format start stop cleanup claude reset
 
 # Mirrors .github/workflows/ci.yml so `make test` matches CI locally.
 
@@ -30,3 +30,15 @@ stop:
 # is squatting on them, and removes logs/pid files under logs/.
 cleanup:
 	./scripts/dev-stop.sh --cleanup
+
+claude:
+	claude --dangerously-skip-permissions --dangerously-load-development-channels plugin:annotate@claude-annotate --model sonnet --name Handymate --effort medium
+
+# Full wipe + reinstall: drops the venv, Rust build artifacts, and frontend
+# node_modules, then rebuilds everything from scratch. Use when the venv or
+# build cache is suspect and `make setup && make build` alone isn't enough.
+reset:
+	rm -rf .venv rust/target frontend/src-tauri/target frontend/node_modules
+	$(MAKE) setup
+	$(MAKE) build
+	cd frontend && npm install

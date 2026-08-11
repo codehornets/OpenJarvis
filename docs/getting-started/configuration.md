@@ -15,7 +15,7 @@ The configuration file lives at:
 ~/.openjarvis/config.toml
 ```
 
-OpenJarvis creates the `~/.openjarvis/` directory and populates it with a default config when you run `jarvis init`.
+OpenJarvis creates the `~/.openjarvis/` directory and populates it with a default config when you run `handy init`.
 
 ## Relocating the OpenJarvis directory
 
@@ -44,7 +44,7 @@ export OPENJARVIS_HOME=~/apps/openjarvis
 Confirm where your data lives with:
 
 ```bash
-jarvis config path
+handy config path
 ```
 
 !!! note "Migration"
@@ -62,7 +62,7 @@ independently of the root, if you need to override just the config file path.
 ### First-Time Setup
 
 ```bash
-jarvis init
+handy init
 ```
 
 This command:
@@ -76,7 +76,7 @@ This command:
 To overwrite an existing config:
 
 ```bash
-jarvis init --force
+handy init --force
 ```
 
 !!! warning
@@ -114,7 +114,7 @@ host = "http://localhost:30000"
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `default` | string | Auto-detected | Default engine backend. One of: `ollama`, `vllm`, `llamacpp`, `sglang`, `cloud`. Set automatically by `jarvis init` based on hardware detection. |
+| `default` | string | Auto-detected | Default engine backend. One of: `ollama`, `vllm`, `llamacpp`, `sglang`, `cloud`. Set automatically by `handy init` based on hardware detection. |
 
 **`[engine.ollama]`:**
 
@@ -341,7 +341,7 @@ policy = "heuristic"
 You can also override the router policy per-query via the CLI:
 
 ```bash
-jarvis ask --router heuristic "Hello"
+handy ask --router heuristic "Hello"
 ```
 
 !!! note "Backward compatibility"
@@ -408,7 +408,7 @@ enabled = true
 
 ### `[server]` — API Server
 
-Controls the OpenAI-compatible API server started by `jarvis serve`.
+Controls the OpenAI-compatible API server started by `handy serve`.
 
 ```toml
 [server]
@@ -430,7 +430,7 @@ workers = 1
 CLI options override config values:
 
 ```bash
-jarvis serve --host 127.0.0.1 --port 9000 --model qwen3:8b --agent simple
+handy serve --host 127.0.0.1 --port 9000 --model qwen3:8b --agent simple
 ```
 
 ---
@@ -615,7 +615,7 @@ enforce_tool_confirmation = true
 
 ## Hardware Auto-Detection
 
-When you run `jarvis init`, OpenJarvis probes your system to detect available hardware. The detection runs in this order:
+When you run `handy init`, OpenJarvis probes your system to detect available hardware. The detection runs in this order:
 
 ### GPU Detection
 

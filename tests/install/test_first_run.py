@@ -15,7 +15,7 @@ def _ctx_with_invocation(name: str | None) -> MagicMock:
 
 
 def test_passes_through_when_subcommand_present(tmp_openjarvis_home: Path) -> None:
-    """If user typed `jarvis ask ...`, guard is a no-op."""
+    """If user typed `handy ask ...`, guard is a no-op."""
     ctx = _ctx_with_invocation("ask")
     result = _first_run.check_and_route(ctx)
     assert result is None
@@ -37,8 +37,8 @@ def test_routes_to_init_when_no_config(tmp_openjarvis_home: Path) -> None:
     assert ctx.invoke.called
     invoked_cmd = ctx.invoke.call_args[0][0]
     assert invoked_cmd.name == "init"
-    # Cold-path init must run with the from-bare-jarvis flag set.
-    assert ctx.invoke.call_args.kwargs.get("from_bare_jarvis") is True
+    # Cold-path init must run with the from-bare-handy flag set.
+    assert ctx.invoke.call_args.kwargs.get("from_bare_handy") is True
 
 
 def test_handles_missing_state_dir(tmp_path: Path, monkeypatch) -> None:
@@ -54,10 +54,10 @@ def test_handles_missing_state_dir(tmp_path: Path, monkeypatch) -> None:
     assert invoked_cmd.name == "init"
 
 
-def test_root_group_invokes_guard_on_bare_jarvis(
+def test_root_group_invokes_guard_on_bare_handy(
     tmp_openjarvis_home: Path, monkeypatch
 ) -> None:
-    """End-to-end: bare `jarvis` invocation calls the first-run guard.
+    """End-to-end: bare `handy` invocation calls the first-run guard.
 
     We monkeypatch check_and_route to a recorder so we can verify it was
     called with a click.Context whose invoked_subcommand is None.

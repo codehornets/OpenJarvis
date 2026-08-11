@@ -70,15 +70,15 @@ body:
           required: true
         - label: Non-mining layers use int8 vanilla Pearl GEMM
           required: true
-        - label: `jarvis mine init --model <pearl-model-id>` succeeds
+        - label: `handy mine init --model <pearl-model-id>` succeeds
           required: true
-        - label: `jarvis mine start` succeeds
+        - label: `handy mine start` succeeds
           required: true
-        - label: `jarvis ask` succeeds through the mining engine
+        - label: `handy ask` succeeds through the mining engine
           required: true
-        - label: `jarvis mine status` reports gateway/mining metrics
+        - label: `handy mine status` reports gateway/mining metrics
           required: true
-        - label: `jarvis mine validate-model --allow-planned` passes
+        - label: `handy mine validate-model --allow-planned` passes
           required: true
         - label: Gateway/miner logs show no submission errors
           required: true
@@ -89,8 +89,8 @@ body:
       description: Attach logs, metrics, model config, and command output.
       placeholder: |
         - /v1/models output:
-        - `jarvis mine status` output:
-        - `jarvis mine validate-model --output` JSON:
+        - `handy mine status` output:
+        - `handy mine validate-model --output` JSON:
         - gateway metrics excerpt:
         - miner logs:
         - PR/commit that flips status to validated:

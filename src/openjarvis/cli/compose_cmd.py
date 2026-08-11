@@ -1,4 +1,4 @@
-"""``jarvis compose`` — unified composition CLI for discrete agents and operators."""
+"""``handy compose`` — unified composition CLI for discrete agents and operators."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def compose() -> None:
 
 
 # ------------------------------------------------------------------ #
-# jarvis compose list
+# handy compose list
 # ------------------------------------------------------------------ #
 
 
@@ -80,7 +80,7 @@ def compose_list(kind: Optional[str]) -> None:
 
 
 # ------------------------------------------------------------------ #
-# jarvis compose show
+# handy compose show
 # ------------------------------------------------------------------ #
 
 
@@ -151,7 +151,7 @@ def compose_show(name: str) -> None:
 
 
 # ------------------------------------------------------------------ #
-# jarvis compose run
+# handy compose run
 # ------------------------------------------------------------------ #
 
 
@@ -235,7 +235,7 @@ def compose_run(name: str, query: tuple[str, ...], output_json: bool) -> None:
 
 
 # ------------------------------------------------------------------ #
-# jarvis compose bench
+# handy compose bench
 # ------------------------------------------------------------------ #
 
 
@@ -351,7 +351,7 @@ def compose_bench(
 
 
 # ------------------------------------------------------------------ #
-# jarvis compose deploy
+# handy compose deploy
 # ------------------------------------------------------------------ #
 
 
@@ -399,7 +399,7 @@ def compose_deploy(name: str) -> None:
 
 
 # ------------------------------------------------------------------ #
-# jarvis compose stop
+# handy compose stop
 # ------------------------------------------------------------------ #
 
 
@@ -433,7 +433,7 @@ def compose_stop(name: str) -> None:
 
 
 # ------------------------------------------------------------------ #
-# jarvis compose status
+# handy compose status
 # ------------------------------------------------------------------ #
 
 

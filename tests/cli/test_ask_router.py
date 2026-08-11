@@ -1,4 +1,4 @@
-"""Tests for model resolution fallback chain in jarvis ask."""
+"""Tests for model resolution fallback chain in handy ask."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ def _register_agents():
     """Re-register agents after the conftest registry clear.
 
     The default ``JarvisConfig().agent.default_agent`` is ``"simple"``,
-    so ``jarvis ask "..."`` (without ``--agent``) routes through SimpleAgent.
+    so ``handy ask "..."`` (without ``--agent``) routes through SimpleAgent.
     Without this re-registration, that path raises ``Unknown agent: simple``.
     """
     from openjarvis.agents.simple import SimpleAgent

@@ -130,5 +130,3 @@ learning.db
 minion_logs/
 *.oj-debug.json
 oj-debug.*.json
-
-vendor/

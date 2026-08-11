@@ -585,7 +585,7 @@ class TestEnvVarExpansion:
 class TestFullE2EFlow:
     """Test the full flow: mention arrives → classify → prompt → agent → tool calls."""
 
-    def _make_mock_jarvis(self, responses=None):
+    def _make_mock_handy(self, responses=None):
         """Create a mock Jarvis instance that returns canned responses."""
         j = MagicMock()
         if responses:
@@ -602,7 +602,7 @@ class TestFullE2EFlow:
         picks between grounded/deferral prompts. The only tool the agent
         needs for a QUESTION is ``channel_send``.
         """
-        j = self._make_mock_jarvis(["check the docs at open-jarvis.github.io"])
+        j = self._make_mock_handy(["check the docs at open-jarvis.github.io"])
         tweet = DEMO_TWEETS[0]
         # mention_type is determined by _classify_mention in production; the
         # classifier itself is exercised in TestClassifyMentionDispatch. Flow
@@ -629,7 +629,7 @@ class TestFullE2EFlow:
 
     def test_bug_report_flow(self):
         """Bug mention → http_request (GitHub issue) + channel_send."""
-        j = self._make_mock_jarvis(["opened an issue for this"])
+        j = self._make_mock_handy(["opened an issue for this"])
         tweet = DEMO_TWEETS[1]
         mention_type = "BUG_REPORT"
         assert mention_type == "BUG_REPORT"
@@ -650,7 +650,7 @@ class TestFullE2EFlow:
 
     def test_feature_request_flow(self):
         """Feature mention → http_request (GitHub issue) + channel_send."""
-        j = self._make_mock_jarvis(
+        j = self._make_mock_handy(
             ["love this idea — opened an issue to track it"],
         )
         tweet = DEMO_TWEETS[2]
@@ -675,7 +675,7 @@ class TestFullE2EFlow:
 
     def test_praise_flow(self):
         """Praise mention → channel_send only."""
-        j = self._make_mock_jarvis(["thanks, glad you like it!"])
+        j = self._make_mock_handy(["thanks, glad you like it!"])
         tweet = DEMO_TWEETS[3]
         mention_type = "PRAISE"
         assert mention_type == "PRAISE"
@@ -688,7 +688,7 @@ class TestFullE2EFlow:
 
     def test_spam_is_ignored(self):
         """Spam mentions should be skipped — no Jarvis.ask call."""
-        j = self._make_mock_jarvis()
+        j = self._make_mock_handy()
         tweet = DEMO_TWEETS[4]  # noqa: F841  (retained for parity with siblings)
         mention_type = "SPAM"
         assert mention_type == "SPAM"
@@ -702,7 +702,7 @@ class TestFullE2EFlow:
         """Verify tool selection for each demo tweet type.
 
         Post LLM-classifier refactor: classification is tested in
-        TestClassifyMentionDispatch against a mocked jarvis. This test
+        TestClassifyMentionDispatch against a mocked handy. This test
         takes the type as a given (paired with the tweet) and verifies
         the routing layer picks the right tools.
         """

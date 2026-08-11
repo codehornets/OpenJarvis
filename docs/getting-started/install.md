@@ -29,7 +29,7 @@ model. **You don't need to install uv or any other prerequisite first.**
     intermittent TLS issues ([#337](https://github.com/open-jarvis/OpenJarvis/issues/337)).
     The `open-jarvis.github.io` URL above is the canonical one.
 
-About 3 minutes on a typical broadband connection. Type `jarvis` to start chatting.
+About 3 minutes on a typical broadband connection. Type `handy` to start chatting.
 
 ## What the installer does
 
@@ -43,7 +43,7 @@ About 3 minutes on a typical broadband connection. Type `jarvis` to start chatti
 | Foreground | Start `ollama serve` | systemd-user / launchd / nohup |
 | Foreground | Pull `qwen3.5:2b` (~1.5 GB) | Ollama's model store |
 | Foreground | Write `config.toml` (auto-detected hardware + engine + model) | `~/.openjarvis/config.toml` |
-| Foreground | Symlink `jarvis` and `jarvis-uninstall` | `~/.local/bin/` |
+| Foreground | Symlink `handy` and `handy-uninstall` | `~/.local/bin/` |
 | Foreground | Add `~/.local/bin` to PATH if missing (with on-screen notice) | `~/.bashrc` or `~/.zshrc` |
 | Background | Install Rust toolchain via rustup | `~/.cargo/` |
 | Background | Build the maturin extension (memory + security features) | venv |
@@ -62,7 +62,7 @@ Re-running the curl line is safe. The installer reads `~/.openjarvis/.state/inst
 
 ## Cloud quick-path
 
-If any of these env vars are set when you install or run `jarvis init`, the installer/init proposes cloud as the default and writes the matching provider into `config.toml`:
+If any of these env vars are set when you install or run `handy init`, the installer/init proposes cloud as the default and writes the matching provider into `config.toml`:
 
 - `OPENROUTER_API_KEY`
 - `ANTHROPIC_API_KEY`
@@ -89,22 +89,22 @@ Local-first remains the default when no key is in env. Precedence is OpenRouter 
 ## Uninstall
 
 ```bash
-jarvis-uninstall
+handy-uninstall
 ```
 
-Removes `~/.openjarvis/`, `~/.local/bin/jarvis`, and `~/.local/bin/jarvis-uninstall`. Leaves Ollama, uv, and the Rust toolchain in place (they may be used by other tools); the script prints removal hints.
+Removes `~/.openjarvis/`, `~/.local/bin/handy`, and `~/.local/bin/handy-uninstall`. Leaves Ollama, uv, and the Rust toolchain in place (they may be used by other tools); the script prints removal hints.
 
 ## Updating
 
 ```bash
-jarvis update
+handy update
 ```
 
 Pulls the latest source, refreshes the editable install, and rebuilds the Rust extension in the background. Models are not touched.
 
 ## Troubleshooting
 
-### "command not found: jarvis"
+### "command not found: handy"
 
 `~/.local/bin` isn't on your PATH. Run `source ~/.bashrc` (or `~/.zshrc`) or open a new terminal.
 
@@ -113,7 +113,7 @@ Pulls the latest source, refreshes the editable install, and rebuilds the Rust e
 Rust extension hasn't finished building yet (or failed). Check status:
 
 ```bash
-jarvis doctor
+handy doctor
 ```
 
 Manually retry:
@@ -127,7 +127,7 @@ Manually retry:
 Check status and retry:
 
 ```bash
-jarvis doctor
+handy doctor
 ~/.openjarvis/.scripts/pull-model.sh qwen3.5:9b
 ```
 

@@ -417,7 +417,7 @@ class AgentExecutor:
         if self._bus is not None:
             agent_kwargs["bus"] = self._bus
         # Propagate confirmation policy from the AgentExecutor down to the
-        # agent's own ToolExecutor. Set by CLI paths like `jarvis agents ask`
+        # agent's own ToolExecutor. Set by CLI paths like `handy agents ask`
         # so non-interactive runs can auto-approve tool execution.
         if getattr(self, "_confirm_callback", None) is not None:
             agent_kwargs["interactive"] = True
@@ -461,7 +461,7 @@ class AgentExecutor:
                     self._system, "memory_backend", None
                 )
             # Wire SOUL.md / MEMORY.md / USER.md persona files into persistent
-            # agents, mirroring the one-shot `jarvis ask` path so they no
+            # agents, mirroring the one-shot `handy ask` path so they no
             # longer apply to CLI calls only (#376).
             cfg = getattr(self._system, "config", None)
             if _accepts("prompt_builder") and (

@@ -96,7 +96,7 @@ Expected:
 On shared hosts, select only idle GPUs during `mine init`:
 
 ```bash
-uv run jarvis mine init --cuda-visible-devices 0
+uv run handy mine init --cuda-visible-devices 0
 ```
 
 This writes `[mining.extra].cuda_visible_devices`. `mine start` passes that
@@ -109,7 +109,7 @@ dedicated host where the miner may use all GPUs.
 Run:
 
 ```bash
-uv run jarvis mine doctor
+uv run handy mine doctor
 ```
 
 Before config exists, `doctor` should show hardware and Docker as OK, and
@@ -118,7 +118,7 @@ Pearl node / wallet as unconfigured.
 Then initialize:
 
 ```bash
-uv run jarvis mine init
+uv run handy mine init
 ```
 
 Use:
@@ -140,7 +140,7 @@ Expected:
 Run `doctor` again:
 
 ```bash
-uv run jarvis mine doctor
+uv run handy mine doctor
 ```
 
 Expected:
@@ -156,7 +156,7 @@ Expected:
 ## Start Mining
 
 ```bash
-uv run jarvis mine start
+uv run handy mine start
 ```
 
 Expected:
@@ -171,8 +171,8 @@ Inspect:
 ```bash
 docker ps --filter name=openjarvis-pearl-miner
 cat ~/.openjarvis/runtime/mining.json
-uv run jarvis mine logs --tail 200
-uv run jarvis mine status
+uv run handy mine logs --tail 200
+uv run handy mine status
 ```
 
 Expected:
@@ -188,8 +188,8 @@ Expected:
 Run:
 
 ```bash
-uv run jarvis mine doctor
-uv run jarvis ask "Say hello in one sentence."
+uv run handy mine doctor
+uv run handy ask "Say hello in one sentence."
 ```
 
 Expected:
@@ -208,7 +208,7 @@ Check gateway metrics directly:
 
 ```bash
 curl -fsS http://127.0.0.1:8339/metrics | tee /tmp/pearl-gateway-metrics.txt
-uv run jarvis mine status
+uv run handy mine status
 ```
 
 Expected:
@@ -245,7 +245,7 @@ smoke test window. Record:
 ## Stop And Cleanup
 
 ```bash
-uv run jarvis mine stop
+uv run handy mine stop
 docker ps --filter name=openjarvis-pearl-miner
 test ! -e ~/.openjarvis/runtime/mining.json
 ```
@@ -254,7 +254,7 @@ Expected:
 
 - Container stops.
 - Sidecar is removed.
-- `jarvis ask` no longer routes through `vllm-pearl-mining` unless another
+- `handy ask` no longer routes through `vllm-pearl-mining` unless another
   mining sidecar is attached.
 
 ## Pass Criteria
@@ -276,9 +276,9 @@ The NVIDIA provider is considered proven when all are true:
 For any failure, collect:
 
 ```bash
-uv run jarvis mine doctor
-uv run jarvis mine status || true
-uv run jarvis mine logs --tail 300 || true
+uv run handy mine doctor
+uv run handy mine status || true
+uv run handy mine logs --tail 300 || true
 docker inspect openjarvis-pearl-miner || true
 curl -fsS http://127.0.0.1:8339/metrics || true
 nvidia-smi

@@ -15,7 +15,7 @@ from openjarvis.cli import cli, main
 
 
 class TestMainEntryPoint:
-    """Tests for the ``jarvis`` console script entry point."""
+    """Tests for the ``handy`` console script entry point."""
 
     def test_windows_reconfigures_stdout_to_utf8(self) -> None:
         """On Windows, main() must reconfigure stdout/stderr to UTF-8 so that
@@ -175,7 +175,7 @@ class TestStartupResilience:
     """Importing the CLI must not force heavy/native deps (#404, #309).
 
     A broken or slow numpy on Windows otherwise raises at import time and takes
-    down every `jarvis` command — including `jarvis serve` — because the CLI
+    down every `handy` command — including `handy serve` — because the CLI
     eagerly pulls the deep-research command chain (-> embeddings -> numpy).
     """
 
@@ -193,5 +193,5 @@ class TestStartupResilience:
         )
         assert result.returncode == 0, (
             "importing openjarvis.cli pulled in numpy (a broken numpy would then "
-            f"crash `jarvis serve`):\nstdout={result.stdout}\nstderr={result.stderr}"
+            f"crash `handy serve`):\nstdout={result.stdout}\nstderr={result.stderr}"
         )

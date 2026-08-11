@@ -49,10 +49,10 @@ The available env vars: `OPENJARVIS_SKIP_SERVICE`, `OPENJARVIS_SERVICE`,
 ## Manual scheduled-task setup
 
 If you skipped the prompt during install, you can register / inspect /
-remove the task with `jarvis-service.ps1`:
+remove the task with `handy-service.ps1`:
 
 ```powershell
-$srv = "$env:LOCALAPPDATA\OpenJarvis\src\deploy\windows\jarvis-service.ps1"
+$srv = "$env:LOCALAPPDATA\OpenJarvis\src\deploy\windows\handy-service.ps1"
 
 # install (idempotent — replaces existing)
 powershell -ExecutionPolicy Bypass -File $srv install
@@ -79,13 +79,13 @@ To expose on your LAN:
 
 ```powershell
 # 1. Generate an API key. The server REFUSES to bind 0.0.0.0 without one.
-$env:OPENJARVIS_API_KEY = (uv run jarvis auth generate-key)
+$env:OPENJARVIS_API_KEY = (uv run handy auth generate-key)
 
 # 2. Re-register the task with -ListenHost 0.0.0.0.
 powershell -ExecutionPolicy Bypass -File $srv install -ListenHost 0.0.0.0
 ```
 
-`jarvis-service.ps1 install` refuses `-ListenHost 0.0.0.0` if
+`handy-service.ps1 install` refuses `-ListenHost 0.0.0.0` if
 `$env:OPENJARVIS_API_KEY` is unset — same guard as the systemd unit's
 `EnvironmentFile=/etc/openjarvis/env`.
 
@@ -93,7 +93,7 @@ powershell -ExecutionPolicy Bypass -File $srv install -ListenHost 0.0.0.0
 
 | Concern | systemd | launchd | Windows |
 |---------|---------|---------|---------|
-| Service definition | `deploy/systemd/openjarvis.service` | `deploy/launchd/com.openjarvis.plist` | `deploy/windows/jarvis-service.ps1` (cmdlet-driven) |
+| Service definition | `deploy/systemd/openjarvis.service` | `deploy/launchd/com.openjarvis.plist` | `deploy/windows/handy-service.ps1` (cmdlet-driven) |
 | Default bind | `0.0.0.0` (with API key) | `127.0.0.1` (no API key) | `127.0.0.1` (no API key) |
 | Restart on failure | `Restart=on-failure RestartSec=5` | `KeepAlive=true` | `RestartCount=3 RestartInterval=PT1M` |
 | Auto-start | `multi-user.target` | `RunAtLoad=true` | `AtLogOn` trigger |
@@ -118,7 +118,7 @@ irm https://open-jarvis.github.io/OpenJarvis/install.ps1 | iex
 ## Uninstall
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\OpenJarvis\src\deploy\windows\jarvis-service.ps1" uninstall
+powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\OpenJarvis\src\deploy\windows\handy-service.ps1" uninstall
 Remove-Item -Recurse -Force "$env:LOCALAPPDATA\OpenJarvis"
 ```
 

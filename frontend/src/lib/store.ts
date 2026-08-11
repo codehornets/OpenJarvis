@@ -72,7 +72,7 @@ interface Settings {
   theme: ThemeMode;
   apiUrl: string;
   // Local server API key (OPENJARVIS_API_KEY). Sent as a Bearer token on
-  // /v1 + /api requests so a key-protected `jarvis serve` doesn't 401 the
+  // /v1 + /api requests so a key-protected `handy serve` doesn't 401 the
   // frontend (#266). Empty = no auth header (keyless local default).
   apiKey: string;
   fontSize: 'small' | 'default' | 'large';

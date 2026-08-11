@@ -21,13 +21,13 @@ Then open the Ubuntu (or Debian) shell that gets installed.
 curl -fsSL https://open-jarvis.github.io/OpenJarvis/install.sh | bash
 ```
 
-About 3 minutes. Type `jarvis` to start.
+About 3 minutes. Type `handy` to start.
 
 ## WSL-specific notes
 
 - The installer detects WSL via `/proc/sys/kernel/osrelease` and uses `nohup ollama serve &` instead of systemd to start the Ollama daemon (WSL2 doesn't ship systemd by default).
-- The first time you run `jarvis`, the WSL kernel may show a "process running in background" notification — that's the bg-orchestrator detaching. It's expected.
-- Models are stored in WSL's filesystem (`~/.openjarvis/`), not your Windows drive. To free up space later: `jarvis-uninstall` removes everything.
+- The first time you run `handy`, the WSL kernel may show a "process running in background" notification — that's the bg-orchestrator detaching. It's expected.
+- Models are stored in WSL's filesystem (`~/.openjarvis/`), not your Windows drive. To free up space later: `handy-uninstall` removes everything.
 
 ## See also
 

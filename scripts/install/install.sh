@@ -596,19 +596,19 @@ pull_default_model() {
 }
 
 write_config() {
-    "$VENV_DIR/bin/jarvis" _bootstrap --write-config \
+    "$VENV_DIR/bin/handy" _bootstrap --write-config \
         --engine ollama --model qwen3.5:2b \
         --prefer-cloud-when-available
 }
 
 install_symlinks() {
     mkdir -p "$HOME/.local/bin"
-    ln -sf "$SCRIPTS_DIR/jarvis-wrapper.sh" "$HOME/.local/bin/jarvis"
-    ln -sf "$SCRIPTS_DIR/jarvis-uninstall.sh" "$HOME/.local/bin/jarvis-uninstall"
+    ln -sf "$SCRIPTS_DIR/handy-wrapper.sh" "$HOME/.local/bin/handy"
+    ln -sf "$SCRIPTS_DIR/handy-uninstall.sh" "$HOME/.local/bin/handy-uninstall"
 }
 
 # Tracks whether the user needs to source ~/.bashrc / ~/.zshrc / open a
-# new terminal before `jarvis` will resolve. Set only when ensure_path
+# new terminal before `handy` will resolve. Set only when ensure_path
 # actually modified the user's rc file.
 PATH_MODIFIED=0
 
@@ -699,16 +699,16 @@ echo
 # the foreground model pull actually succeeded and (b) whether the PATH
 # update needs a shell refresh. The four combinations:
 #
-#   PATH ok + model ok   -> "type jarvis"
-#   PATH new + model ok  -> "source rc && jarvis  (or open new terminal)"
-#   PATH ok + model bad  -> "model still downloading; jarvis doctor"
-#   PATH new + model bad -> "source rc && jarvis doctor; chat works once download finishes"
+#   PATH ok + model ok   -> "type handy"
+#   PATH new + model ok  -> "source rc && handy  (or open new terminal)"
+#   PATH ok + model bad  -> "model still downloading; handy doctor"
+#   PATH new + model bad -> "source rc && handy doctor; chat works once download finishes"
 #
-# `jarvis` and `jarvis doctor` need PATH equally, so the source/restart
+# `handy` and `handy doctor` need PATH equally, so the source/restart
 # guidance goes first when PATH was modified.
-NEXT_CMD="jarvis"
+NEXT_CMD="handy"
 if [[ "$MODEL_PULL_OK" -ne 1 ]]; then
-    NEXT_CMD="jarvis doctor"
+    NEXT_CMD="handy doctor"
 fi
 
 if [[ "$PATH_MODIFIED" -eq 1 ]]; then
@@ -730,7 +730,7 @@ fi
 
 if [[ "$MODEL_PULL_OK" -ne 1 ]]; then
     cat <<EOF
-NOTE: the qwen3.5:2b model didn't finish downloading. 'jarvis doctor'
+NOTE: the qwen3.5:2b model didn't finish downloading. 'handy doctor'
 shows the retry progress; chat will work once the download completes
 in the background.
 
@@ -741,5 +741,5 @@ cat <<EOF
 Background work continues silently:
   - Rust toolchain + maturin extension build
   - Bigger model downloads
-  Run 'jarvis doctor' to check status anytime.
+  Run 'handy doctor' to check status anytime.
 EOF

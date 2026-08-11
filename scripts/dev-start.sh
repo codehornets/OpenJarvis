@@ -38,7 +38,7 @@ elif curl -sf http://localhost:8000/health &>/dev/null; then
   fail "Something is already serving http://localhost:8000 (not tracked by dev-start). Run 'make stop' or free the port manually."
 else
   info "Starting backend on port 8000..."
-  nohup uv run jarvis serve --port 8000 >"$BACKEND_LOG" 2>&1 &
+  nohup uv run handy serve --port 8000 >"$BACKEND_LOG" 2>&1 &
   echo $! >"$BACKEND_PID_FILE"
   disown
   sleep 2

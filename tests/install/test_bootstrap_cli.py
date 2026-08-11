@@ -1,4 +1,4 @@
-"""Tests for the jarvis _bootstrap hidden CLI command."""
+"""Tests for the handy _bootstrap hidden CLI command."""
 
 from __future__ import annotations
 

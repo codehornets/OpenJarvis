@@ -154,18 +154,18 @@ All query methods accept optional `since` and `until` parameters (Unix timestamp
 
 ```bash
 # Show aggregated statistics
-jarvis telemetry stats
-jarvis telemetry stats -n 5          # Top 5 models only
+handy telemetry stats
+handy telemetry stats -n 5          # Top 5 models only
 
 # Export records
-jarvis telemetry export              # JSON to stdout
-jarvis telemetry export -f csv       # CSV to stdout
-jarvis telemetry export -o data.json # JSON to file
-jarvis telemetry export -f csv -o metrics.csv
+handy telemetry export              # JSON to stdout
+handy telemetry export -f csv       # CSV to stdout
+handy telemetry export -o data.json # JSON to file
+handy telemetry export -f csv -o metrics.csv
 
 # Clear all records
-jarvis telemetry clear               # With confirmation prompt
-jarvis telemetry clear --yes         # Without confirmation
+handy telemetry clear               # With confirmation prompt
+handy telemetry clear --yes         # Without confirmation
 ```
 
 ---

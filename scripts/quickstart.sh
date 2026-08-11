@@ -202,7 +202,7 @@ info "Starting backend API server on port 8000..."
 if curl -sf http://localhost:8000/health &>/dev/null; then
   fail "An OpenJarvis server is already running on port 8000. Stop it before re-running quickstart so updated environment variables are applied."
 fi
-uv run jarvis serve --port 8000 >"$BACKEND_LOG" 2>&1 &
+uv run handy serve --port 8000 >"$BACKEND_LOG" 2>&1 &
 BACKEND_PID=$!
 CLEANUP_PIDS+=("$BACKEND_PID")
 info "Backend logs: $BACKEND_LOG"

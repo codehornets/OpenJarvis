@@ -1,4 +1,4 @@
-"""``jarvis telemetry`` — query and manage telemetry data."""
+"""``handy telemetry`` — query and manage telemetry data."""
 
 from __future__ import annotations
 

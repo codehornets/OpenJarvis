@@ -29,6 +29,6 @@ Register OpenJarvis as a launch agent on macOS.
 
 ## API Server
 
-Run OpenJarvis as an OpenAI-compatible HTTP server via `jarvis serve`.
+Run OpenJarvis as an OpenAI-compatible HTTP server via `handy serve`.
 
 [:octicons-arrow-right-24: API server guide](api-server.md)

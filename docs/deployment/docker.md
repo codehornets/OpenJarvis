@@ -10,7 +10,7 @@ refuses to start on a non-loopback address without one. Set it first:
 ```bash
 cd deploy/docker
 cp .env.example .env
-echo "OPENJARVIS_API_KEY=$(jarvis auth generate-key)" > .env   # or paste your own
+echo "OPENJARVIS_API_KEY=$(handy auth generate-key)" > .env   # or paste your own
 ```
 
 Then start both the API server and an Ollama backend with Docker Compose:
@@ -27,7 +27,7 @@ This brings up two services:
 
 | Service  | Port  | Description                        |
 |----------|-------|------------------------------------|
-| `jarvis` | 8000  | OpenJarvis API server              |
+| `handy` | 8000  | OpenJarvis API server              |
 | `ollama` | 11434 | Ollama inference engine            |
 
 Verify the server is running:
@@ -71,7 +71,7 @@ WORKDIR /app
 
 EXPOSE 8000
 
-ENTRYPOINT ["jarvis"]
+ENTRYPOINT ["handy"]
 CMD ["serve", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
@@ -117,7 +117,7 @@ WORKDIR /app
 
 EXPOSE 8000
 
-ENTRYPOINT ["jarvis"]
+ENTRYPOINT ["handy"]
 CMD ["serve", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
@@ -144,7 +144,7 @@ The `docker-compose.yml` defines a complete deployment with the OpenJarvis API s
 version: "3.9"
 
 services:
-  jarvis:
+  handy:
     build:
       context: .
       dockerfile: Dockerfile
@@ -171,7 +171,7 @@ volumes:
 
 ### Environment Variables
 
-The `jarvis` service is configured through environment variables:
+The `handy` service is configured through environment variables:
 
 | Variable                      | Description                                             | Default                    |
 |-------------------------------|---------------------------------------------------------|----------------------------|
@@ -184,7 +184,7 @@ The `ollama-models` named volume persists downloaded models across container res
 
 ### Service Dependencies
 
-The `jarvis` service declares `depends_on: ollama`, ensuring the Ollama container starts before the API server. Both services use `restart: unless-stopped` to automatically recover from crashes.
+The `handy` service declares `depends_on: ollama`, ensuring the Ollama container starts before the API server. Both services use `restart: unless-stopped` to automatically recover from crashes.
 
 ## Custom Configuration
 
@@ -194,7 +194,7 @@ To use a custom `config.toml`, mount it into the container at the expected path 
 
 ```yaml
 services:
-  jarvis:
+  handy:
     build:
       context: .
       dockerfile: Dockerfile
@@ -216,7 +216,7 @@ To persist telemetry data, memory databases, and trace records across container 
 
 ```yaml
 services:
-  jarvis:
+  handy:
     # ... other config ...
     volumes:
       - openjarvis-data:/root/.openjarvis
@@ -239,7 +239,7 @@ To use the GPU Dockerfile in your Compose setup, change the `dockerfile` field a
 
 ```yaml
 services:
-  jarvis:
+  handy:
     build:
       context: .
       dockerfile: Dockerfile.gpu
@@ -284,7 +284,7 @@ You can integrate this into your Docker Compose healthcheck:
 
 ```yaml
 services:
-  jarvis:
+  handy:
     # ... other config ...
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -307,7 +307,7 @@ RUN pip install --no-cache-dir uv && \
 
 ### Overriding the Default Command
 
-The entrypoint is `jarvis` and the default command is `serve --host 0.0.0.0 --port 8000`. Override the command to change server options:
+The entrypoint is `handy` and the default command is `serve --host 0.0.0.0 --port 8000`. Override the command to change server options:
 
 ```bash
 docker run -d -p 9000:9000 openjarvis:latest \
@@ -318,14 +318,14 @@ Or in Docker Compose:
 
 ```yaml
 services:
-  jarvis:
+  handy:
     build: .
     command: ["serve", "--host", "0.0.0.0", "--port", "9000", "--model", "qwen3:8b"]
     ports:
       - "9000:9000"
 ```
 
-### Available CLI Options for `jarvis serve`
+### Available CLI Options for `handy serve`
 
 | Option               | Description                                         |
 |----------------------|-----------------------------------------------------|

@@ -139,7 +139,7 @@ The fastest way is to use the App Manifest — paste this JSON to configure ever
 
 3. **Connect in OpenJarvis:**
    - Desktop/Browser: Agents → your agent → Channels tab → Gmail → Reconnect
-   - CLI: `uv run jarvis connect gmail_imap`
+   - CLI: `uv run handy connect gmail_imap`
    - Enter your email address and the app password
 
 ### Troubleshooting
@@ -324,7 +324,7 @@ We recommend creating **one Slack app** that handles both. The App Manifest belo
 
 **As a data source** (read channel messages):
 - Desktop/Browser: Data Sources → Slack → paste the bot token (`xoxb-...`)
-- CLI: `uv run jarvis connect slack`
+- CLI: `uv run handy connect slack`
 
 **As a messaging channel** (DM your agent):
 - Desktop/Browser: Data Sources → Messaging Channels → Slack → Set Up
@@ -377,7 +377,7 @@ We recommend creating **one Slack app** that handles both. The App Manifest belo
 
 3. **Connect in OpenJarvis:**
    - Desktop/Browser: Agents → Channels tab → Notion → paste the token
-   - CLI: `uv run jarvis connect notion`
+   - CLI: `uv run handy connect notion`
 
 ### Troubleshooting
 
@@ -399,7 +399,7 @@ We recommend creating **one Slack app** that handles both. The App Manifest belo
 2. **Copy your API key** (starts with `grn_`)
 3. **Connect in OpenJarvis:**
    - Desktop/Browser: Agents → Channels tab → Granola → paste the key
-   - CLI: `uv run jarvis connect granola`
+   - CLI: `uv run handy connect granola`
 
 ### Troubleshooting
 
@@ -465,7 +465,7 @@ Same as Apple Notes — requires Full Disk Access.
 
 3. **Connect in OpenJarvis:**
    - Desktop/Browser: Agents → Channels tab → Outlook → enter email + app password
-   - CLI: `uv run jarvis connect outlook`
+   - CLI: `uv run handy connect outlook`
 
 ### Troubleshooting
 
@@ -486,7 +486,7 @@ Same as Apple Notes — requires Full Disk Access.
 1. Find your Obsidian vault folder (the folder containing the `.obsidian` directory)
 2. **Connect in OpenJarvis:**
    - Desktop/Browser: Agents → Channels tab → Obsidian → paste the vault path
-   - CLI: `uv run jarvis connect obsidian --path /path/to/vault`
+   - CLI: `uv run handy connect obsidian --path /path/to/vault`
 
 ### Troubleshooting
 
@@ -516,7 +516,7 @@ Same as Apple Notes — requires Full Disk Access.
 
 4. **Connect in OpenJarvis:**
    - Desktop/Browser: Agents → Channels tab → Dropbox → paste the token
-   - CLI: `uv run jarvis connect dropbox`
+   - CLI: `uv run handy connect dropbox`
 
 ### Troubleshooting
 
@@ -533,7 +533,7 @@ Same as Apple Notes — requires Full Disk Access.
 
 | Issue | Solution |
 |-------|----------|
-| "Connected — no data synced yet" | The connector authenticated but hasn't synced. Try running `uv run jarvis deep-research-setup --skip-chat` to trigger a sync. |
+| "Connected — no data synced yet" | The connector authenticated but hasn't synced. Try running `uv run handy deep-research-setup --skip-chat` to trigger a sync. |
 | Data seems stale | Connectors sync on demand. Run the setup command or click "Reconnect" to re-sync. |
 | Want to reset a connector | Click "Reconnect" in the Channels tab, or delete the credential file at `~/.openjarvis/connectors/{connector}.json` |
 

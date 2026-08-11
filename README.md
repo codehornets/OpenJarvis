@@ -48,18 +48,18 @@ Pick your platform and run one command. Each installer handles [uv](https://docs
 | **Native Windows** | `irm https://open-jarvis.github.io/OpenJarvis/install.ps1 \| iex` |
 | **Desktop GUI** | Download `.exe` / `.dmg` / `.deb` / `.rpm` / `.AppImage` from the [latest release](https://github.com/open-jarvis/OpenJarvis/releases) |
 
-Then `jarvis` to start. The Rust extension and larger models continue downloading in the background; `jarvis doctor` shows status.
+Then `handy` to start. The Rust extension and larger models continue downloading in the background; `handy doctor` shows status.
 
 Platform-specific notes (WSL2 setup, native-Windows scheduled-task service, desktop prerequisites, manual / contributor install): see the [installation docs](https://open-jarvis.github.io/OpenJarvis/getting-started/install/).
 
 ## Quick Start
 
 ```bash
-jarvis                          # start chatting (default: chat-simple)
-jarvis init --preset <name>     # switch to a starter config
+handy                          # start chatting (default: chat-simple)
+handy init --preset <name>     # switch to a starter config
 ```
 
-> Prefix `jarvis ...` with `uv run`, or `source .venv/bin/activate` first.
+> Prefix `handy ...` with `uv run`, or `source .venv/bin/activate` first.
 
 | Preset | What it does |
 |---|---|
@@ -72,9 +72,9 @@ jarvis init --preset <name>     # switch to a starter config
 Example:
 
 ```bash
-jarvis init --preset morning-digest-mac
-jarvis connect gdrive          # one OAuth covers Gmail / Calendar / Tasks
-jarvis digest --fresh          # generate and play your first briefing
+handy init --preset morning-digest-mac
+handy connect gdrive          # one OAuth covers Gmail / Calendar / Tasks
+handy digest --fresh          # generate and play your first briefing
 ```
 
 Per-preset deep dives: [morning digest](https://open-jarvis.github.io/OpenJarvis/user-guide/morning-digest/) · [deep research](https://open-jarvis.github.io/OpenJarvis/user-guide/deep-research/) · [code assistant](https://open-jarvis.github.io/OpenJarvis/user-guide/code-assistant/) · [scheduled monitor](https://open-jarvis.github.io/OpenJarvis/user-guide/scheduled-monitor/) · [chat simple](https://open-jarvis.github.io/OpenJarvis/user-guide/chat-simple/) · or the full [quickstart guide](https://open-jarvis.github.io/OpenJarvis/getting-started/quickstart/).
@@ -85,17 +85,17 @@ Skills teach agents how to better use tools and improve their reasoning. Every s
 
 ```bash
 # Install skills from public sources
-jarvis skill install hermes:arxiv
-jarvis skill sync hermes --category research
+handy skill install hermes:arxiv
+handy skill sync hermes --category research
 
 # Use skills with any agent
-jarvis ask "Use the code-explainer skill to explain this Python code: for i in range(5): print(i*2)"
+handy ask "Use the code-explainer skill to explain this Python code: for i in range(5): print(i*2)"
 
 # Optimize skills from your trace history
-jarvis optimize skills --policy dspy
+handy optimize skills --policy dspy
 
 # Benchmark the impact
-jarvis bench skills --max-samples 5 --seeds 42
+handy bench skills --max-samples 5 --seeds 42
 ```
 
 Import from [Hermes Agent](https://github.com/NousResearch/hermes-agent) (~150 skills), [OpenClaw](https://github.com/openclaw/skills) (~13,700 community skills), or any GitHub repo. Skills follow the [agentskills.io](https://agentskills.io/specification) open standard.

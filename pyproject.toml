@@ -3,9 +3,9 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "OpenJarvis"
+name = "Handymate"
 dynamic = ["version"]
-description = "OpenJarvis — modular AI assistant backend with composable intelligence primitives"
+description = "Handymate — modular AI assistant backend with composable intelligence primitives"
 readme = "README.md"
 # Upper bound: numpy 2.2.x (pinned transitively via datasets/pandas) ships no
 # cp314 Windows wheel, so under Python 3.14 uv would compile numpy from source
@@ -14,7 +14,7 @@ readme = "README.md"
 requires-python = ">=3.10,<3.14"
 license = {text = "Apache-2.0"}
 authors = [
-    {name = "Open Jarvis Contributors"},
+    {name = "Handymate Contributors"},
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -153,14 +153,14 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/open-jarvis/OpenJarvis"
-Documentation = "https://open-jarvis.github.io/OpenJarvis/"
-Repository = "https://github.com/open-jarvis/OpenJarvis"
-Issues = "https://github.com/open-jarvis/OpenJarvis/issues"
+Homepage = "https://github.com/codehornets/Handymate"
+Documentation = "https://codehornets.github.io/handymate/"
+Repository = "https://github.com/codehornets/Handymate"
+Issues = "https://github.com/codehornets/handymate/issues"
 
 [project.scripts]
-jarvis = "openjarvis.cli:main"
-openjarvis-eval = "openjarvis.evals.cli:main"
+handy = "handymate.cli:main"
+handymate-eval = "handymate.evals.cli:main"
 
 # Version is derived from git tags by hatch-vcs (see #526). For source/editable
 # checkouts this yields the true `git describe` version (e.g. 1.0.3.dev109+g<sha>)

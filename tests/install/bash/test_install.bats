@@ -21,7 +21,7 @@ setup() {
     : > "$UV_STUB_LOG"
     : > "$CURL_STUB_LOG"
 
-    # uv stub needs to fake creating a venv with a jarvis binary.
+    # uv stub needs to fake creating a venv with a handy binary.
     # Replace the stubs/uv with one that creates the venv tree on `venv` command.
     # Since we don't want to mutate the real stub, override via a per-test stub dir.
     export PER_TEST_STUBS="$TEST_TMPDIR/stubs"
@@ -43,13 +43,13 @@ case "\$1" in
         done
         if [[ -n "\$venv_path" ]]; then
             mkdir -p "\$venv_path/bin"
-            cat > "\$venv_path/bin/jarvis" <<'EOJ'
+            cat > "\$venv_path/bin/handy" <<'EOJ'
 #!/usr/bin/env bash
-# fake jarvis for tests
-echo "fake jarvis: \$@"
+# fake handy for tests
+echo "fake handy: \$@"
 exit 0
 EOJ
-            chmod +x "\$venv_path/bin/jarvis"
+            chmod +x "\$venv_path/bin/handy"
             cat > "\$venv_path/bin/python" <<'EOJ'
 #!/usr/bin/env bash
 # fake python that prints empty for the inline embedded scripts (recommend_model, etc.)
@@ -110,10 +110,10 @@ IDEOF
     grep -q "clone" "$GIT_STUB_LOG"
 }
 
-@test "creates jarvis symlink in ~/.local/bin" {
+@test "creates handy symlink in ~/.local/bin" {
     run bash "$SCRIPT" --no-bg-orchestrator
     [ "$status" -eq 0 ]
-    [ -L "$FAKE_HOME/.local/bin/jarvis" ] || [ -f "$FAKE_HOME/.local/bin/jarvis" ]
+    [ -L "$FAKE_HOME/.local/bin/handy" ] || [ -f "$FAKE_HOME/.local/bin/handy" ]
 }
 
 @test "is idempotent — second run skips completed steps" {

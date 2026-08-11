@@ -1,4 +1,4 @@
-"""Smoke tests for ``jarvis optimize`` and ``jarvis feedback`` CLI commands,
+"""Smoke tests for ``handy optimize`` and ``handy feedback`` CLI commands,
 plus unit tests for OptimizeConfig, new event types, and TraceStore.update_feedback.
 """
 
@@ -94,7 +94,7 @@ class TestFeedbackCmd:
 class TestOptimizeConfig:
     """Tests for OptimizeConfig in JarvisConfig."""
 
-    def test_optimize_config_in_jarvis_config(self):
+    def test_optimize_config_in_handy_config(self):
         from openjarvis.core.config import JarvisConfig, OptimizeConfig
 
         cfg = JarvisConfig()

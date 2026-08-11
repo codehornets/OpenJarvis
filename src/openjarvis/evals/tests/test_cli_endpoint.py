@@ -39,7 +39,7 @@ def _tb_config(**overrides) -> RunConfig:
 
 class TestBuildBackendForwardsEndpoint:
     @patch("openjarvis.evals.backends.jarvis_direct.JarvisDirectBackend")
-    def test_jarvis_direct_receives_base_url_and_api_key(self, mock_cls):
+    def test_handy_direct_receives_base_url_and_api_key(self, mock_cls):
         _build_backend(
             "jarvis-direct",
             "vllm",
@@ -53,7 +53,7 @@ class TestBuildBackendForwardsEndpoint:
         assert kwargs["api_key"] == "sk-k"
 
     @patch("openjarvis.evals.backends.jarvis_agent.JarvisAgentBackend")
-    def test_jarvis_agent_receives_base_url_and_api_key(self, mock_cls):
+    def test_handy_agent_receives_base_url_and_api_key(self, mock_cls):
         _build_backend(
             "jarvis-agent",
             "vllm",

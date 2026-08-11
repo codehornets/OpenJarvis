@@ -1,4 +1,4 @@
-"""``jarvis model`` — model management subcommands."""
+"""``handy model`` — model management subcommands."""
 
 from __future__ import annotations
 

@@ -46,7 +46,7 @@ The installer will:
 
 ```powershell
 cd "$env:LOCALAPPDATA\OpenJarvis\src"
-uv run jarvis serve
+uv run handy serve
 ```
 
 Open `http://127.0.0.1:8000/health` to verify.
@@ -57,7 +57,7 @@ If you skipped the prompt during install, register the auto-start task
 manually:
 
 ```powershell
-$srv = "$env:LOCALAPPDATA\OpenJarvis\src\deploy\windows\jarvis-service.ps1"
+$srv = "$env:LOCALAPPDATA\OpenJarvis\src\deploy\windows\handy-service.ps1"
 powershell -ExecutionPolicy Bypass -File $srv install
 ```
 

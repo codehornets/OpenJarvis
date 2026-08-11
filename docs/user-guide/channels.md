@@ -194,32 +194,32 @@ channel.connect()
 
 ## CLI Commands
 
-The `jarvis channel` subcommand group provides quick access to channel operations.
+The `handy channel` subcommand group provides quick access to channel operations.
 
 ### List Channels
 
 ```bash
-jarvis channel list
+handy channel list
 ```
 
 ### Send a Message
 
 ```bash
 # Send to a channel by name
-jarvis channel send telegram "Build completed successfully"
+handy channel send telegram "Build completed successfully"
 ```
 
 ### Show Status
 
 ```bash
-jarvis channel status
+handy channel status
 ```
 
 ---
 
 ## API Server Endpoints
 
-When `jarvis serve` is running, three channel endpoints are available. Channels must be configured and enabled in `[channel]` for these endpoints to return data.
+When `handy serve` is running, three channel endpoints are available. Channels must be configured and enabled in `[channel]` for these endpoints to return data.
 
 ### `GET /v1/channels`
 
@@ -466,15 +466,15 @@ export SENDBLUE_API_SECRET_KEY="your_secret"
 export SENDBLUE_FROM_NUMBER="+16452468235"
 
 # Check channel status
-jarvis channel status --channel-type sendblue
+handy channel status --channel-type sendblue
 
 # Send a message
-jarvis channel send sendblue "+15551234567" "Hello from Jarvis!"
+handy channel send sendblue "+15551234567" "Hello from Jarvis!"
 ```
 
 ### Server Restart Behavior
 
-SendBlue bindings are **automatically restored on server restart**. When `jarvis serve` starts:
+SendBlue bindings are **automatically restored on server restart**. When `handy serve` starts:
 
 1. The server checks the database for existing SendBlue channel bindings
 2. Re-creates the `SendBlueChannel` instance with stored credentials

@@ -82,7 +82,7 @@ policy = "heuristic"
 ```
 
 ```bash
-jarvis ask --router learned "What is the capital of France?"
+handy ask --router learned "What is the capital of France?"
 ```
 
 ### The `ensure_registered()` Pattern

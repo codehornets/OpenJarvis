@@ -44,7 +44,7 @@ Operators are OpenJarvis's key differentiator — persistent, scheduled, statefu
 
 | Item | Maturity | Details |
 |------|----------|---------|
-| Operator health checks & heartbeat monitoring | **Ready** | Add liveness probes to OperatorManager; surface in `jarvis operators status`. Detect stalled operators beyond the existing reconciliation loop. |
+| Operator health checks & heartbeat monitoring | **Ready** | Add liveness probes to OperatorManager; surface in `handy operators status`. Detect stalled operators beyond the existing reconciliation loop. |
 | Metrics collection for operator manifests | **Ready** | The `metrics` field exists in `OperatorManifest` but is not collected. Wire it to telemetry. **Good first issue.** |
 | Capability policy enforcement | **Ready** | `required_capabilities` field exists in manifests but is not enforced. Connect to the existing RBAC `CapabilityPolicy` system. **Good first issue.** |
 | Rate limiting per operator | **Ready** | Prevent runaway operators from hammering inference. Add configurable rate limits to OperatorManager. |

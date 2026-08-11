@@ -15,13 +15,13 @@ uv sync --extra server
 Start with default settings:
 
 ```bash
-jarvis serve
+handy serve
 ```
 
 The server reads defaults from `~/.openjarvis/config.toml` and auto-detects available engines and models. Override any option via CLI flags:
 
 ```bash
-jarvis serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b --agent orchestrator
+handy serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b --agent orchestrator
 ```
 
 ### CLI Options
@@ -45,7 +45,7 @@ Starting OpenJarvis API server
 ```
 
 !!! warning "Server dependency check"
-    If the `[server]` extra is not installed, `jarvis serve` exits with a clear error message explaining how to install the required dependencies.
+    If the `[server]` extra is not installed, `handy serve` exits with a clear error message explaining how to install the required dependencies.
 
 ## Endpoints
 
@@ -441,7 +441,7 @@ workers = 1
 | `model`   | `string`  | `""`            | Default model name. When empty, falls back to `[intelligence] default_model` or the first model discovered on the engine. |
 | `workers` | `integer` | `1`             | Number of uvicorn workers (for future use).                                |
 
-CLI flags override config file values. For example, `jarvis serve --port 9000` overrides the `port` setting in the config file.
+CLI flags override config file values. For example, `handy serve --port 9000` overrides the `port` setting in the config file.
 
 The server also reads from other config sections at startup:
 
@@ -458,10 +458,10 @@ For production deployments, run OpenJarvis behind a reverse proxy like Nginx or 
 ```nginx
 server {
     listen 443 ssl;
-    server_name jarvis.example.com;
+    server_name handy.example.com;
 
-    ssl_certificate /etc/ssl/certs/jarvis.pem;
-    ssl_certificate_key /etc/ssl/private/jarvis.key;
+    ssl_certificate /etc/ssl/certs/handy.pem;
+    ssl_certificate_key /etc/ssl/private/handy.key;
 
     location / {
         proxy_pass http://127.0.0.1:8000;
@@ -484,7 +484,7 @@ server {
 ### Caddy
 
 ```
-jarvis.example.com {
+handy.example.com {
     reverse_proxy 127.0.0.1:8000 {
         flush_interval -1
     }
@@ -498,7 +498,7 @@ The `flush_interval -1` setting disables response buffering, which is required f
 When running behind a reverse proxy, bind the server to `127.0.0.1` so it only accepts connections from the proxy:
 
 ```bash
-jarvis serve --host 127.0.0.1 --port 8000
+handy serve --host 127.0.0.1 --port 8000
 ```
 
 Or in `config.toml`:

@@ -1,4 +1,4 @@
-"""``jarvis doctor`` — run diagnostic checks on the OpenJarvis installation."""
+"""``handy doctor`` — run diagnostic checks on the OpenJarvis installation."""
 
 from __future__ import annotations
 
@@ -46,7 +46,7 @@ def _check_config_exists() -> CheckResult:
         "Config file",
         "warn",
         f"Not found at {DEFAULT_CONFIG_PATH}",
-        details="Run `jarvis init` to generate a config file.",
+        details="Run `handy init` to generate a config file.",
     )
 
 

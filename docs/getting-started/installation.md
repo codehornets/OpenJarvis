@@ -61,7 +61,7 @@ If you prefer to run each step yourself:
 === "Step 3: Start backend"
 
     ```bash
-    uv run jarvis serve --port 8000
+    uv run handy serve --port 8000
     ```
 
 === "Step 4: Start frontend"
@@ -144,24 +144,24 @@ Requires [Rust](https://rustup.rs/). On Python 3.14+, set `PYO3_USE_ABI3_FORWARD
 ### Verify
 
 ```bash
-jarvis --version
-# jarvis, version 0.1.0
+handy --version
+# handy, version 0.1.0
 ```
 
 ### First commands
 
 ```bash
-jarvis ask "What is the capital of France?"
+handy ask "What is the capital of France?"
 
-jarvis ask --agent orchestrator --tools calculator "What is 137 * 42?"
+handy ask --agent orchestrator --tools calculator "What is 137 * 42?"
 
-jarvis serve --port 8000
+handy serve --port 8000
 
-jarvis doctor
+handy doctor
 
-jarvis model list
+handy model list
 
-jarvis chat
+handy chat
 ```
 
 !!! info "Inference backend required"
@@ -279,7 +279,7 @@ OpenJarvis uses optional extras to keep the base installation lightweight.
 | Extra | Install Command | Description |
 |-------|----------------|-------------|
 | `desktop` | `uv sync --extra desktop` | Desktop/API server plus local speech input |
-| `server` | `uv sync --extra server` | OpenAI-compatible API server (`jarvis serve`) |
+| `server` | `uv sync --extra server` | OpenAI-compatible API server (`handy serve`) |
 | `dev` | `uv sync --extra dev` | Development and testing tools |
 | `docs` | `uv sync --extra docs` | Documentation build tools |
 
@@ -305,7 +305,7 @@ The easiest way to get started. Handles model downloading and serving automatica
     ollama pull qwen3:0.6b
     ```
 
-3. Verify: `jarvis model list`
+3. Verify: `handy model list`
 
 !!! tip "Best for: Apple Silicon Macs, consumer NVIDIA GPUs, CPU-only systems"
 

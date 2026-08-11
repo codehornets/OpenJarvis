@@ -27,7 +27,7 @@ declares `EnvironmentFile=/etc/openjarvis/env` (no `-` prefix), so it will
 
 ```bash
 sudo mkdir -p /etc/openjarvis
-echo "OPENJARVIS_API_KEY=$(jarvis auth generate-key)" | sudo tee /etc/openjarvis/env
+echo "OPENJARVIS_API_KEY=$(handy auth generate-key)" | sudo tee /etc/openjarvis/env
 sudo chmod 600 /etc/openjarvis/env
 ```
 
@@ -63,7 +63,7 @@ After=network.target
 Type=simple
 User=openjarvis
 WorkingDirectory=/opt/openjarvis
-ExecStart=/opt/openjarvis/.venv/bin/jarvis serve --host 0.0.0.0 --port 8000
+ExecStart=/opt/openjarvis/.venv/bin/handy serve --host 0.0.0.0 --port 8000
 Restart=on-failure
 RestartSec=5
 Environment=HOME=/opt/openjarvis
@@ -86,7 +86,7 @@ WantedBy=multi-user.target
 | `Type`             | `simple`                                                           | The process started by `ExecStart` is the main service process. systemd considers the service started immediately. |
 | `User`             | `openjarvis`                                                       | Runs the server as the `openjarvis` user rather than root, limiting the blast radius of any security issue. |
 | `WorkingDirectory` | `/opt/openjarvis`                                                  | Sets the working directory for the process. This is where OpenJarvis looks for local files and writes data. |
-| `ExecStart`        | `/opt/openjarvis/.venv/bin/jarvis serve --host 0.0.0.0 --port 8000` | The command to start the server. Uses the full path to the `jarvis` binary inside the virtual environment. |
+| `ExecStart`        | `/opt/openjarvis/.venv/bin/handy serve --host 0.0.0.0 --port 8000` | The command to start the server. Uses the full path to the `handy` binary inside the virtual environment. |
 | `Restart`          | `on-failure`                                                       | Automatically restarts the service if it exits with a non-zero exit code. Does not restart on clean shutdown (`systemctl stop`). |
 | `RestartSec`       | `5`                                                                | Waits 5 seconds before attempting a restart, preventing rapid restart loops if the service crashes immediately on startup. |
 | `Environment`      | `HOME=/opt/openjarvis`                                             | Sets the `HOME` environment variable so OpenJarvis finds its configuration at `~/.openjarvis/config.toml` (resolving to `/opt/openjarvis/.openjarvis/config.toml`). |
@@ -104,7 +104,7 @@ WantedBy=multi-user.target
 Edit the `ExecStart` line to change the host or port:
 
 ```ini
-ExecStart=/opt/openjarvis/.venv/bin/jarvis serve --host 127.0.0.1 --port 9000
+ExecStart=/opt/openjarvis/.venv/bin/handy serve --host 127.0.0.1 --port 9000
 ```
 
 !!! tip
@@ -112,10 +112,10 @@ ExecStart=/opt/openjarvis/.venv/bin/jarvis serve --host 127.0.0.1 --port 9000
 
 ### Setting the Engine and Model
 
-Pass additional flags to `jarvis serve`:
+Pass additional flags to `handy serve`:
 
 ```ini
-ExecStart=/opt/openjarvis/.venv/bin/jarvis serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b
+ExecStart=/opt/openjarvis/.venv/bin/handy serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b
 ```
 
 ### Adding Environment Variables
@@ -144,7 +144,7 @@ If you prefer a different service user, update both the `User` directive and the
 [Service]
 User=myuser
 WorkingDirectory=/home/myuser/openjarvis
-ExecStart=/home/myuser/openjarvis/.venv/bin/jarvis serve --host 0.0.0.0 --port 8000
+ExecStart=/home/myuser/openjarvis/.venv/bin/handy serve --host 0.0.0.0 --port 8000
 Environment=HOME=/home/myuser/openjarvis
 ```
 
@@ -210,12 +210,12 @@ Example output:
 ● openjarvis.service - OpenJarvis API Server
      Loaded: loaded (/etc/systemd/system/openjarvis.service; enabled; preset: enabled)
      Active: active (running) since Fri 2026-02-21 10:00:00 UTC; 2h ago
-   Main PID: 12345 (jarvis)
+   Main PID: 12345 (handy)
       Tasks: 4 (limit: 4915)
      Memory: 256.0M
         CPU: 1min 23s
      CGroup: /system.slice/openjarvis.service
-             └─12345 /opt/openjarvis/.venv/bin/python /opt/openjarvis/.venv/bin/jarvis serve --host 0.0.0.0 --port 8000
+             └─12345 /opt/openjarvis/.venv/bin/python /opt/openjarvis/.venv/bin/handy serve --host 0.0.0.0 --port 8000
 ```
 
 ### Enable and Disable on Boot

@@ -200,8 +200,8 @@ src/openjarvis/
         tools.py            MCP scheduler tools (schedule_task, list, pause, resume, cancel)
 
     cli/                CLI commands (Click-based)
-        ask.py              jarvis ask -- query the assistant
-        serve.py            jarvis serve -- start API server
+        ask.py              handy ask -- query the assistant
+        serve.py            handy serve -- start API server
 
     sdk.py              Jarvis class -- high-level Python SDK
     mcp/                MCP (Model Context Protocol) layer

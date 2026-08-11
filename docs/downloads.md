@@ -124,7 +124,7 @@ If you prefer to run each step yourself:
 === "Step 3: Start backend"
 
     ```bash
-    uv run jarvis serve --port 8000
+    uv run handy serve --port 8000
     ```
 
 === "Step 4: Start frontend"
@@ -162,30 +162,30 @@ uv sync
 ### Verify
 
 ```bash
-jarvis --version
-# jarvis, version 0.1.0
+handy --version
+# handy, version 0.1.0
 ```
 
 ### First commands
 
 ```bash
 # Ask a question
-jarvis ask "What is the capital of France?"
+handy ask "What is the capital of France?"
 
 # Use an agent with tools
-jarvis ask --agent orchestrator --tools calculator "What is 137 * 42?"
+handy ask --agent orchestrator --tools calculator "What is 137 * 42?"
 
 # Start the API server
-jarvis serve --port 8000
+handy serve --port 8000
 
 # Run diagnostics
-jarvis doctor
+handy doctor
 
 # List available models
-jarvis model list
+handy model list
 
 # Interactive chat
-jarvis chat
+handy chat
 ```
 
 !!! info "Inference backend required"

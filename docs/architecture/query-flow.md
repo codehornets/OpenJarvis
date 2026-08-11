@@ -19,7 +19,7 @@ sequenceDiagram
     participant TEL as Telemetry
     participant TRC as Trace Collector
 
-    User->>CLI: jarvis ask "query" / j.ask("query")
+    User->>CLI: handy ask "query" / j.ask("query")
     CLI->>CFG: load_config()
     CFG-->>CLI: JarvisConfig (hardware, engine defaults)
 
@@ -78,7 +78,7 @@ In direct mode, the query goes straight to the inference engine with optional me
 
 ```bash
 # CLI
-jarvis ask "What is the capital of France?"
+handy ask "What is the capital of France?"
 
 # SDK
 j = Jarvis()
@@ -91,7 +91,7 @@ In agent mode, the query is handled by a named agent that can perform multiple i
 
 ```bash
 # CLI
-jarvis ask --agent orchestrator --tools calculator,think "What is 2^10 + 3^5?"
+handy ask --agent orchestrator --tools calculator,think "What is 2^10 + 3^5?"
 
 # SDK
 response = j.ask("What is 2^10 + 3^5?", agent="orchestrator", tools=["calculator"])

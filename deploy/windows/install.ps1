@@ -19,7 +19,7 @@
       6. Run `uv sync --extra desktop --group desktop-native` so the FastAPI
          server, speech backend, and native extension are importable.
       7. Optionally register the scheduled-task service (see
-         deploy/windows/jarvis-service.ps1).
+         deploy/windows/handy-service.ps1).
 
     Usage (one-liner):
       irm https://open-jarvis.github.io/OpenJarvis/install.ps1 | iex
@@ -368,7 +368,7 @@ if (-not $ollamaReady) {
 
 $modelPullOk = $false
 if ($ollamaReady) {
-    Write-Info "Pulling qwen3.5:2b (~1.5 GB) so 'jarvis' works on first run..."
+    Write-Info "Pulling qwen3.5:2b (~1.5 GB) so 'handy' works on first run..."
     & $ollamaExe pull 'qwen3.5:2b'
     if ($LASTEXITCODE -eq 0) {
         $modelPullOk = $true
@@ -381,11 +381,11 @@ if ($ollamaReady) {
 }
 
 # ---------------------------------------------------------------------------
-# 9. jarvis.cmd shim - so bare `jarvis` works in any new PowerShell
+# 9. handy.cmd shim - so bare `handy` works in any new PowerShell
 # ---------------------------------------------------------------------------
 
 $binDir = Join-Path $installRoot 'bin'
-$shimPath = Join-Path $binDir 'jarvis.cmd'
+$shimPath = Join-Path $binDir 'handy.cmd'
 
 if (-not (Test-Path $binDir)) {
     New-Item -ItemType Directory -Path $binDir | Out-Null
@@ -400,7 +400,7 @@ $shimContent = @"
 @echo off
 setlocal
 set "SRC=%~dp0..\src"
-uv run --project "%SRC%" jarvis %*
+uv run --project "%SRC%" handy %*
 "@
 Set-Content -Path $shimPath -Value $shimContent -Encoding ASCII
 
@@ -426,13 +426,13 @@ if (-not $pathOnUser) {
     [System.Environment]::SetEnvironmentVariable('Path', $newUserPath, 'User')
     $pathNeedsRefresh = $true
 }
-Write-Ok "jarvis shim installed at $shimPath"
+Write-Ok "handy shim installed at $shimPath"
 
 # ---------------------------------------------------------------------------
 # 10. Optional: register the scheduled-task service
 # ---------------------------------------------------------------------------
 
-$serviceScript = Join-Path $srcDir 'deploy\windows\jarvis-service.ps1'
+$serviceScript = Join-Path $srcDir 'deploy\windows\handy-service.ps1'
 $shouldInstallService = $false
 
 # Pre-check admin if the user wants the service - Register-ScheduledTask
@@ -501,12 +501,12 @@ Write-Host "  Repo:    $srcDir"
 # Tell the truth about what the user can run next, given (a) whether the
 # starter model finished pulling and (b) whether the User-PATH update
 # needs a fresh PowerShell to take effect.
-$nextCmd = if ($modelPullOk) { 'jarvis' } else { 'jarvis doctor' }
+$nextCmd = if ($modelPullOk) { 'handy' } else { 'handy doctor' }
 
 if ($pathNeedsRefresh) {
     Write-Host ""
     Write-Host "  Run it:  open a NEW PowerShell, then: $nextCmd" -ForegroundColor Yellow
-    Write-Host "           (the jarvis shim was added to your User PATH; the"
+    Write-Host "           (the handy shim was added to your User PATH; the"
     Write-Host "            current PowerShell won't see it until restart)"
 } else {
     Write-Host "  Run it:  $nextCmd"
@@ -516,7 +516,7 @@ if (-not $modelPullOk) {
     Write-Host ""
     Write-Host "  NOTE: the qwen3.5:2b model didn't finish downloading." -ForegroundColor Yellow
     Write-Host "        Chat will fail until the bg-orchestrator finishes the retry."
-    Write-Host "        'jarvis doctor' shows progress."
+    Write-Host "        'handy doctor' shows progress."
 }
 
 if ($shouldInstallService) {

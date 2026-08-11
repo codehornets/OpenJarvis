@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# jarvis-uninstall.sh — clean removal of OpenJarvis from $HOME.
+# handy-uninstall.sh — clean removal of OpenJarvis from $HOME.
 #
 # Removes:
 #   ~/.openjarvis/
-#   ~/.local/bin/jarvis
-#   ~/.local/bin/jarvis-uninstall
+#   ~/.local/bin/handy
+#   ~/.local/bin/handy-uninstall
 #
 # Does NOT remove: ollama, uv, or the Rust toolchain.
 
@@ -29,7 +29,7 @@ if [[ -d "$OPENJARVIS_HOME" ]]; then
     echo "Removed $OPENJARVIS_HOME"
 fi
 
-for f in "$HOME/.local/bin/jarvis" "$HOME/.local/bin/jarvis-uninstall"; do
+for f in "$HOME/.local/bin/handy" "$HOME/.local/bin/handy-uninstall"; do
     if [[ -L "$f" ]] || [[ -f "$f" ]]; then
         rm -f "$f"
         echo "Removed $f"

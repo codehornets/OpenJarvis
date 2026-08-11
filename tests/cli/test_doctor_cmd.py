@@ -1,4 +1,4 @@
-"""Tests for ``jarvis doctor`` CLI command."""
+"""Tests for ``handy doctor`` CLI command."""
 
 from __future__ import annotations
 

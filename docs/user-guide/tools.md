@@ -438,7 +438,7 @@ from openjarvis.scheduler.scheduler import TaskScheduler
 from openjarvis.scheduler.store import SchedulerStore
 
 store = SchedulerStore(db_path="~/.openjarvis/scheduler.db")
-scheduler = TaskScheduler(store=store, system=jarvis_system)
+scheduler = TaskScheduler(store=store, system=handy_system)
 scheduler.start()
 
 tool = ScheduleTaskTool()
@@ -549,7 +549,7 @@ class MyTool(BaseTool):
 After registration, use the tool with an agent:
 
 ```bash
-jarvis ask --agent orchestrator --tools my_tool "Process this data"
+handy ask --agent orchestrator --tools my_tool "Process this data"
 ```
 
 ---
@@ -562,13 +562,13 @@ Tools are specified as a comma-separated list with the `--tools` flag. An agent 
 
 ```bash
 # Single tool
-jarvis ask --agent orchestrator --tools calculator "What is 15% of 340?"
+handy ask --agent orchestrator --tools calculator "What is 15% of 340?"
 
 # Multiple tools
-jarvis ask --agent orchestrator --tools calculator,think "Solve: 2x + 5 = 13"
+handy ask --agent orchestrator --tools calculator,think "Solve: 2x + 5 = 13"
 
 # All available tools (list them)
-jarvis ask --agent orchestrator --tools calculator,think,retrieval,file_read "..."
+handy ask --agent orchestrator --tools calculator,think,retrieval,file_read "..."
 ```
 
 ### Via Python SDK

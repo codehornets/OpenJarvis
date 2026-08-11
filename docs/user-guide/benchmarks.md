@@ -205,28 +205,28 @@ Each line in the JSONL output is a JSON object:
 
 ```bash
 # Run all benchmarks with default settings (10 samples)
-jarvis bench run
+handy bench run
 
 # Run with more samples for better statistical accuracy
-jarvis bench run -n 50
+handy bench run -n 50
 
 # Run only the latency benchmark
-jarvis bench run -b latency
+handy bench run -b latency
 
 # Run only the throughput benchmark with 20 samples
-jarvis bench run -b throughput -n 20
+handy bench run -b throughput -n 20
 
 # Specify model and engine
-jarvis bench run -m qwen3:8b -e ollama
+handy bench run -m qwen3:8b -e ollama
 
 # Output JSON summary to stdout
-jarvis bench run --json
+handy bench run --json
 
 # Write JSONL results to a file
-jarvis bench run -o results.jsonl
+handy bench run -o results.jsonl
 
 # Combine options
-jarvis bench run -b latency -n 100 -m qwen3:8b --json -o latency.jsonl
+handy bench run -b latency -n 100 -m qwen3:8b --json -o latency.jsonl
 ```
 
 | Option                     | Type   | Default | Description                              |
@@ -323,7 +323,7 @@ class ContextLengthBenchmark(BaseBenchmark):
 Once registered, your benchmark is available through the CLI:
 
 ```bash
-jarvis bench run -b context_length
+handy bench run -b context_length
 ```
 
 And through the `BenchmarkSuite`:

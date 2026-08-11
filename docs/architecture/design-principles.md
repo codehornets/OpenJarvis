@@ -133,10 +133,10 @@ The `recommend_engine()` function maps hardware to engines:
 | NVIDIA consumer | `ollama` (easy setup) |
 | AMD GPU | `vllm` (ROCm support) |
 
-This recommendation is written to `config.toml` during `jarvis init` and used as the default engine:
+This recommendation is written to `config.toml` during `handy init` and used as the default engine:
 
 ```bash
-jarvis init --force
+handy init --force
 # Detects hardware, writes ~/.openjarvis/config.toml with:
 # [engine]
 # default = "vllm"  # (for A100)
@@ -176,8 +176,8 @@ The `instrumented_generate()` wrapper handles all telemetry transparently:
 The `TelemetryAggregator` provides read-only queries over stored records:
 
 ```bash
-jarvis telemetry stats          # Aggregated statistics
-jarvis telemetry export --json  # Export all records
+handy telemetry stats          # Aggregated statistics
+handy telemetry export --json  # Export all records
 ```
 
 !!! note "Telemetry is best-effort"
@@ -227,7 +227,7 @@ Design choices that support this principle:
 
 ## 7. OpenAI-Compatible
 
-The API server (`jarvis serve`) implements the **OpenAI chat completions API format**, making OpenJarvis a drop-in replacement for OpenAI in existing applications.
+The API server (`handy serve`) implements the **OpenAI chat completions API format**, making OpenJarvis a drop-in replacement for OpenAI in existing applications.
 
 Supported endpoints:
 

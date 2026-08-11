@@ -46,8 +46,8 @@ dependencies (pytest, ruff, respx, pytest-asyncio, pytest-cov).
 ### Verify Installation
 
 ```bash
-uv run jarvis --version   # Should print 0.1.0
-uv run jarvis --help      # Show all subcommands
+uv run handy --version   # Should print 0.1.0
+uv run handy --help      # Show all subcommands
 ```
 
 ---
@@ -259,13 +259,13 @@ src/openjarvis/
 
     cli/                        # Click CLI commands
         __init__.py             # main group
-        ask.py                  # jarvis ask
-        init_cmd.py             # jarvis init
-        model.py                # jarvis model list/info
-        memory_cmd.py           # jarvis memory index/search/stats
-        telemetry_cmd.py        # jarvis telemetry stats/export/clear
-        bench_cmd.py            # jarvis bench run
-        serve.py                # jarvis serve
+        ask.py                  # handy ask
+        init_cmd.py             # handy init
+        model.py                # handy model list/info
+        memory_cmd.py           # handy memory index/search/stats
+        telemetry_cmd.py        # handy telemetry stats/export/clear
+        bench_cmd.py            # handy bench run
+        serve.py                # handy serve
 ```
 
 ---

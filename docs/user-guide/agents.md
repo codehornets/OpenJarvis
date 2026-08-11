@@ -72,8 +72,8 @@ A single install can answer as different personas without changing global config
 Select one per invocation, or opt out entirely:
 
 ```bash
-jarvis ask --persona work  "summarize my open PRs"
-jarvis ask --persona none  "what is 2 + 2?"     # inject no persona
+handy ask --persona work  "summarize my open PRs"
+handy ask --persona none  "what is 2 + 2?"     # inject no persona
 ```
 
 Set `persona_name` under `[memory_files]` to make a named persona the default. `persona_name = "none"` (equivalently `--persona none`) disables persona injection for that run.
@@ -332,25 +332,25 @@ The `OpenHandsAgent` wraps the real `openhands-sdk` package for AI-driven softwa
 
 ```bash
 # Simple agent
-jarvis ask --agent simple "What is the capital of France?"
+handy ask --agent simple "What is the capital of France?"
 
 # Orchestrator with tools
-jarvis ask --agent orchestrator --tools calculator,think "What is sqrt(256)?"
+handy ask --agent orchestrator --tools calculator,think "What is sqrt(256)?"
 
 # NativeReActAgent
-jarvis ask --agent native_react --tools calculator "What is 2+2?"
+handy ask --agent native_react --tools calculator "What is 2+2?"
 
 # ReAct alias (same as native_react)
-jarvis ask --agent react --tools calculator,think "Solve step by step: 15% of 340"
+handy ask --agent react --tools calculator,think "Solve step by step: 15% of 340"
 
 # NativeOpenHandsAgent
-jarvis ask --agent native_openhands --tools calculator,web_search "Summarize example.com"
+handy ask --agent native_openhands --tools calculator,web_search "Summarize example.com"
 
 # RLMAgent
-jarvis ask --agent rlm "Summarize this long document"
+handy ask --agent rlm "Summarize this long document"
 
 # OpenHands SDK agent
-jarvis ask --agent openhands "Fix the bug in test_utils.py"
+handy ask --agent openhands "Fix the bug in test_utils.py"
 ```
 
 ### Via Python SDK
@@ -441,7 +441,7 @@ print(result.content)
 
 ```bash
 # Via CLI
-jarvis ask --agent claude_code "Refactor the tests to use pytest fixtures"
+handy ask --agent claude_code "Refactor the tests to use pytest fixtures"
 ```
 
 !!! info "accepts_tools = False"
@@ -489,7 +489,7 @@ agent.close()
 
 ```bash
 # Via CLI (opencode must be installed)
-jarvis ask --agent opencode "Refactor the parser to use a state machine"
+handy ask --agent opencode "Refactor the parser to use a state machine"
 ```
 
 !!! tip "Pass-through providers"
@@ -555,7 +555,7 @@ result = agent.run("Generate today's report")
 
 ```bash
 # Via CLI
-jarvis ask --agent operative "Check system status"
+handy ask --agent operative "Check system status"
 ```
 
 ---
@@ -625,7 +625,7 @@ result = agent.run("Investigate the root cause of the production outage")
 
 ```bash
 # Via CLI
-jarvis ask --agent monitor_operative "Analyze the security audit findings"
+handy ask --agent monitor_operative "Analyze the security audit findings"
 ```
 
 ---

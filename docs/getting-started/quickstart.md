@@ -7,10 +7,10 @@ search:
 
 # Quick Start
 
-!!! tip "Running `jarvis` commands"
-    Every `jarvis ...` example below assumes you have either activated the project venv
+!!! tip "Running `handy` commands"
+    Every `handy ...` example below assumes you have either activated the project venv
     (`source .venv/bin/activate`) or are prefixing each command with `uv run`. A bare
-    `jarvis init --preset ...` from a fresh clone will fail with `command not found`.
+    `handy init --preset ...` from a fresh clone will fail with `command not found`.
 
 ## What You Can Build
 
@@ -19,24 +19,24 @@ OpenJarvis is a modular AI assistant framework. Here's what developers build wit
 === "Chat with Any Model"
 
     ```bash
-    jarvis ask "Explain quantum entanglement" -m qwen3.5:4b   # use qwen3.5:9b or larger on GPU
+    handy ask "Explain quantum entanglement" -m qwen3.5:4b   # use qwen3.5:9b or larger on GPU
     ```
 
 === "Agent + Tools"
 
     ```bash
-    jarvis ask --agent orchestrator --tools calculator,web_search "What is the GDP of France in USD?"
+    handy ask --agent orchestrator --tools calculator,web_search "What is the GDP of France in USD?"
     ```
 
 === "Index Docs & Ask"
 
     ```bash
-    jarvis memory index ./docs/
-    jarvis ask "How do I configure the engine?"
+    handy memory index ./docs/
+    handy ask "How do I configure the engine?"
     ```
 
     !!! warning "Requires the Rust extension"
-        `jarvis memory index` and `jarvis memory search` import `openjarvis_rust`. If you
+        `handy memory index` and `handy memory search` import `openjarvis_rust`. If you
         skipped the `uv run maturin develop -m rust/crates/openjarvis-python/Cargo.toml`
         step in [Installation](installation.md), these commands fail with
         `ModuleNotFoundError: No module named 'openjarvis_rust'`. Build the extension
@@ -53,7 +53,7 @@ OpenJarvis is a modular AI assistant framework. Here's what developers build wit
 === "API Server"
 
     ```bash
-    jarvis serve --port 8000
+    handy serve --port 8000
     # Now use any OpenAI-compatible client
     ```
 
@@ -61,35 +61,35 @@ OpenJarvis is a modular AI assistant framework. Here's what developers build wit
 
     ```bash
     cp configs/openjarvis/examples/morning-digest-mac.toml ~/.openjarvis/config.toml
-    jarvis connect gdrive       # one OAuth flow for Gmail, Calendar, Tasks
-    CARTESIA_API_KEY="..." jarvis digest --fresh
+    handy connect gdrive       # one OAuth flow for Gmail, Calendar, Tasks
+    CARTESIA_API_KEY="..." handy digest --fresh
     # Plays a spoken daily briefing with your email, calendar, health, and news
     ```
 
 === "Deep Research"
 
     ```bash
-    jarvis init --preset deep-research
-    jarvis memory index ~/Documents/papers/
-    jarvis ask "Summarize all documents about transformer architectures"
+    handy init --preset deep-research
+    handy memory index ~/Documents/papers/
+    handy ask "Summarize all documents about transformer architectures"
     # Multi-hop search across your indexed docs with citations
     ```
 
 === "Code Assistant"
 
     ```bash
-    jarvis init --preset code-assistant
-    jarvis ask "Write a Python script that parses CSV files"
+    handy init --preset code-assistant
+    handy ask "Write a Python script that parses CSV files"
     # Orchestrator agent with code execution, file I/O, and shell access
     ```
 
 === "Scheduled Monitor"
 
     ```bash
-    jarvis init --preset scheduled-monitor
-    jarvis memory index ~/Documents/
-    jarvis scheduler start
-    jarvis scheduler create \
+    handy init --preset scheduled-monitor
+    handy memory index ~/Documents/
+    handy scheduler start
+    handy scheduler create \
       --prompt "Check for new emails about Project X" \
       --schedule "0 9 * * 1-5" --agent operative
     # Persistent agent that runs on a cron schedule
@@ -114,7 +114,7 @@ Copy one of these to `~/.openjarvis/config.toml` to get a pre-configured setup:
 Or generate a config with digest included:
 
 ```bash
-jarvis init --digest
+handy init --digest
 ```
 
 This guide walks through the core workflows of OpenJarvis: the browser app, CLI, Python SDK, agents with tools, memory, benchmarks, and the API server.
@@ -158,7 +158,7 @@ To stop all services, press ++ctrl+c++ in the terminal.
 Start by detecting your hardware and generating a configuration file:
 
 ```bash
-jarvis init
+handy init
 ```
 
 This runs hardware auto-detection (GPU vendor, VRAM, CPU, RAM) and writes a config file to `~/.openjarvis/config.toml` with sensible defaults for your system. It also selects the recommended inference engine.
@@ -176,7 +176,7 @@ Config written successfully.
 To overwrite an existing config:
 
 ```bash
-jarvis init --force
+handy init --force
 ```
 
 See [Configuration](configuration.md) for the full config reference.
@@ -188,7 +188,7 @@ See [Configuration](configuration.md) for the full config reference.
 The simplest way to interact with OpenJarvis is the `ask` command:
 
 ```bash
-jarvis ask "What is the capital of France?"
+handy ask "What is the capital of France?"
 ```
 
 OpenJarvis will auto-detect a running engine, select a model using the configured router policy, and return the response.
@@ -197,16 +197,16 @@ OpenJarvis will auto-detect a running engine, select a model using the configure
 
 | Option | Description | Example |
 |--------|-------------|---------|
-| `-m`, `--model` | Override model selection | `jarvis ask -m qwen3:8b "Hello"` |
-| `-e`, `--engine` | Force a specific engine | `jarvis ask -e ollama "Hello"` |
-| `-t`, `--temperature` | Sampling temperature (default: 0.7) | `jarvis ask -t 0.2 "Hello"` |
-| `--max-tokens` | Max tokens to generate (default: 1024) | `jarvis ask --max-tokens 2048 "Hello"` |
-| `--json` | Output raw JSON result | `jarvis ask --json "Hello"` |
-| `--no-stream` | Disable streaming | `jarvis ask --no-stream "Hello"` |
-| `--no-context` | Disable memory context injection | `jarvis ask --no-context "Hello"` |
-| `-a`, `--agent` | Use an agent | `jarvis ask -a orchestrator "Hello"` |
-| `--tools` | Comma-separated tools | `jarvis ask --tools calculator,think "2+2"` |
-| `--router` | Router policy for model selection | `jarvis ask --router heuristic "Hello"` |
+| `-m`, `--model` | Override model selection | `handy ask -m qwen3:8b "Hello"` |
+| `-e`, `--engine` | Force a specific engine | `handy ask -e ollama "Hello"` |
+| `-t`, `--temperature` | Sampling temperature (default: 0.7) | `handy ask -t 0.2 "Hello"` |
+| `--max-tokens` | Max tokens to generate (default: 1024) | `handy ask --max-tokens 2048 "Hello"` |
+| `--json` | Output raw JSON result | `handy ask --json "Hello"` |
+| `--no-stream` | Disable streaming | `handy ask --no-stream "Hello"` |
+| `--no-context` | Disable memory context injection | `handy ask --no-context "Hello"` |
+| `-a`, `--agent` | Use an agent | `handy ask -a orchestrator "Hello"` |
+| `--tools` | Comma-separated tools | `handy ask --tools calculator,think "2+2"` |
+| `--router` | Router policy for model selection | `handy ask --router heuristic "Hello"` |
 
 ### Via Python SDK
 
@@ -277,7 +277,7 @@ Agents add multi-turn reasoning and tool-calling capabilities. The `orchestrator
 ### CLI Example
 
 ```bash
-jarvis ask --agent orchestrator --tools calculator,think "What is 137 * 42?"
+handy ask --agent orchestrator --tools calculator,think "What is 137 * 42?"
 ```
 
 ### SDK Example
@@ -309,10 +309,10 @@ Index a file or directory. OpenJarvis chunks the content and stores it in the co
 
     ```bash
     # Index a directory
-    jarvis memory index ./docs/
+    handy memory index ./docs/
 
     # Index a single file with custom chunk size
-    jarvis memory index ./paper.txt --chunk-size 256 --chunk-overlap 32
+    handy memory index ./paper.txt --chunk-size 256 --chunk-overlap 32
     ```
 
 === "Python SDK"
@@ -333,8 +333,8 @@ Query the memory store to find relevant chunks:
 === "CLI"
 
     ```bash
-    jarvis memory search "configuration options"
-    jarvis memory search -k 10 "how to deploy"
+    handy memory search "configuration options"
+    handy memory search -k 10 "how to deploy"
     ```
 
 === "Python SDK"
@@ -350,7 +350,7 @@ Query the memory store to find relevant chunks:
 === "CLI"
 
     ```bash
-    jarvis memory stats
+    handy memory stats
     ```
 
 === "Python SDK"
@@ -369,7 +369,7 @@ To disable this behavior:
 === "CLI"
 
     ```bash
-    jarvis ask --no-context "Hello"
+    handy ask --no-context "Hello"
     ```
 
 === "Python SDK"
@@ -387,7 +387,7 @@ Context injection is controlled by `agent.context_from_memory` in `config.toml`.
 See all models available on running engines:
 
 ```bash
-jarvis model list
+handy model list
 ```
 
 This produces a table showing each model, its engine, parameter count, context length, and VRAM requirements.
@@ -395,13 +395,13 @@ This produces a table showing each model, its engine, parameter count, context l
 ### Get Model Details
 
 ```bash
-jarvis model info qwen3:8b
+handy model info qwen3:8b
 ```
 
 ### Pull a Model (Ollama)
 
 ```bash
-jarvis model pull qwen3:8b
+handy model pull qwen3:8b
 ```
 
 ### SDK Model Listing
@@ -424,24 +424,24 @@ The benchmarking framework measures inference latency and throughput against you
 === "All benchmarks"
 
     ```bash
-    jarvis bench run
+    handy bench run
     ```
 
 === "Specific benchmark"
 
     ```bash
-    jarvis bench run -b latency
-    jarvis bench run -b throughput
+    handy bench run -b latency
+    handy bench run -b throughput
     ```
 
 === "Custom options"
 
     ```bash
     # 20 samples, JSON output
-    jarvis bench run -n 20 --json
+    handy bench run -n 20 --json
 
     # Specific model and engine, write to file
-    jarvis bench run -m qwen3:8b -e ollama -o results.jsonl
+    handy bench run -m qwen3:8b -e ollama -o results.jsonl
     ```
 
 Example output:
@@ -474,13 +474,13 @@ OpenJarvis provides an OpenAI-compatible API server for integration with existin
 ### Start the Server
 
 ```bash
-jarvis serve --port 8000
+handy serve --port 8000
 ```
 
 With custom options:
 
 ```bash
-jarvis serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b --agent orchestrator
+handy serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b --agent orchestrator
 ```
 
 ### API Endpoints
@@ -522,20 +522,20 @@ curl http://localhost:8000/v1/chat/completions \
 OpenJarvis records telemetry for every inference call (timing, tokens, cost). View aggregated statistics:
 
 ```bash
-jarvis telemetry stats
+handy telemetry stats
 ```
 
 Export telemetry data:
 
 ```bash
-jarvis telemetry export --format json
-jarvis telemetry export --format csv -o telemetry.csv
+handy telemetry export --format json
+handy telemetry export --format csv -o telemetry.csv
 ```
 
 Clear all telemetry records:
 
 ```bash
-jarvis telemetry clear --yes
+handy telemetry clear --yes
 ```
 
 ## Complete Working Example
