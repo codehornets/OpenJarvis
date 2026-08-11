@@ -18,6 +18,7 @@ import { UpdateChecker } from './components/Desktop/UpdateChecker';
 import { track, hashId } from './lib/analytics';
 import { MotionConfig } from 'motion/react';
 import { sfx, unlockAudio } from './lib/sfx';
+import { BootSequence } from './components/Boot/BootSequence';
 
 export default function App() {
   const [setupDone, setSetupDone] = useState(!isTauri());
@@ -200,6 +201,7 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
+      <BootSequence />
       <UpdateChecker />
       <Routes>
         <Route element={<Layout />}>
