@@ -26,7 +26,7 @@ start:
 stop:
 	./scripts/dev-stop.sh
 
-# Like stop, but also force-frees ports 8000/5173 if something untracked
+# Like stop, but also force-frees ports 8000/5273 if something untracked
 # is squatting on them, and removes logs/pid files under logs/.
 cleanup:
 	./scripts/dev-stop.sh --cleanup

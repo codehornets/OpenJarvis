@@ -4,7 +4,7 @@ set -uo pipefail
 # ── Handymate dev stop ──────────────────────────────────────────────
 # Stops the backend/frontend dev servers started by scripts/dev-start.sh.
 # Pass --cleanup to also remove logs/pid files and force-free ports
-# 8000/5173 if something untracked is still squatting on them.
+# 8000/5273 if something untracked is still squatting on them.
 # ──────────────────────────────────────────────────────────────────────
 
 BLUE='\033[0;34m'
@@ -69,7 +69,7 @@ stop_pidfile "backend" "$LOG_DIR/backend.pid"
 stop_pidfile "frontend" "$LOG_DIR/frontend.pid"
 
 if [[ "$CLEANUP" == "1" ]]; then
-  for port in 8000 5173; do
+  for port in 8000 5273; do
     pid="$(lsof -ti tcp:"$port" -sTCP:LISTEN 2>/dev/null || true)"
     if [[ -n "$pid" ]]; then
       warn "Port $port still held by untracked pid $pid — force-killing"

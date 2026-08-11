@@ -98,7 +98,7 @@ The script handles everything:
 2. Installs Ollama if not present and pulls a starter model
 3. Installs Python and frontend dependencies
 4. Starts the backend API server and frontend dev server
-5. Opens `http://localhost:5173` in your browser
+5. Opens `http://localhost:5273` in your browser
 
 ### Manual setup
 
@@ -134,7 +134,7 @@ If you prefer to run each step yourself:
     npm run dev
     ```
 
-Then open [http://localhost:5173](http://localhost:5173).
+Then open [http://localhost:5273](http://localhost:5273).
 
 ### What you get
 

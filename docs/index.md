@@ -49,7 +49,7 @@ Handymate is that stack. It is a framework for local-first personal AI, built ar
     ```
 
     This installs dependencies, starts Ollama + a local model, launches the backend
-    and frontend, and opens `http://localhost:5173` in your browser.
+    and frontend, and opens `http://localhost:5273` in your browser.
 
 === "Desktop App"
 

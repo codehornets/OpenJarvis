@@ -217,15 +217,15 @@ else
 fi
 
 # ── 10. Start frontend ──────────────────────────────────────────────
-info "Starting frontend dev server on port 5173..."
+info "Starting frontend dev server on port 5273..."
 (cd frontend && npm run dev) >"$FRONTEND_LOG" 2>&1 &
 CLEANUP_PIDS+=($!)
 info "Frontend logs: $FRONTEND_LOG"
 sleep 3
-ok "Frontend running at http://localhost:5173"
+ok "Frontend running at http://localhost:5273"
 
 # ── 11. Open browser ────────────────────────────────────────────────
-URL="http://localhost:5173"
+URL="http://localhost:5273"
 info "Opening $URL ..."
 case "$(uname -s)" in
   Darwin) open "$URL" ;;
@@ -237,7 +237,7 @@ esac
 echo ""
 echo -e "${GREEN}${BOLD}  Handymate is running!${NC}"
 echo ""
-echo "  Chat UI:  http://localhost:5173"
+echo "  Chat UI:  http://localhost:5273"
 echo "  API:      http://localhost:8000"
 echo "  Model:    $MODEL"
 echo ""

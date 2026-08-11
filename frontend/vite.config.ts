@@ -53,7 +53,11 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    // 5273, not Vite's default 5173: other workspace projects run dev-server
+    // fleets on 5173-5179, and silent auto-increment would break the Tauri
+    // devUrl. strictPort makes a collision loud instead.
+    port: 5273,
+    strictPort: true,
     proxy: {
       // ws: true is required for the /v1/agents/events WebSocket. Without it
       // Vite proxies the HTTP request but not the upgrade, so the socket never
