@@ -90,11 +90,8 @@ export function ChatArea() {
       {/* Data sources banner */}
       {hasConnectedSources === false && !bannerDismissed && (
         <div
-          className="mx-4 mb-2 flex items-center gap-3 px-4 py-3 rounded-lg text-sm shrink-0"
-          style={{
-            background: 'var(--color-accent-subtle)',
-            border: '1px solid var(--color-border)',
-          }}
+          className="hud-panel mx-4 mb-2 flex items-center gap-3 px-4 py-3 rounded-lg text-sm shrink-0"
+          style={{ background: 'var(--color-accent-subtle)' }}
         >
           <Database size={16} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
           <span style={{ color: 'var(--color-text-secondary)', flex: 1 }}>
@@ -129,8 +126,17 @@ export function ChatArea() {
             >
               <Sparkles size={24} />
             </div>
-            <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
+            <h2
+              className="text-xl font-bold mb-2"
+              style={{
+                color: 'var(--color-text)',
+                fontFamily: 'var(--font-display)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.15em',
+              }}
+            >
               {getGreeting()}
+              <span className="hud-caret" aria-hidden="true" />
             </h2>
             <p className="text-sm text-center max-w-sm mb-6" style={{ color: 'var(--color-text-secondary)' }}>
               Ask anything. Your AI runs locally — private, fast, and always available.

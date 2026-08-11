@@ -88,12 +88,13 @@ export function XRayFooter({ usage, telemetry, isResearch = false }: Props) {
         style={{ cursor: rows.length > 0 ? 'pointer' : 'default' }}
       >
         <span
-          className="w-1 h-1 rounded-full shrink-0"
-          style={{ background: 'var(--color-accent)' }}
+          className="hud-glow-dot"
+          aria-hidden="true"
+          style={{ color: 'var(--color-accent-2)' }}
         />
         <span
-          className="text-[11px] flex-1"
-          style={{ color: 'var(--color-text-tertiary)', fontFamily: 'system-ui' }}
+          className="hud-mono text-[11px] flex-1"
+          style={{ color: 'var(--color-text-tertiary)' }}
         >
           {summary}
         </span>
@@ -113,12 +114,12 @@ export function XRayFooter({ usage, telemetry, isResearch = false }: Props) {
           <div className="grid gap-y-0.5" style={{ gridTemplateColumns: 'auto 1fr', columnGap: '1rem' }}>
             {rows.map((row) => (
               <div key={row.label} className="contents">
-                <span className="text-[11px]" style={{ color: 'var(--color-text-tertiary)', fontFamily: 'monospace' }}>
+                <span className="hud-mono text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
                   {row.label}
                 </span>
                 <span
-                  className="text-[11px]"
-                  style={{ color: row.color || 'var(--color-text-secondary)', fontFamily: 'monospace' }}
+                  className="hud-mono text-[11px]"
+                  style={{ color: row.color || 'var(--color-text-secondary)' }}
                 >
                   {row.value}
                 </span>

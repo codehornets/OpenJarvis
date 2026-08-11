@@ -60,6 +60,7 @@ export function ToolCallCard({ toolCall }: Props) {
       className="rounded-md text-xs overflow-hidden"
       style={{
         border: '1px solid var(--color-border-subtle, var(--color-border))',
+        borderLeft: `2px solid ${config.color}`,
         background: 'var(--color-bg-tertiary, var(--color-bg-secondary))',
         fontFamily:
           'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
@@ -107,6 +108,19 @@ export function ToolCallCard({ toolCall }: Props) {
               : `${(toolCall.latency / 1000).toFixed(1)}s`}
           </span>
         )}
+        <span
+          className="px-1.5 py-0.5 rounded uppercase shrink-0"
+          style={{
+            background: config.bg,
+            border: `1px solid ${config.border}`,
+            color: config.color,
+            fontFamily: 'var(--font-hud)',
+            fontSize: 9,
+            letterSpacing: '0.1em',
+          }}
+        >
+          {config.label}
+        </span>
       </button>
       {expanded && (
         <div

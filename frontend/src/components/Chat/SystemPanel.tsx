@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type CSSProperties } from 'react';
 import {
   Zap,
   Activity,
@@ -28,6 +28,10 @@ interface TelemetryStats {
   total_tokens?: number;
 }
 
+// Full-scale reading for the power bar — a laptop-class package ceiling, so
+// typical local-inference draw lands mid-bar rather than pinned.
+const MAX_POWER_W = 150;
+
 const CLOUD_PRICING = [
   { name: 'GPT-5.6 Sol', input: 5.00, output: 30.00, primary: true },
   { name: 'Claude Fable 5', input: 10.00, output: 50.00, primary: false },
@@ -42,6 +46,7 @@ export function SystemPanel() {
   const liveEnergy = useAppStore((s) => s.liveEnergy);
   const [energy, setEnergy] = useState<EnergyData | null>(null);
   const [telemetry, setTelemetry] = useState<TelemetryStats | null>(null);
+  const [lastOk, setLastOk] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -50,14 +55,20 @@ export function SystemPanel() {
         fetch(`${base}/v1/telemetry/energy`).then((r) => (r.ok ? r.json() : null)),
         fetch(`${base}/v1/telemetry/stats`).then((r) => (r.ok ? r.json() : null)),
       ]);
-      if (energyRes.status === 'fulfilled' && energyRes.value) {
-        setEnergy(energyRes.value as EnergyData);
+      const energyData =
+        energyRes.status === 'fulfilled' ? (energyRes.value as EnergyData | null) : null;
+      const telData =
+        telRes.status === 'fulfilled' ? (telRes.value as TelemetryStats | null) : null;
+      if (energyData) {
+        setEnergy(energyData);
       }
-      if (telRes.status === 'fulfilled' && telRes.value) {
-        setTelemetry(telRes.value as TelemetryStats);
+      if (telData) {
+        setTelemetry(telData);
       }
+      setLastOk(energyData != null || telData != null);
     } catch {
       // best-effort
+      setLastOk(false);
     }
   }, []);
 
@@ -74,6 +85,7 @@ export function SystemPanel() {
 
   const promptK = (savings?.total_prompt_tokens ?? 0) / 1000;
   const completionK = (savings?.total_completion_tokens ?? 0) / 1000;
+  const powerW = liveEnergy?.power_w ?? energy?.avg_power_w ?? 0;
 
   return (
     <div
@@ -90,48 +102,88 @@ export function SystemPanel() {
         className="flex items-center justify-between px-4 py-3 shrink-0"
         style={{ borderBottom: '1px solid var(--color-border)' }}
       >
-        <span className="text-xs font-semibold tracking-wide uppercase" style={{ color: 'var(--color-text-secondary)' }}>
-          System
+        <span className="flex items-center gap-2">
+          <span
+            className="hud-heartbeat"
+            aria-hidden="true"
+            style={
+              {
+                background: 'var(--color-accent-2)',
+                '--color-accent-glow': 'var(--color-accent-2-glow)',
+              } as CSSProperties
+            }
+          />
+          <span className="hud-label" style={{ color: 'var(--color-text-secondary)' }}>
+            System
+          </span>
         </span>
-        <button
-          onClick={toggleSystemPanel}
-          className="p-1 rounded-md transition-colors cursor-pointer"
-          style={{ color: 'var(--color-text-tertiary)' }}
-          title="Close panel"
-        >
-          <X size={14} />
-        </button>
+        <span className="flex items-center gap-1.5">
+          <StatusBadge label={lastOk ? 'Live' : 'Offline'} tone={lastOk ? 'accent' : 'neutral'} />
+          <button
+            onClick={toggleSystemPanel}
+            className="p-1 rounded-md transition-colors cursor-pointer"
+            style={{ color: 'var(--color-text-tertiary)' }}
+            title="Close panel"
+          >
+            <X size={14} />
+          </button>
+        </span>
       </div>
 
       <div className="flex flex-col gap-4 p-4">
         {/* Session Stats */}
         <section>
-          <h4 className="text-[11px] font-medium uppercase tracking-wide mb-2" style={{ color: 'var(--color-text-tertiary)' }}>
-            Session
-          </h4>
+          <h4 className="hud-label mb-2">Session</h4>
           <div className="grid grid-cols-2 gap-2">
-            <MiniStat icon={Hash} label="Requests" value={String(savings?.total_calls ?? telemetry?.total_requests ?? 0)} />
-            <MiniStat icon={Hash} label="Output Tokens" value={formatNumber(savings?.total_completion_tokens ?? telemetry?.total_tokens ?? 0)} />
+            <MiniStat
+              icon={Hash}
+              label="Requests"
+              value={String(savings?.total_calls ?? telemetry?.total_requests ?? 0)}
+              index={0}
+            />
+            <MiniStat
+              icon={Hash}
+              label="Output Tokens"
+              value={formatNumber(savings?.total_completion_tokens ?? telemetry?.total_tokens ?? 0)}
+              index={1}
+            />
           </div>
         </section>
 
         {/* Device */}
         <section>
-          <h4 className="text-[11px] font-medium uppercase tracking-wide mb-2" style={{ color: 'var(--color-text-tertiary)' }}>
-            Device
-          </h4>
+          <h4 className="hud-label mb-2">Device</h4>
           <div className="grid grid-cols-2 gap-2">
             {energy?.cpu_temp_c != null && (
-              <MiniStat icon={Thermometer} label="CPU Temp" value={String(Math.round(energy.cpu_temp_c))} unit="°C" />
+              <MiniStat
+                icon={Thermometer}
+                label="CPU Temp"
+                value={String(Math.round(energy.cpu_temp_c))}
+                unit="°C"
+                index={0}
+                barPercent={tempPercent(energy.cpu_temp_c)}
+                barColor={tempStatus(energy.cpu_temp_c)}
+              />
             )}
             {energy?.gpu_temp_c != null && (
-              <MiniStat icon={Thermometer} label="GPU Temp" value={String(Math.round(energy.gpu_temp_c))} unit="°C" />
+              <MiniStat
+                icon={Thermometer}
+                label="GPU Temp"
+                value={String(Math.round(energy.gpu_temp_c))}
+                unit="°C"
+                index={1}
+                barPercent={tempPercent(energy.gpu_temp_c)}
+                barColor={tempStatus(energy.gpu_temp_c)}
+              />
             )}
             <MiniStat
               icon={Zap}
               label="Power"
-              value={(liveEnergy?.power_w ?? energy?.avg_power_w ?? 0).toFixed(1)}
+              value={powerW.toFixed(1)}
               unit="W"
+              index={2}
+              barPercent={loadPercent(powerW, MAX_POWER_W)}
+              barColor={loadStatus(loadPercent(powerW, MAX_POWER_W))}
             />
             <MiniStat
               icon={Activity}
@@ -140,6 +192,7 @@ export function SystemPanel() {
                 ((liveEnergy?.energy_j ?? energy?.total_energy_j ?? 0) / 1000)
               ).toFixed(1)}
               unit="kJ"
+              index={3}
             />
           </div>
         </section>
@@ -147,9 +200,7 @@ export function SystemPanel() {
 
         {/* Cost Comparison */}
         <section>
-          <h4 className="text-[11px] font-medium uppercase tracking-wide mb-2" style={{ color: 'var(--color-text-tertiary)' }}>
-            Cost Comparison
-          </h4>
+          <h4 className="hud-label mb-2">Cost Comparison</h4>
 
           {/* Local */}
           <div
@@ -212,12 +263,7 @@ export function SystemPanel() {
 
         {/* Leaderboard / Share */}
         <section>
-          <h4
-            className="text-[11px] font-medium uppercase tracking-wide mb-2"
-            style={{ color: 'var(--color-text-tertiary)' }}
-          >
-            Leaderboard
-          </h4>
+          <h4 className="hud-label mb-2">Leaderboard</h4>
 
           <button
             onClick={() => setOptInModalOpen(true)}
@@ -365,6 +411,16 @@ function StatusBadge({
       {label}
     </span>
   );
+}
+
+function loadPercent(value: number, max: number): number {
+  return Math.min(100, Math.max(0, (value / max) * 100));
+}
+
+function loadStatus(percent: number): string {
+  if (percent > 85) return 'var(--color-error)';
+  if (percent > 70) return 'var(--color-warning)';
+  return 'var(--color-accent)';
 }
 
 function tempPercent(tempC: number): number {

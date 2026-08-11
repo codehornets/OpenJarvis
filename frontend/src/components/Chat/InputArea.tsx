@@ -6,6 +6,7 @@ import { streamChat, streamResearch } from '../../lib/sse';
 import { fetchSavings, getBase } from '../../lib/api';
 import { listConnectors, getSyncStatus } from '../../lib/connectors-api';
 import { MicButton } from './MicButton';
+import { CornerBrackets } from '../hud/CornerBrackets';
 import { useSpeech } from '../../hooks/useSpeech';
 import type {
   ChatMessage,
@@ -562,9 +563,12 @@ export function InputArea() {
             aria-pressed={deepResearch}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs transition-colors cursor-pointer disabled:cursor-default disabled:opacity-50"
             style={{
-              background: deepResearch ? 'var(--color-accent-subtle)' : 'transparent',
-              border: `1px solid ${deepResearch ? 'var(--color-accent)' : 'var(--color-border)'}`,
-              color: deepResearch ? 'var(--color-accent)' : 'var(--color-text-tertiary)',
+              background: deepResearch ? 'var(--color-accent-2-subtle)' : 'transparent',
+              border: `1px solid ${deepResearch ? 'var(--color-accent-2)' : 'var(--color-border)'}`,
+              color: deepResearch ? 'var(--color-accent-2)' : 'var(--color-text-tertiary)',
+              fontFamily: deepResearch ? 'var(--font-hud)' : undefined,
+              textTransform: deepResearch ? 'uppercase' : undefined,
+              letterSpacing: deepResearch ? '0.08em' : undefined,
             }}
             title={deepResearch ? 'Deep Research: on' : 'Deep Research: off'}
           >
@@ -585,54 +589,57 @@ export function InputArea() {
           </div>
         )}
       </div>
-      <div className="chat-input-shell flex items-center gap-2 rounded-2xl px-4 py-3">
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={selectedModel ? 'Message Handymate...' : 'Pick a model first (⌘K)...'}
-          rows={1}
-          className="flex-1 bg-transparent outline-none resize-none text-sm leading-relaxed"
-          style={{ color: 'var(--color-text)', maxHeight: '200px' }}
-          disabled={streamState.isStreaming || modelLoading}
-        />
-        {isCurrentChatStreaming ? (
-          <button
-            onClick={stopStreaming}
-            className="p-2 rounded-xl transition-colors shrink-0 cursor-pointer"
-            style={{ background: 'var(--color-error)', color: 'var(--color-on-accent)' }}
-            title="Stop generating"
-          >
-            <Square size={16} />
-          </button>
-        ) : (
-          <div className="flex items-center gap-1">
-            <MicButton
-              state={speechState}
-              onClick={handleMicClick}
-              disabled={micDisabled}
-              reason={micReason}
-            />
+      <div className="relative">
+        <CornerBrackets />
+        <div className="chat-input-shell flex items-center gap-2 rounded-2xl px-4 py-3">
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={selectedModel ? 'Message Handymate...' : 'Pick a model first (⌘K)...'}
+            rows={1}
+            className="hud-input-mono flex-1 bg-transparent outline-none resize-none text-sm leading-relaxed"
+            style={{ color: 'var(--color-text)', maxHeight: '200px' }}
+            disabled={streamState.isStreaming || modelLoading}
+          />
+          {isCurrentChatStreaming ? (
             <button
-              onClick={sendMessage}
-              disabled={streamState.isStreaming || !input.trim() || modelLoading || !selectedModel}
-              title={selectedModel ? 'Send message' : 'Pick a model first (⌘K)'}
-              className="p-2 rounded-xl transition-colors shrink-0 cursor-pointer disabled:opacity-30 disabled:cursor-default"
-              style={{
-                background: input.trim() ? 'var(--color-accent)' : 'var(--color-bg-tertiary)',
-                color: input.trim() ? 'white' : 'var(--color-text-tertiary)',
-              }}
+              onClick={stopStreaming}
+              className="p-2 rounded-xl transition-colors shrink-0 cursor-pointer"
+              style={{ background: 'var(--color-error)', color: 'var(--color-on-accent)' }}
+              title="Stop generating"
             >
-              {modelLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+              <Square size={16} />
             </button>
-          </div>
-        )}
+          ) : (
+            <div className="flex items-center gap-1">
+              <MicButton
+                state={speechState}
+                onClick={handleMicClick}
+                disabled={micDisabled}
+                reason={micReason}
+              />
+              <button
+                onClick={sendMessage}
+                disabled={streamState.isStreaming || !input.trim() || modelLoading || !selectedModel}
+                title={selectedModel ? 'Send message' : 'Pick a model first (⌘K)'}
+                className="p-2 rounded-xl transition-colors shrink-0 cursor-pointer disabled:opacity-30 disabled:cursor-default"
+                style={{
+                  background: input.trim() ? 'var(--color-accent)' : 'var(--color-bg-tertiary)',
+                  color: input.trim() ? 'white' : 'var(--color-text-tertiary)',
+                }}
+              >
+                {modelLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex items-center justify-center mt-2 text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
         <span>
-          <kbd className="font-mono">Enter</kbd> to send &middot;{' '}
-          <kbd className="font-mono">Shift+Enter</kbd> for new line
+          <kbd style={{ fontFamily: 'var(--font-hud)' }}>Enter</kbd> to send &middot;{' '}
+          <kbd style={{ fontFamily: 'var(--font-hud)' }}>Shift+Enter</kbd> for new line
         </span>
       </div>
     </div>

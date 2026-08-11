@@ -112,12 +112,13 @@ export function MessageBubble({ message, isLive = false }: Props) {
     return (
       <div className="flex justify-end mb-4">
         <div
-          className="max-w-[85%] px-4 py-2.5 text-sm leading-relaxed animate-in fade-in slide-in-from-right-4 duration-300"
+          className="hud-clip-tr max-w-[85%] px-4 py-2.5 text-sm leading-relaxed animate-in fade-in slide-in-from-right-4 duration-300"
           style={{
             background: 'var(--color-user-bubble)',
             color: 'var(--color-user-bubble-text)',
             border: '1px solid color-mix(in srgb, var(--color-accent) 25%, transparent)',
-            borderRadius: 'var(--radius-xl) var(--radius-xl) var(--radius-sm) var(--radius-xl)',
+            // Top-right stays square so the hud-clip-tr chamfer reads as a cut.
+            borderRadius: 'var(--radius-xl) 0 var(--radius-sm) var(--radius-xl)',
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
           }}
@@ -172,6 +173,17 @@ export function MessageBubble({ message, isLive = false }: Props) {
       {/* Assistant message */}
       {cleanContent && (
         <div className="prose max-w-none">
+          <div
+            className="hud-label flex items-center gap-1.5 mb-1"
+            style={{ color: 'var(--color-text-tertiary)' }}
+          >
+            <span
+              className="hud-glow-dot"
+              aria-hidden="true"
+              style={{ color: isLive ? 'var(--color-accent-2)' : 'var(--color-text-tertiary)' }}
+            />
+            Jarvis
+          </div>
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}
             rehypePlugins={rehypePlugins}
@@ -182,10 +194,7 @@ export function MessageBubble({ message, isLive = false }: Props) {
             {cleanContent}
           </ReactMarkdown>
           {isLive && (
-            <span
-              className="inline-block w-1.5 h-4 ml-0.5 align-middle animate-pulse"
-              style={{ background: 'var(--color-accent)', borderRadius: '1px' }}
-            />
+            <span className="hud-caret" aria-hidden="true" />
           )}
         </div>
       )}

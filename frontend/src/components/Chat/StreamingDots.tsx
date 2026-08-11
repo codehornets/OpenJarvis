@@ -24,32 +24,35 @@ export function StreamingDots({ phase }: Props) {
       <style>{DOT_KEYFRAMES}</style>
       <div className="flex gap-1">
         <span
-          className="w-1.5 h-1.5 rounded-full"
+          className="w-1.5 h-1.5 rounded-full dark:shadow-[0_0_8px_currentColor]"
           style={{
-            background: 'var(--color-text-tertiary)',
+            color: 'var(--color-accent)',
+            background: 'currentColor',
             animation: 'streaming-dot-breathe 1.8s ease-in-out infinite',
             animationDelay: '0ms',
           }}
         />
         <span
-          className="w-1.5 h-1.5 rounded-full"
+          className="w-1.5 h-1.5 rounded-full dark:shadow-[0_0_8px_currentColor]"
           style={{
-            background: 'var(--color-text-tertiary)',
+            color: 'var(--color-accent)',
+            background: 'currentColor',
             animation: 'streaming-dot-breathe 1.8s ease-in-out infinite',
             animationDelay: '220ms',
           }}
         />
         <span
-          className="w-1.5 h-1.5 rounded-full"
+          className="w-1.5 h-1.5 rounded-full dark:shadow-[0_0_8px_currentColor]"
           style={{
-            background: 'var(--color-text-tertiary)',
+            color: 'var(--color-accent)',
+            background: 'currentColor',
             animation: 'streaming-dot-breathe 1.8s ease-in-out infinite',
             animationDelay: '470ms',
           }}
         />
       </div>
       {phase && (
-        <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+        <span className="hud-label" style={{ color: 'var(--color-text-tertiary)' }}>
           {phase}
         </span>
       )}

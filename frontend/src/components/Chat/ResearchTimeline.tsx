@@ -76,13 +76,15 @@ function TimelineStep({
             : 'var(--color-text-tertiary)',
           opacity: active ? 1 : 0.6,
           transform: 'translateX(-3px)',
-          boxShadow: active ? '0 0 0 3px var(--color-accent-subtle)' : 'none',
+          boxShadow: active
+            ? '0 0 0 3px var(--color-accent-subtle), 0 0 8px var(--color-accent-glow)'
+            : 'none',
           transition: 'background 200ms, box-shadow 200ms',
         }}
       />
 
       <div
-        className="text-[10px] uppercase tracking-[0.08em] mb-0.5"
+        className="hud-label mb-0.5"
         style={{
           color: active ? 'var(--color-accent)' : 'var(--color-text-tertiary)',
         }}
@@ -98,10 +100,7 @@ function TimelineStep({
       </div>
 
       {meta.length > 0 && (
-        <div
-          className="text-[11px] mt-0.5"
-          style={{ color: 'var(--color-text-tertiary)' }}
-        >
+        <div className="hud-label mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
           {meta.join(' · ')}
         </div>
       )}
@@ -117,10 +116,7 @@ function TimelineStep({
           />
         </div>
       ) : trace.numHits != null ? (
-        <div
-          className="text-[11px] mt-1"
-          style={{ color: 'var(--color-text-tertiary)' }}
-        >
+        <div className="hud-label mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
           {trace.numHits} {trace.numHits === 1 ? 'result' : 'results'}
         </div>
       ) : null}
@@ -168,7 +164,7 @@ export function ResearchTimeline({ traces, isLive, hasContent }: Props) {
             style={{
               background: 'var(--color-accent)',
               transform: 'translateX(-3px)',
-              boxShadow: '0 0 0 3px var(--color-accent-subtle)',
+              boxShadow: '0 0 0 3px var(--color-accent-subtle), 0 0 8px var(--color-accent-glow)',
             }}
           />
           <StatusLine text="Analyzing query" />
