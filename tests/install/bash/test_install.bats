@@ -5,7 +5,7 @@ setup() {
     export FAKE_HOME="$TEST_TMPDIR/home"
     mkdir -p "$FAKE_HOME"
     export HOME="$FAKE_HOME"
-    export OPENJARVIS_HOME="$FAKE_HOME/.openjarvis"
+    export HANDYMATE_HOME="$FAKE_HOME/.handymate"
 
     export STUBS_DIR="$BATS_TEST_DIRNAME/stubs"
     # Use a copy of stubs without uv-style real binaries that might be on the host.
@@ -91,21 +91,21 @@ IDEOF
     echo "$output" | grep -qi "root"
 }
 
-@test "creates ~/.openjarvis directory tree" {
+@test "creates ~/.handymate directory tree" {
     run bash "$SCRIPT" --no-bg-orchestrator
     [ "$status" -eq 0 ]
-    [ -d "$OPENJARVIS_HOME/src" ]
-    [ -d "$OPENJARVIS_HOME/.state" ]
-    [ -d "$OPENJARVIS_HOME/.scripts" ]
+    [ -d "$HANDYMATE_HOME/src" ]
+    [ -d "$HANDYMATE_HOME/.state" ]
+    [ -d "$HANDYMATE_HOME/.scripts" ]
 }
 
 @test "writes install-state.json on success" {
     run bash "$SCRIPT" --no-bg-orchestrator
     [ "$status" -eq 0 ]
-    [ -f "$OPENJARVIS_HOME/.state/install-state.json" ]
+    [ -f "$HANDYMATE_HOME/.state/install-state.json" ]
 }
 
-@test "calls git clone for the OpenJarvis repo" {
+@test "calls git clone for the Handymate repo" {
     run bash "$SCRIPT" --no-bg-orchestrator
     grep -q "clone" "$GIT_STUB_LOG"
 }
@@ -126,9 +126,9 @@ IDEOF
 }
 
 @test "detects WSL2 and writes platform note to install-state" {
-    OPENJARVIS_FORCE_WSL=1 run bash "$SCRIPT" --no-bg-orchestrator
+    HANDYMATE_FORCE_WSL=1 run bash "$SCRIPT" --no-bg-orchestrator
     [ "$status" -eq 0 ]
-    grep -q "wsl" "$OPENJARVIS_HOME/.state/install-state.json"
+    grep -q "wsl" "$HANDYMATE_HOME/.state/install-state.json"
 }
 
 @test "fails loudly when git is missing" {
@@ -201,9 +201,9 @@ IDEOF
     PATH="$no_py_stubs" run bash "$SCRIPT" --no-bg-orchestrator --minimal
     [ "$status" -eq 0 ]
     # State file was still written (mark_done is Python-free).
-    [ -f "$OPENJARVIS_HOME/.state/install-state.json" ]
+    [ -f "$HANDYMATE_HOME/.state/install-state.json" ]
     # And it still has valid-looking JSON for state_done's grep.
-    grep -q '"install_uv":' "$OPENJARVIS_HOME/.state/install-state.json"
+    grep -q '"install_uv":' "$HANDYMATE_HOME/.state/install-state.json"
 }
 
 @test "mark_done is idempotent — second mark of same key doesn't duplicate" {
@@ -211,13 +211,13 @@ IDEOF
     [ "$status" -eq 0 ]
     # Capture first state file
     local first_count
-    first_count="$(grep -c '"install_uv":' "$OPENJARVIS_HOME/.state/install-state.json")"
+    first_count="$(grep -c '"install_uv":' "$HANDYMATE_HOME/.state/install-state.json")"
     [ "$first_count" -eq 1 ]
     # Second run reuses state — keys should not duplicate even if some path re-marks.
     run bash "$SCRIPT" --no-bg-orchestrator
     [ "$status" -eq 0 ]
     local second_count
-    second_count="$(grep -c '"install_uv":' "$OPENJARVIS_HOME/.state/install-state.json")"
+    second_count="$(grep -c '"install_uv":' "$HANDYMATE_HOME/.state/install-state.json")"
     [ "$second_count" -eq 1 ]
 }
 

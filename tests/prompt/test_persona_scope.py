@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from openjarvis.core.config import MemoryFilesConfig
-from openjarvis.prompt.builder import SystemPromptBuilder
+from handymate.core.config import MemoryFilesConfig
+from handymate.prompt.builder import SystemPromptBuilder
 
 
 def test_empty_persona_passes_through_global_defaults():
@@ -21,7 +21,7 @@ def test_none_persona_disables_all_files():
 
 def test_named_persona_resolves_to_personas_dir():
     out = SystemPromptBuilder._resolve_persona(MemoryFilesConfig(persona_name="coder"))
-    base = str(Path.home() / ".openjarvis" / "personas" / "coder")
+    base = str(Path.home() / ".handymate" / "personas" / "coder")
     assert out.soul_path == f"{base}/SOUL.md"
     assert out.memory_path == f"{base}/MEMORY.md"
     assert out.user_path == f"{base}/USER.md"
@@ -40,9 +40,9 @@ def test_none_persona_build_does_not_raise(tmp_path, monkeypatch):
     """
     import dataclasses
 
-    from openjarvis.core.config import load_config
+    from handymate.core.config import load_config
 
-    monkeypatch.setenv("OPENJARVIS_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("HANDYMATE_HOME", str(tmp_path / "home"))
     cfg = load_config(tmp_path / "missing-config.toml")
     mf = dataclasses.replace(cfg.memory_files, persona_name="none")
     builder = SystemPromptBuilder(

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.core.config import JarvisConfig, load_config
-from openjarvis.core.registry import BenchmarkRegistry
+from handymate.core.config import JarvisConfig, load_config
+from handymate.core.registry import BenchmarkRegistry
 
 
 class TestBenchmarkRegistry:
@@ -36,19 +36,19 @@ class TestConfigPhase5:
         assert cfg.learning is not None
 
     def test_benchmark_registry_importable(self):
-        from openjarvis.core.registry import BenchmarkRegistry
+        from handymate.core.registry import BenchmarkRegistry
 
         assert BenchmarkRegistry is not None
 
     def test_registry_isolation(self):
         """BenchmarkRegistry entries don't leak into other registries."""
-        from openjarvis.core.registry import ModelRegistry
+        from handymate.core.registry import ModelRegistry
 
         BenchmarkRegistry.register_value("iso-test", "bench-value")
         with pytest.raises(KeyError):
             ModelRegistry.get("iso-test")
 
     def test_load_config_default(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("OPENJARVIS_HOME", str(tmp_path / "home"))
+        monkeypatch.setenv("HANDYMATE_HOME", str(tmp_path / "home"))
         cfg = load_config(tmp_path / "missing-config.toml")
         assert isinstance(cfg, JarvisConfig)

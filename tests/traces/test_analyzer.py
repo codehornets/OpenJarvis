@@ -5,9 +5,9 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from openjarvis.core.types import StepType, Trace, TraceStep
-from openjarvis.traces.analyzer import TraceAnalyzer
-from openjarvis.traces.store import TraceStore
+from handymate.core.types import StepType, Trace, TraceStep
+from handymate.traces.analyzer import TraceAnalyzer
+from handymate.traces.store import TraceStore
 
 
 def _make_trace(

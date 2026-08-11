@@ -7,10 +7,10 @@ from unittest import mock
 
 import pytest
 
-from openjarvis.core.registry import EngineRegistry
-from openjarvis.core.types import Message, Role
-from openjarvis.engine._base import EngineConnectionError
-from openjarvis.engine.cloud import (
+from handymate.core.registry import EngineRegistry
+from handymate.core.types import Message, Role
+from handymate.engine._base import EngineConnectionError
+from handymate.engine.cloud import (
     CloudEngine,
     _is_codex_model,
     _is_deepseek_model,
@@ -285,7 +285,7 @@ class TestCodexGenerate:
         }
 
         with mock.patch(
-            "openjarvis.engine.cloud.httpx.post",
+            "handymate.engine.cloud.httpx.post",
             return_value=fake_response,
         ) as mock_post:
             result = engine.generate(
@@ -332,7 +332,7 @@ class TestCodexGenerate:
         }
 
         with mock.patch(
-            "openjarvis.engine.cloud.httpx.post",
+            "handymate.engine.cloud.httpx.post",
             return_value=fake_response,
         ):
             result = engine.generate(
@@ -361,7 +361,7 @@ class TestCodexGenerate:
         }
 
         with mock.patch(
-            "openjarvis.engine.cloud.httpx.post",
+            "handymate.engine.cloud.httpx.post",
             return_value=fake_response,
         ) as mock_post:
             engine.generate(

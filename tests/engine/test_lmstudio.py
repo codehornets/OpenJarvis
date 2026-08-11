@@ -6,10 +6,10 @@ import httpx
 import pytest
 import respx
 
-from openjarvis.core.registry import EngineRegistry
-from openjarvis.core.types import Message, Role
-from openjarvis.engine._base import EngineConnectionError
-from openjarvis.engine.openai_compat_engines import LMStudioEngine
+from handymate.core.registry import EngineRegistry
+from handymate.core.types import Message, Role
+from handymate.engine._base import EngineConnectionError
+from handymate.engine.openai_compat_engines import LMStudioEngine
 
 
 @pytest.fixture()

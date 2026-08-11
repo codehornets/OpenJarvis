@@ -1,42 +1,42 @@
 <div align="center">
-  <img alt="OpenJarvis" src="assets/OpenJarvis_Horizontal_Logo.png" width="400">
+  <img alt="Handymate" src="assets/Handymate_Horizontal_Logo.png" width="400">
 
   <p><i>Personal AI, On Personal Devices.</i></p>
 
   <p>
     <a href="https://arxiv.org/abs/2605.17172"><img src="https://img.shields.io/badge/arXiv-2605.17172-b31b1b.svg" alt="arXiv"></a>
-    <a href="https://openjarvis.stanford.edu/"><img src="https://img.shields.io/badge/project-OpenJarvis-blue" alt="Project"></a>
-    <a href="https://open-jarvis.github.io/OpenJarvis/"><img src="https://img.shields.io/badge/docs-mkdocs-blue" alt="Docs"></a>
+    <a href="https://handymate.stanford.edu/"><img src="https://img.shields.io/badge/project-Handymate-blue" alt="Project"></a>
+    <a href="https://codehornets.github.io/handymate/"><img src="https://img.shields.io/badge/docs-mkdocs-blue" alt="Docs"></a>
     <img src="https://img.shields.io/badge/python-%3E%3D3.10-blue" alt="Python">
     <img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License">
     <a href="https://discord.gg/CMVBmDQ5Fj"><img src="https://img.shields.io/badge/discord-join-7289da?logo=discord&logoColor=white" alt="Discord"></a>
-    <a href="https://x.com/OpenJarvisAI"><img src="https://img.shields.io/badge/X-@OpenJarvisAI-black?logo=x&logoColor=white" alt="X / Twitter"></a>
+    <a href="https://x.com/HandymateAI"><img src="https://img.shields.io/badge/X-@HandymateAI-black?logo=x&logoColor=white" alt="X / Twitter"></a>
   </p>
 </div>
 
 ---
 
 <div align="center">
-  <img alt="OpenJarvis demo reel" src="assets/openjarvis_demo_reel.webp" width="75%">
+  <img alt="Handymate demo reel" src="assets/handymate_demo_reel.webp" width="75%">
 </div>
 
 ---
 
-> **[Documentation](https://open-jarvis.github.io/OpenJarvis/)**
+> **[Documentation](https://codehornets.github.io/handymate/)**
 >
-> **[Project Site](https://openjarvis.stanford.edu/)**
+> **[Project Site](https://handymate.stanford.edu/)**
 >
 > **[Paper](https://arxiv.org/abs/2605.17172)**
 >
-> **[Leaderboard](https://open-jarvis.github.io/OpenJarvis/leaderboard/)**
+> **[Leaderboard](https://codehornets.github.io/handymate/leaderboard/)**
 >
-> **[Roadmap](https://open-jarvis.github.io/OpenJarvis/development/roadmap/)**
+> **[Roadmap](https://codehornets.github.io/handymate/development/roadmap/)**
 
-## Why OpenJarvis?
+## Why Handymate?
 
 Personal AI agents are exploding in popularity, but nearly all of them still route intelligence through cloud APIs. Your "personal" AI continues to depend on someone else's server. At the same time, our [Intelligence Per Watt](https://www.intelligence-per-watt.ai/) research showed that local language models already handle 88.7% of single-turn chat and reasoning queries, with intelligence efficiency improving 5.3× from 2023 to 2025. The models and hardware are increasingly ready. What has been missing is the software stack to make local-first personal AI practical.
 
-OpenJarvis is that stack. It is a framework for local-first personal AI, built around three core ideas: shared primitives for building on-device agents; evaluations that treat energy, FLOPs, latency, and dollar cost as first-class constraints alongside accuracy; and a learning loop that improves models using local trace data. The goal is simple: make it possible to build personal AI agents that run locally by default, calling the cloud only when truly necessary. OpenJarvis aims to be both a research platform and a production foundation for local AI, in the spirit of PyTorch.
+Handymate is that stack. It is a framework for local-first personal AI, built around three core ideas: shared primitives for building on-device agents; evaluations that treat energy, FLOPs, latency, and dollar cost as first-class constraints alongside accuracy; and a learning loop that improves models using local trace data. The goal is simple: make it possible to build personal AI agents that run locally by default, calling the cloud only when truly necessary. Handymate aims to be both a research platform and a production foundation for local AI, in the spirit of PyTorch.
 
 ## Installation
 
@@ -44,13 +44,13 @@ Pick your platform and run one command. Each installer handles [uv](https://docs
 
 | Platform | One-liner |
 |---|---|
-| **macOS · Linux · WSL2** | `curl -fsSL https://open-jarvis.github.io/OpenJarvis/install.sh \| bash` |
-| **Native Windows** | `irm https://open-jarvis.github.io/OpenJarvis/install.ps1 \| iex` |
-| **Desktop GUI** | Download `.exe` / `.dmg` / `.deb` / `.rpm` / `.AppImage` from the [latest release](https://github.com/open-jarvis/OpenJarvis/releases) |
+| **macOS · Linux · WSL2** | `curl -fsSL https://codehornets.github.io/handymate/install.sh \| bash` |
+| **Native Windows** | `irm https://codehornets.github.io/handymate/install.ps1 \| iex` |
+| **Desktop GUI** | Download `.exe` / `.dmg` / `.deb` / `.rpm` / `.AppImage` from the [latest release](https://github.com/codehornets/handymate/releases) |
 
 Then `handy` to start. The Rust extension and larger models continue downloading in the background; `handy doctor` shows status.
 
-Platform-specific notes (WSL2 setup, native-Windows scheduled-task service, desktop prerequisites, manual / contributor install): see the [installation docs](https://open-jarvis.github.io/OpenJarvis/getting-started/install/).
+Platform-specific notes (WSL2 setup, native-Windows scheduled-task service, desktop prerequisites, manual / contributor install): see the [installation docs](https://codehornets.github.io/handymate/getting-started/install/).
 
 ## Quick Start
 
@@ -77,7 +77,7 @@ handy connect gdrive          # one OAuth covers Gmail / Calendar / Tasks
 handy digest --fresh          # generate and play your first briefing
 ```
 
-Per-preset deep dives: [morning digest](https://open-jarvis.github.io/OpenJarvis/user-guide/morning-digest/) · [deep research](https://open-jarvis.github.io/OpenJarvis/user-guide/deep-research/) · [code assistant](https://open-jarvis.github.io/OpenJarvis/user-guide/code-assistant/) · [scheduled monitor](https://open-jarvis.github.io/OpenJarvis/user-guide/scheduled-monitor/) · [chat simple](https://open-jarvis.github.io/OpenJarvis/user-guide/chat-simple/) · or the full [quickstart guide](https://open-jarvis.github.io/OpenJarvis/getting-started/quickstart/).
+Per-preset deep dives: [morning digest](https://codehornets.github.io/handymate/user-guide/morning-digest/) · [deep research](https://codehornets.github.io/handymate/user-guide/deep-research/) · [code assistant](https://codehornets.github.io/handymate/user-guide/code-assistant/) · [scheduled monitor](https://codehornets.github.io/handymate/user-guide/scheduled-monitor/) · [chat simple](https://codehornets.github.io/handymate/user-guide/chat-simple/) · or the full [quickstart guide](https://codehornets.github.io/handymate/getting-started/quickstart/).
 
 ### Skills
 
@@ -100,11 +100,11 @@ handy bench skills --max-samples 5 --seeds 42
 
 Import from [Hermes Agent](https://github.com/NousResearch/hermes-agent) (~150 skills), [OpenClaw](https://github.com/openclaw/skills) (~13,700 community skills), or any GitHub repo. Skills follow the [agentskills.io](https://agentskills.io/specification) open standard.
 
-See the [Skills User Guide](https://open-jarvis.github.io/OpenJarvis/user-guide/skills/) and [Skills Tutorial](https://open-jarvis.github.io/OpenJarvis/tutorials/skills-workflow/) for details.
+See the [Skills User Guide](https://codehornets.github.io/handymate/user-guide/skills/) and [Skills Tutorial](https://codehornets.github.io/handymate/tutorials/skills-workflow/) for details.
 
 ### Built-in Agents
 
-OpenJarvis ships with eight built-in agents across three execution modes (on-demand, scheduled, continuous):
+Handymate ships with eight built-in agents across three execution modes (on-demand, scheduled, continuous):
 
 | Agent | Type | What it does |
 |-------|------|-------------|
@@ -117,16 +117,16 @@ OpenJarvis ships with eight built-in agents across three execution modes (on-dem
 | `native_openhands` | On-demand | CodeAct — generates and executes Python code |
 | `simple` | On-demand | Single-turn chat, no tools |
 
-See the [User Guide](https://open-jarvis.github.io/OpenJarvis/user-guide/morning-digest/) and [Tutorials](https://open-jarvis.github.io/OpenJarvis/tutorials/) for detailed setup instructions.
+See the [User Guide](https://codehornets.github.io/handymate/user-guide/morning-digest/) and [Tutorials](https://codehornets.github.io/handymate/tutorials/) for detailed setup instructions.
 
-Full documentation — including Docker deployment, cloud engines, development setup, and tutorials — at **[open-jarvis.github.io/OpenJarvis](https://open-jarvis.github.io/OpenJarvis/)**.
+Full documentation — including Docker deployment, cloud engines, development setup, and tutorials — at **[codehornets.github.io/handymate](https://codehornets.github.io/handymate/)**.
 
 ## Community
 
-- **GitHub:** [github.com/open-jarvis/OpenJarvis](https://github.com/open-jarvis/OpenJarvis)
+- **GitHub:** [github.com/codehornets/handymate](https://github.com/codehornets/handymate)
 - **Discord:** [discord.gg/CMVBmDQ5Fj](https://discord.gg/CMVBmDQ5Fj)
-- **X / Twitter:** [@OpenJarvisAI](https://x.com/OpenJarvisAI)
-- **Docs:** [open-jarvis.github.io/OpenJarvis](https://open-jarvis.github.io/OpenJarvis/)
+- **X / Twitter:** [@HandymateAI](https://x.com/HandymateAI)
+- **Docs:** [codehornets.github.io/handymate](https://codehornets.github.io/handymate/)
 
 ## Contributing
 
@@ -135,18 +135,18 @@ We welcome contributions! See the [Contributing Guide](CONTRIBUTING.md) for ince
 Quick start for contributors:
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis
+git clone https://github.com/codehornets/handymate.git
+cd Handymate
 uv sync --extra dev
 uv run pre-commit install
 uv run pytest tests/ -v
 ```
 
-Browse the [Roadmap](https://open-jarvis.github.io/OpenJarvis/development/roadmap/) for areas where help is needed. Comment **"take"** on any issue to get auto-assigned.
+Browse the [Roadmap](https://codehornets.github.io/handymate/development/roadmap/) for areas where help is needed. Comment **"take"** on any issue to get auto-assigned.
 
 ## About
 
-OpenJarvis is part of [Intelligence Per Watt](https://www.intelligence-per-watt.ai/), a research initiative studying the intelligence efficiency of AI systems. The project is developed at [Hazy Research](https://hazyresearch.stanford.edu/) and the [Scaling Intelligence Lab](https://scalingintelligence.stanford.edu/) at [Stanford SAIL](https://ai.stanford.edu/).
+Handymate is part of [Intelligence Per Watt](https://www.intelligence-per-watt.ai/), a research initiative studying the intelligence efficiency of AI systems. The project is developed at [Hazy Research](https://hazyresearch.stanford.edu/) and the [Scaling Intelligence Lab](https://scalingintelligence.stanford.edu/) at [Stanford SAIL](https://ai.stanford.edu/).
 
 ## Sponsors
 
@@ -162,8 +162,8 @@ OpenJarvis is part of [Intelligence Per Watt](https://www.intelligence-per-watt.
 
 ## Citation
 ```bibtex
-@misc{saadfalcon2026openjarvispersonalaipersonal,
-      title={OpenJarvis: Personal AI, On Personal Devices}, 
+@misc{saadfalcon2026handymatepersonalaipersonal,
+      title={Handymate: Personal AI, On Personal Devices}, 
       author={Jon Saad-Falcon and Avanika Narayan and Robby Manihani and Tanvir Bhathal and Herumb Shandilya and Hakki Orhun Akengin and Gabriel Bo and Andrew Park and Matthew Hart and Caia Costello and Chuan Li and Christopher Ré and Azalia Mirhoseini},
       year={2026},
       eprint={2605.17172},

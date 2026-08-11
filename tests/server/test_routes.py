@@ -10,8 +10,8 @@ import pytest
 fastapi = pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
-from openjarvis.core.events import EventBus, EventType  # noqa: E402
-from openjarvis.server.app import create_app  # noqa: E402
+from handymate.core.events import EventBus, EventType  # noqa: E402
+from handymate.server.app import create_app  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -47,7 +47,7 @@ def _make_engine(content="Hello from server", models=None):
 
 
 def _make_agent(content="Hello from agent"):
-    from openjarvis.agents._stubs import AgentResult
+    from handymate.agents._stubs import AgentResult
 
     agent = MagicMock()
     agent.agent_id = "mock"
@@ -56,7 +56,7 @@ def _make_agent(content="Hello from agent"):
 
 
 def _test_config():
-    from openjarvis.core.config import JarvisConfig
+    from handymate.core.config import JarvisConfig
 
     cfg = JarvisConfig()
     cfg.analytics.enabled = False
@@ -422,8 +422,8 @@ class TestChatCompletions:
         The fix unwraps the engine via `engine._inner` before passing it
         to `instrumented_generate`. This test pins that contract.
         """
-        from openjarvis.core.events import EventBus, EventType
-        from openjarvis.telemetry.instrumented_engine import InstrumentedEngine
+        from handymate.core.events import EventBus, EventType
+        from handymate.telemetry.instrumented_engine import InstrumentedEngine
 
         # Build a fresh engine + bus and explicitly wrap with
         # InstrumentedEngine (mirrors the production app construction).
@@ -467,7 +467,7 @@ class TestChatCompletions:
         # would carry no version stamp and `current_methodology_only`
         # would drop it from leaderboard sums entirely. Pin that
         # contract — see the adversarial review on PR #498.
-        from openjarvis.core.types import TOKEN_COUNTING_VERSION
+        from handymate.core.types import TOKEN_COUNTING_VERSION
 
         rec = received_records[0].data["record"]
         assert rec.token_counting_version == TOKEN_COUNTING_VERSION, (
@@ -544,8 +544,8 @@ class TestChatCompletions:
         agent's own tool loop, and word-splits generic filler content,
         dropping the tool_calls the caller asked for.
         """
-        from openjarvis.core.events import EventBus
-        from openjarvis.engine._stubs import StreamChunk
+        from handymate.core.events import EventBus
+        from handymate.engine._stubs import StreamChunk
 
         engine = _make_engine()
 
@@ -683,7 +683,7 @@ def _make_capturing_engine(captured: list):
     async def mock_stream_full(
         messages, *, model, temperature=0.7, max_tokens=1024, **kw
     ):
-        from openjarvis.engine._stubs import StreamChunk
+        from handymate.engine._stubs import StreamChunk
 
         captured.append(messages)
         yield StreamChunk(content="ok", finish_reason="stop")
@@ -694,10 +694,10 @@ def _make_capturing_engine(captured: list):
 
 
 def _identity_config():
-    from openjarvis.core.config import JarvisConfig
+    from handymate.core.config import JarvisConfig
 
     cfg = JarvisConfig()
-    cfg.agent.default_system_prompt = "You are OpenJarvis."
+    cfg.agent.default_system_prompt = "You are Handymate."
     cfg.analytics.enabled = False
     return cfg
 
@@ -707,7 +707,7 @@ class TestIdentityPromptInjection:
 
     The desktop UI posts only user/assistant turns to the
     OpenAI-compatible ``/v1/chat/completions`` endpoint, so the engine never
-    saw OpenJarvis's identity system prompt and the model answered from its
+    saw Handymate's identity system prompt and the model answered from its
     training identity ("I'm Claude", "I am Qwen", ...). The engine-direct
     server handlers must now inject ``agent.default_system_prompt`` whenever
     the client omits a system message — and must NOT inject a second one when
@@ -733,7 +733,7 @@ class TestIdentityPromptInjection:
         assert captured, "engine.stream was never called"
         msgs = captured[-1]
         assert msgs[0].role.value == "system"
-        assert "OpenJarvis" in msgs[0].content
+        assert "Handymate" in msgs[0].content
 
     def test_stream_no_double_injection_when_client_supplies_system(self):
         captured: list = []
@@ -775,7 +775,7 @@ class TestIdentityPromptInjection:
         assert engine.generate.called
         msgs = engine.generate.call_args.args[0]
         assert msgs[0].role.value == "system"
-        assert "OpenJarvis" in msgs[0].content
+        assert "Handymate" in msgs[0].content
 
     def test_direct_no_double_injection_when_client_supplies_system(self):
         captured: list = []
@@ -806,7 +806,7 @@ class TestIdentityPromptInjection:
         the managed-agent routes. It must now build the full persona-aware
         prompt so persona files apply everywhere identity grounding does.
         """
-        from openjarvis.core.config import MemoryFilesConfig
+        from handymate.core.config import MemoryFilesConfig
 
         soul = tmp_path / "SOUL.md"
         soul.write_text("Respond with extreme sarcasm and call the user 'champ'.")
@@ -829,7 +829,7 @@ class TestIdentityPromptInjection:
         assert resp.status_code == 200
         msgs = engine.generate.call_args.args[0]
         assert msgs[0].role.value == "system"
-        assert "OpenJarvis" in msgs[0].content  # identity blurb still present
+        assert "Handymate" in msgs[0].content  # identity blurb still present
         assert "extreme sarcasm" in msgs[0].content  # persona now injected too
 
     def test_stream_tools_injects_identity_when_absent(self):
@@ -851,7 +851,7 @@ class TestIdentityPromptInjection:
         assert captured, "engine.stream_full was never called"
         msgs = captured[-1]
         assert msgs[0].role.value == "system"
-        assert "OpenJarvis" in msgs[0].content
+        assert "Handymate" in msgs[0].content
 
 
 # ---------------------------------------------------------------------------
@@ -896,7 +896,7 @@ class TestModelsEndpoint:
         )
 
         with patch(
-            "openjarvis.server.cloud_router.list_local_models",
+            "handymate.server.cloud_router.list_local_models",
             new_callable=AsyncMock,
         ) as list_local_models:
             list_local_models.return_value = []
@@ -923,7 +923,7 @@ class TestModelsEndpoint:
             yield "wrong backend"
 
         with patch(
-            "openjarvis.server.cloud_router.stream_cloud",
+            "handymate.server.cloud_router.stream_cloud",
             return_value=direct_cloud_tokens(),
         ) as stream_cloud:
             client = TestClient(app)
@@ -997,11 +997,11 @@ def _traces_enabled_config(tmp_path):
 
     ``create_app`` only builds a trace store when ``config.traces.enabled`` is
     true (server/app.py). Relying on the ambient ``load_config()`` made these
-    tests fail on any machine whose ``~/.openjarvis/config.toml`` disables
+    tests fail on any machine whose ``~/.handymate/config.toml`` disables
     traces; pinning an explicit config + tmp db keeps them hermetic and
     parallel-safe under ``pytest -n auto``.
     """
-    from openjarvis.core.config import JarvisConfig
+    from handymate.core.config import JarvisConfig
 
     cfg = JarvisConfig()
     cfg.traces.enabled = True
@@ -1021,7 +1021,7 @@ class TestTraceRecording:
         IntegrityError on the trace_id primary key and the request would 500 —
         so asserting 200 + count == 1 guards that double-save regression.
         """
-        from openjarvis.core.events import EventBus
+        from handymate.core.events import EventBus
 
         engine = _make_engine()
         agent = _make_agent(content="traced reply")

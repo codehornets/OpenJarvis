@@ -1,17 +1,17 @@
 # CLI Reference
 
-OpenJarvis provides a command-line interface through the `handy` command. Built on [Click](https://click.palletsprojects.com/), it offers subcommands for querying models, managing memory, running benchmarks, and serving an OpenAI-compatible API.
+Handymate provides a command-line interface through the `handy` command. Built on [Click](https://click.palletsprojects.com/), it offers subcommands for querying models, managing memory, running benchmarks, and serving an OpenAI-compatible API.
 
 ## Global Options
 
 ```bash
-handy --version   # Print the OpenJarvis version
+handy --version   # Print the Handymate version
 handy --help      # Show top-level help with all subcommands
 ```
 
 ## `handy init`
 
-Detect local hardware (CPU, GPU, RAM) and generate a configuration file at `~/.openjarvis/config.toml`.
+Detect local hardware (CPU, GPU, RAM) and generate a configuration file at `~/.handymate/config.toml`.
 
 ```bash
 handy init           # Interactive — refuses to overwrite existing config
@@ -135,7 +135,7 @@ JARVIS_NUM_CTX=8192 handy ask --screen "What's on my screen?"
 ```
 
 !!! note "Keep vision on-device"
-    Images are sensitive. OpenJarvis prints a privacy warning before sending
+    Images are sensitive. Handymate prints a privacy warning before sending
     an image to a non-local engine, so a screenshot never leaves your machine
     unnoticed. Use a local engine (e.g. `ollama` with `gemma3:4b`) to keep
     vision fully local.
@@ -236,7 +236,7 @@ handy model pull qwen3:8b
 
 ## `handy pearl`
 
-Access Pearl's native node, wallet, and RPC tools from the OpenJarvis CLI.
+Access Pearl's native node, wallet, and RPC tools from the Handymate CLI.
 
 ```bash
 handy pearl doctor
@@ -249,7 +249,7 @@ handy pearl address
 All Pearl wrapper commands use the `handy pearl <command>` shape. The
 pass-through commands map to Pearl's native binaries:
 
-| OpenJarvis command | Pearl binary | Use |
+| Handymate command | Pearl binary | Use |
 |--------------------|--------------|-----|
 | `handy pearl doctor` | n/a | Check whether `pearld`, `oyster`, and `prlctl` are discoverable |
 | `handy pearl node` | `pearld` | Run the Pearl full node |
@@ -503,9 +503,9 @@ When an agent is configured (e.g., `--agent orchestrator`), non-streaming reques
 LLM-guided spec search (the frontier-driven harness-learning subsystem)
 is exposed as a Python library only — there is currently no top-level
 `handy` subcommand for it. Construct a `SpecSearchOrchestrator`
-directly from `openjarvis.learning.spec_search.orchestrator` and call
+directly from `handymate.learning.spec_search.orchestrator` and call
 `.run(trigger)` with a trigger from
-`openjarvis.learning.spec_search.triggers`. See
+`handymate.learning.spec_search.triggers`. See
 [`docs/user-guide/llm-guided-spec-search.md`](llm-guided-spec-search.md)
 for the architecture and the building blocks
 (`splits.py`, external corpora, `external_adapter`).

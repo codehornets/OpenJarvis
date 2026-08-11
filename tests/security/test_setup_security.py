@@ -6,9 +6,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.core.config import CapabilitiesConfig, JarvisConfig, SecurityConfig
-from openjarvis.core.events import EventBus
-from openjarvis.security import SecurityContext, setup_security
+from handymate.core.config import CapabilitiesConfig, JarvisConfig, SecurityConfig
+from handymate.core.events import EventBus
+from handymate.security import SecurityContext, setup_security
 
 
 def _make_mock_engine() -> MagicMock:
@@ -34,7 +34,7 @@ def _make_config(*, enabled: bool = True, caps_enabled: bool = False) -> JarvisC
 
 def _has_rust() -> bool:
     try:
-        import openjarvis_rust  # noqa: F401
+        import handymate_rust  # noqa: F401
 
         return True
     except ImportError:
@@ -44,7 +44,7 @@ def _has_rust() -> bool:
 class TestSetupSecurityEnabled:
     @pytest.mark.skipif(not _has_rust(), reason="Rust extension not compiled")
     def test_returns_wrapped_engine(self) -> None:
-        from openjarvis.security.guardrails import GuardrailsEngine
+        from handymate.security.guardrails import GuardrailsEngine
 
         engine = _make_mock_engine()
         bus = EventBus()

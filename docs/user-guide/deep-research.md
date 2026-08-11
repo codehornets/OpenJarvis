@@ -7,13 +7,13 @@ A multi-hop research agent that searches across your indexed documents, cross-re
 ### 1. Install and initialize
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis
+git clone https://github.com/codehornets/handymate.git
+cd Handymate
 uv sync --extra dev
 handy init --preset deep-research
 ```
 
-This writes a pre-configured `~/.openjarvis/config.toml` for the deep research agent.
+This writes a pre-configured `~/.handymate/config.toml` for the deep research agent.
 
 ### 2. Index your documents
 
@@ -26,7 +26,7 @@ handy memory index ./docs/
 handy memory index ~/Documents/papers/
 ```
 
-OpenJarvis chunks the content and stores it in a local SQLite/FTS5 database. Supported formats include `.txt`, `.md`, `.pdf`, `.py`, `.json`, `.csv`, and more.
+Handymate chunks the content and stores it in a local SQLite/FTS5 database. Supported formats include `.txt`, `.md`, `.pdf`, `.py`, `.json`, `.csv`, and more.
 
 ### 3. Ask a research question
 
@@ -63,7 +63,7 @@ handy memory stats
 
 ## Configuration Reference
 
-The preset writes this to `~/.openjarvis/config.toml`:
+The preset writes this to `~/.handymate/config.toml`:
 
 ```toml
 [engine]

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-# ── OpenJarvis dev stop ──────────────────────────────────────────────
+# ── Handymate dev stop ──────────────────────────────────────────────
 # Stops the backend/frontend dev servers started by scripts/dev-start.sh.
 # Pass --cleanup to also remove logs/pid files and force-free ports
 # 8000/5173 if something untracked is still squatting on them.

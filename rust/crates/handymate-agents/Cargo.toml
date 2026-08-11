@@ -1,0 +1,20 @@
+[package]
+name = "handymate-agents"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+handymate-core = { path = "../handymate-core" }
+handymate-engine = { path = "../handymate-engine" }
+handymate-tools = { path = "../handymate-tools" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+regex = { workspace = true }
+sha2 = { workspace = true }
+once_cell = { workspace = true }
+parking_lot = { workspace = true }
+rig-core = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true }

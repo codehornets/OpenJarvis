@@ -1,13 +1,13 @@
 ---
 title: Installation
-description: Get OpenJarvis running — browser app, desktop app, CLI, or Python SDK
+description: Get Handymate running — browser app, desktop app, CLI, or Python SDK
 search:
   boost: 3
 ---
 
 # Installation
 
-OpenJarvis runs entirely on your hardware. Choose the interface that fits your workflow.
+Handymate runs entirely on your hardware. Choose the interface that fits your workflow.
 
 ---
 
@@ -19,8 +19,8 @@ your machine and the frontend connects via `localhost`.
 ### One-command setup
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis
+git clone https://github.com/codehornets/handymate.git
+cd Handymate
 ./scripts/quickstart.sh
 ```
 
@@ -39,10 +39,10 @@ If you prefer to run each step yourself:
 === "Step 1: Clone and install"
 
     ```bash
-    git clone https://github.com/open-jarvis/OpenJarvis.git
-    cd OpenJarvis
+    git clone https://github.com/codehornets/handymate.git
+    cd Handymate
     uv sync --extra desktop
-    uv run maturin develop -m rust/crates/openjarvis-python/Cargo.toml
+    uv run maturin develop -m rust/crates/handymate-python/Cargo.toml
     cd frontend && npm install && cd ..
     ```
 
@@ -77,7 +77,7 @@ Then open [http://localhost:5173](http://localhost:5173).
 
 ## Desktop App
 
-The desktop app is a native window for the OpenJarvis chat UI. All inference and backend
+The desktop app is a native window for the Handymate chat UI. All inference and backend
 processing happens on your local machine — the app connects to the backend you start locally.
 
 ### Setup
@@ -85,8 +85,8 @@ processing happens on your local machine — the app connects to the backend you
 **Step 1.** Start the backend (same as Browser App):
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis
+git clone https://github.com/codehornets/handymate.git
+cd Handymate
 ./scripts/quickstart.sh
 ```
 
@@ -94,29 +94,29 @@ cd OpenJarvis
 
 | Platform | Download |
 |----------|----------|
-| macOS (Universal) | [:material-download: **OpenJarvis.dmg**](https://github.com/open-jarvis/OpenJarvis/releases/download/desktop-v1.0.2/OpenJarvis_1.0.1_universal.dmg) |
-| Windows (64-bit) | [:material-download: **OpenJarvis-setup.exe**](https://github.com/open-jarvis/OpenJarvis/releases/download/desktop-v1.0.2/OpenJarvis_1.0.1_x64-setup.exe) |
-| Linux (DEB) | [:material-download: **OpenJarvis.deb**](https://github.com/open-jarvis/OpenJarvis/releases/download/desktop-v1.0.2/OpenJarvis_1.0.1_amd64.deb) |
-| Linux (RPM) | [:material-download: **OpenJarvis.rpm**](https://github.com/open-jarvis/OpenJarvis/releases/download/desktop-v1.0.2/OpenJarvis-1.0.1-1.x86_64.rpm) |
-| Linux (AppImage) | [:material-download: **OpenJarvis.AppImage**](https://github.com/open-jarvis/OpenJarvis/releases/download/desktop-v1.0.2/OpenJarvis_1.0.1_amd64.AppImage) |
+| macOS (Universal) | [:material-download: **Handymate.dmg**](https://github.com/codehornets/handymate/releases/download/desktop-v1.0.2/Handymate_1.0.1_universal.dmg) |
+| Windows (64-bit) | [:material-download: **Handymate-setup.exe**](https://github.com/codehornets/handymate/releases/download/desktop-v1.0.2/Handymate_1.0.1_x64-setup.exe) |
+| Linux (DEB) | [:material-download: **Handymate.deb**](https://github.com/codehornets/handymate/releases/download/desktop-v1.0.2/Handymate_1.0.1_amd64.deb) |
+| Linux (RPM) | [:material-download: **Handymate.rpm**](https://github.com/codehornets/handymate/releases/download/desktop-v1.0.2/Handymate-1.0.1-1.x86_64.rpm) |
+| Linux (AppImage) | [:material-download: **Handymate.AppImage**](https://github.com/codehornets/handymate/releases/download/desktop-v1.0.2/Handymate_1.0.1_amd64.AppImage) |
 
 The app connects to `http://localhost:8000` automatically.
 
 !!! warning "macOS: \"app is damaged\""
     If macOS says the app is damaged, clear the Gatekeeper quarantine flag:
     ```bash
-    xattr -cr /Applications/OpenJarvis.app
+    xattr -cr /Applications/Handymate.app
     ```
     This is normal for open-source apps distributed outside the App Store.
 
 !!! tip "All releases"
-    Browse all versions on the [GitHub Releases](https://github.com/open-jarvis/OpenJarvis/releases) page.
+    Browse all versions on the [GitHub Releases](https://github.com/codehornets/handymate/releases) page.
 
 ### Build from source
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis/desktop
+git clone https://github.com/codehornets/handymate.git
+cd Handymate/desktop
 npm install
 npm run tauri build
 ```
@@ -127,16 +127,16 @@ The built installer will be in `frontend/src-tauri/target/release/bundle/`.
 
 ## CLI
 
-The command-line interface is the fastest way to interact with OpenJarvis
+The command-line interface is the fastest way to interact with Handymate
 programmatically. Every feature is accessible from the terminal.
 
 ### Install
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis
+git clone https://github.com/codehornets/handymate.git
+cd Handymate
 uv sync
-uv run maturin develop -m rust/crates/openjarvis-python/Cargo.toml
+uv run maturin develop -m rust/crates/handymate-python/Cargo.toml
 ```
 
 Requires [Rust](https://rustup.rs/). On Python 3.14+, set `PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1` before the `maturin` command.
@@ -177,10 +177,10 @@ For programmatic access, the `Jarvis` class provides a high-level sync API.
 ### Install
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis
+git clone https://github.com/codehornets/handymate.git
+cd Handymate
 uv sync
-uv run maturin develop -m rust/crates/openjarvis-python/Cargo.toml
+uv run maturin develop -m rust/crates/handymate-python/Cargo.toml
 ```
 
 Requires [Rust](https://rustup.rs/). On Python 3.14+, set `PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1` before the `maturin` command.
@@ -188,7 +188,7 @@ Requires [Rust](https://rustup.rs/). On Python 3.14+, set `PYO3_USE_ABI3_FORWARD
 ### Quick example
 
 ```python
-from openjarvis import Jarvis
+from handymate import Jarvis
 
 j = Jarvis()
 print(j.ask("Explain quicksort in two sentences."))
@@ -213,7 +213,7 @@ print(result["turns"])         # number of agent turns
 For full control, use the `SystemBuilder`:
 
 ```python
-from openjarvis import SystemBuilder
+from handymate import SystemBuilder
 
 system = (
     SystemBuilder()
@@ -251,7 +251,7 @@ See the [Python SDK guide](../user-guide/python-sdk.md) for the full API referen
 
 ## Optional Extras
 
-OpenJarvis uses optional extras to keep the base installation lightweight.
+Handymate uses optional extras to keep the base installation lightweight.
 
 ### Inference Backends
 
@@ -261,7 +261,7 @@ OpenJarvis uses optional extras to keep the base installation lightweight.
 | `inference-google` | `uv sync --extra inference-google` | Google Gemini API |
 
 !!! note "Ollama, vLLM, and llama.cpp are HTTP-based"
-    These engines have no additional Python dependencies — OpenJarvis communicates over HTTP. You still need the engine software running on your machine.
+    These engines have no additional Python dependencies — Handymate communicates over HTTP. You still need the engine software running on your machine.
 
 ### Memory Backends
 
@@ -291,7 +291,7 @@ uv sync --extra desktop --extra memory-faiss --extra inference-cloud
 
 ## Setting Up an Inference Backend
 
-OpenJarvis requires at least one inference backend. Choose the one that matches your hardware.
+Handymate requires at least one inference backend. Choose the one that matches your hardware.
 
 ### Ollama (Recommended)
 

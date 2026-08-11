@@ -4,18 +4,18 @@
 
 | Platform | One-liner | Detailed guide |
 |---|---|---|
-| **macOS** | `curl -fsSL https://open-jarvis.github.io/OpenJarvis/install.sh \| bash` | [macOS install](macos.md) |
-| **Linux** | `curl -fsSL https://open-jarvis.github.io/OpenJarvis/install.sh \| bash` | [Linux install](linux.md) |
-| **WSL2 on Windows** | `curl -fsSL https://open-jarvis.github.io/OpenJarvis/install.sh \| bash` (run inside Ubuntu) | [WSL2 install](wsl2.md) |
-| **Native Windows** | `irm https://open-jarvis.github.io/OpenJarvis/install.ps1 \| iex` | [Native Windows install](windows-native.md) |
-| **Desktop GUI** | Download from the [latest release](https://github.com/open-jarvis/OpenJarvis/releases) | — |
+| **macOS** | `curl -fsSL https://codehornets.github.io/handymate/install.sh \| bash` | [macOS install](macos.md) |
+| **Linux** | `curl -fsSL https://codehornets.github.io/handymate/install.sh \| bash` | [Linux install](linux.md) |
+| **WSL2 on Windows** | `curl -fsSL https://codehornets.github.io/handymate/install.sh \| bash` (run inside Ubuntu) | [WSL2 install](wsl2.md) |
+| **Native Windows** | `irm https://codehornets.github.io/handymate/install.ps1 \| iex` | [Native Windows install](windows-native.md) |
+| **Desktop GUI** | Download from the [latest release](https://github.com/codehornets/handymate/releases) | — |
 
 The bash and PowerShell installers do the same thing on their respective hosts. The rest of this page documents the bash installer in detail; the [native Windows guide](windows-native.md) is the equivalent reference for PowerShell.
 
 ## Bash installer
 
 ```bash
-curl -fsSL https://open-jarvis.github.io/OpenJarvis/install.sh | bash
+curl -fsSL https://codehornets.github.io/handymate/install.sh | bash
 ```
 
 The installer downloads everything for you — including [uv](https://docs.astral.sh/uv/)
@@ -24,10 +24,10 @@ model. **You don't need to install uv or any other prerequisite first.**
 
 !!! info "Install URL"
     This script is served straight from the project's own GitHub Pages site,
-    so HTTPS always works. You may also see `https://openjarvis.ai/install.sh`
+    so HTTPS always works. You may also see `https://handymate.ai/install.sh`
     referenced in older docs — that domain is community-operated and has had
-    intermittent TLS issues ([#337](https://github.com/open-jarvis/OpenJarvis/issues/337)).
-    The `open-jarvis.github.io` URL above is the canonical one.
+    intermittent TLS issues ([#337](https://github.com/codehornets/handymate/issues/337)).
+    The `codehornets.github.io` URL above is the canonical one.
 
 About 3 minutes on a typical broadband connection. Type `handy` to start chatting.
 
@@ -36,13 +36,13 @@ About 3 minutes on a typical broadband connection. Type `handy` to start chattin
 | Phase | Step | Where |
 |---|---|---|
 | Foreground | Install `uv` (Python package manager) | `~/.cargo/bin/` or `~/.local/bin/` |
-| Foreground | Clone OpenJarvis repo | `~/.openjarvis/src/` |
-| Foreground | Create Python 3.11 venv | `~/.openjarvis/.venv/` |
+| Foreground | Clone Handymate repo | `~/.handymate/src/` |
+| Foreground | Create Python 3.11 venv | `~/.handymate/.venv/` |
 | Foreground | `uv pip install -e .` (editable install) | venv |
 | Foreground | Install Ollama | system default |
 | Foreground | Start `ollama serve` | systemd-user / launchd / nohup |
 | Foreground | Pull `qwen3.5:2b` (~1.5 GB) | Ollama's model store |
-| Foreground | Write `config.toml` (auto-detected hardware + engine + model) | `~/.openjarvis/config.toml` |
+| Foreground | Write `config.toml` (auto-detected hardware + engine + model) | `~/.handymate/config.toml` |
 | Foreground | Symlink `handy` and `handy-uninstall` | `~/.local/bin/` |
 | Foreground | Add `~/.local/bin` to PATH if missing (with on-screen notice) | `~/.bashrc` or `~/.zshrc` |
 | Background | Install Rust toolchain via rustup | `~/.cargo/` |
@@ -58,7 +58,7 @@ About 3 minutes on a typical broadband connection. Type `handy` to start chattin
 
 ## Idempotent re-runs
 
-Re-running the curl line is safe. The installer reads `~/.openjarvis/.state/install-state.json` and skips completed steps. If your venv got nuked, re-running heals it.
+Re-running the curl line is safe. The installer reads `~/.handymate/.state/install-state.json` and skips completed steps. If your venv got nuked, re-running heals it.
 
 ## Cloud quick-path
 
@@ -83,8 +83,8 @@ Local-first remains the default when no key is in env. Precedence is OpenRouter 
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `OPENJARVIS_HOME` | `$HOME/.openjarvis` | Install location. |
-| `OPENJARVIS_REPO_URL` | `https://github.com/open-jarvis/OpenJarvis.git` | Source repo for the clone step. |
+| `HANDYMATE_HOME` | `$HOME/.handymate` | Install location. |
+| `HANDYMATE_REPO_URL` | `https://github.com/codehornets/handymate.git` | Source repo for the clone step. |
 
 ## Uninstall
 
@@ -92,7 +92,7 @@ Local-first remains the default when no key is in env. Precedence is OpenRouter 
 handy-uninstall
 ```
 
-Removes `~/.openjarvis/`, `~/.local/bin/handy`, and `~/.local/bin/handy-uninstall`. Leaves Ollama, uv, and the Rust toolchain in place (they may be used by other tools); the script prints removal hints.
+Removes `~/.handymate/`, `~/.local/bin/handy`, and `~/.local/bin/handy-uninstall`. Leaves Ollama, uv, and the Rust toolchain in place (they may be used by other tools); the script prints removal hints.
 
 ## Updating
 
@@ -119,7 +119,7 @@ handy doctor
 Manually retry:
 
 ```bash
-~/.openjarvis/.scripts/install-rust.sh && ~/.openjarvis/.scripts/build-extension.sh
+~/.handymate/.scripts/install-rust.sh && ~/.handymate/.scripts/build-extension.sh
 ```
 
 ### A bigger model failed to download
@@ -128,7 +128,7 @@ Check status and retry:
 
 ```bash
 handy doctor
-~/.openjarvis/.scripts/pull-model.sh qwen3.5:9b
+~/.handymate/.scripts/pull-model.sh qwen3.5:9b
 ```
 
 ### Behind a corporate proxy

@@ -1,27 +1,27 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/openjarvis-core",
-    "crates/openjarvis-engine",
-    "crates/openjarvis-agents",
-    "crates/openjarvis-tools",
-    "crates/openjarvis-learning",
-    "crates/openjarvis-telemetry",
-    "crates/openjarvis-traces",
-    "crates/openjarvis-security",
-    "crates/openjarvis-mcp",
-    "crates/openjarvis-python",
-    "crates/openjarvis-sessions",
-    "crates/openjarvis-workflow",
-    "crates/openjarvis-skills",
-    "crates/openjarvis-recipes",
-    "crates/openjarvis-templates",
-    "crates/openjarvis-a2a",
-    "crates/openjarvis-scheduler",
+    "crates/handymate-core",
+    "crates/handymate-engine",
+    "crates/handymate-agents",
+    "crates/handymate-tools",
+    "crates/handymate-learning",
+    "crates/handymate-telemetry",
+    "crates/handymate-traces",
+    "crates/handymate-security",
+    "crates/handymate-mcp",
+    "crates/handymate-python",
+    "crates/handymate-sessions",
+    "crates/handymate-workflow",
+    "crates/handymate-skills",
+    "crates/handymate-recipes",
+    "crates/handymate-templates",
+    "crates/handymate-a2a",
+    "crates/handymate-scheduler",
 ]
 
 # Minimum supported Rust version. The workspace uses let-chains (via rig-core)
-# and `is_multiple_of` (openjarvis-skills), both stabilized in Rust 1.88 —
+# and `is_multiple_of` (handymate-skills), both stabilized in Rust 1.88 —
 # building on 1.86/1.87 fails with cryptic E0658 errors deep in dependencies
 # (see #252). Declared here and pinned in rust-toolchain.toml so users get a
 # clear "requires rustc 1.88" signal instead.

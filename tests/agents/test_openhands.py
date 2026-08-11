@@ -6,9 +6,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.agents._stubs import BaseAgent
-from openjarvis.agents.openhands import OpenHandsAgent
-from openjarvis.core.registry import AgentRegistry
+from handymate.agents._stubs import BaseAgent
+from handymate.agents.openhands import OpenHandsAgent
+from handymate.core.registry import AgentRegistry
 
 
 class TestOpenHandsAgentRegistration:

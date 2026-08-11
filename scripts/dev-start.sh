@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ── OpenJarvis dev start ─────────────────────────────────────────────
+# ── Handymate dev start ─────────────────────────────────────────────
 # Starts backend + frontend dev servers in the background (detached),
 # assuming deps are already installed (see scripts/quickstart.sh for
 # first-time setup). Pairs with scripts/dev-stop.sh.

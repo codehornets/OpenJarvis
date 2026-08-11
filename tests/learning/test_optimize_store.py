@@ -1,9 +1,9 @@
-"""Tests for openjarvis.optimize.store module."""
+"""Tests for handymate.optimize.store module."""
 
 from __future__ import annotations
 
-from openjarvis.learning.optimize.store import OptimizationStore
-from openjarvis.learning.optimize.types import (
+from handymate.learning.optimize.store import OptimizationStore
+from handymate.learning.optimize.types import (
     OptimizationRun,
     SampleScore,
     SearchDimension,

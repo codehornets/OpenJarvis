@@ -13,10 +13,10 @@ from unittest.mock import MagicMock
 import pytest
 from click.testing import CliRunner
 
-from openjarvis.evals.cli import main as cli_main
-from openjarvis.evals.core.runner import EvalRunner, _extract_continuous_score
-from openjarvis.evals.core.types import EvalRecord, RunConfig
-from openjarvis.evals.scorers.liveresearch import (
+from handymate.evals.cli import main as cli_main
+from handymate.evals.core.runner import EvalRunner, _extract_continuous_score
+from handymate.evals.core.types import EvalRecord, RunConfig
+from handymate.evals.scorers.liveresearch import (
     _escape_newlines_inside_strings,
     _parse_judge_response,
     _safe_json_loads,

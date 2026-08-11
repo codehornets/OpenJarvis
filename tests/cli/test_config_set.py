@@ -8,14 +8,14 @@ from unittest import mock
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
+from handymate.cli import cli
 
 
 class TestConfigSet:
     def test_set_creates_config_file(self, tmp_path: Path) -> None:
         """config set creates config.toml if it doesn't exist."""
         config_file = tmp_path / "config.toml"
-        env = {"OPENJARVIS_CONFIG": str(config_file)}
+        env = {"HANDYMATE_CONFIG": str(config_file)}
         with mock.patch.dict(os.environ, env):
             result = CliRunner().invoke(
                 cli, ["config", "set", "engine.default", "vllm"]
@@ -29,10 +29,10 @@ class TestConfigSet:
         """config set writes engine.ollama.host correctly."""
         config_file = tmp_path / "config.toml"
         config_file.write_text('[engine]\ndefault = "ollama"\n')
-        env = {"OPENJARVIS_CONFIG": str(config_file)}
+        env = {"HANDYMATE_CONFIG": str(config_file)}
         with (
             mock.patch.dict(os.environ, env),
-            mock.patch("openjarvis.cli.config_cmd.httpx"),
+            mock.patch("handymate.cli.config_cmd.httpx"),
         ):
             result = CliRunner().invoke(
                 cli,
@@ -50,7 +50,7 @@ class TestConfigSet:
             "[intelligence]\n"
             'default_model = "qwen2.5:3b"\n'
         )
-        env = {"OPENJARVIS_CONFIG": str(config_file)}
+        env = {"HANDYMATE_CONFIG": str(config_file)}
         with mock.patch.dict(os.environ, env):
             result = CliRunner().invoke(
                 cli, ["config", "set", "engine.default", "vllm"]
@@ -81,7 +81,7 @@ class TestConfigSet:
             return original_write_text(path, data, *args, **kwargs)
 
         with (
-            mock.patch.dict(os.environ, {"OPENJARVIS_CONFIG": str(config_file)}),
+            mock.patch.dict(os.environ, {"HANDYMATE_CONFIG": str(config_file)}),
             mock.patch.object(Path, "read_text", autospec=True, side_effect=read_text),
             mock.patch.object(
                 Path, "write_text", autospec=True, side_effect=write_text
@@ -100,7 +100,7 @@ class TestConfigSet:
         """config set rejects unknown keys."""
         config_file = tmp_path / "config.toml"
         config_file.write_text("")
-        env = {"OPENJARVIS_CONFIG": str(config_file)}
+        env = {"HANDYMATE_CONFIG": str(config_file)}
         with mock.patch.dict(os.environ, env):
             result = CliRunner().invoke(
                 cli, ["config", "set", "engine.olllama.host", "http://x:1234"]
@@ -112,10 +112,10 @@ class TestConfigSet:
         """config set probes engine host and reports reachability."""
         config_file = tmp_path / "config.toml"
         config_file.write_text("")
-        env = {"OPENJARVIS_CONFIG": str(config_file)}
+        env = {"HANDYMATE_CONFIG": str(config_file)}
         with (
             mock.patch.dict(os.environ, env),
-            mock.patch("openjarvis.cli.config_cmd.httpx") as mock_httpx,
+            mock.patch("handymate.cli.config_cmd.httpx") as mock_httpx,
         ):
             mock_httpx.get.return_value = mock.Mock(status_code=200)
             result = CliRunner().invoke(
@@ -129,10 +129,10 @@ class TestConfigSet:
         """config set warns when engine host is unreachable, but still writes."""
         config_file = tmp_path / "config.toml"
         config_file.write_text("")
-        env = {"OPENJARVIS_CONFIG": str(config_file)}
+        env = {"HANDYMATE_CONFIG": str(config_file)}
         with (
             mock.patch.dict(os.environ, env),
-            mock.patch("openjarvis.cli.config_cmd.httpx") as mock_httpx,
+            mock.patch("handymate.cli.config_cmd.httpx") as mock_httpx,
         ):
             mock_httpx.get.side_effect = Exception("Connection refused")
             result = CliRunner().invoke(
@@ -149,7 +149,7 @@ class TestConfigSet:
         """config set coerces integer values."""
         config_file = tmp_path / "config.toml"
         config_file.write_text("")
-        env = {"OPENJARVIS_CONFIG": str(config_file)}
+        env = {"HANDYMATE_CONFIG": str(config_file)}
         with mock.patch.dict(os.environ, env):
             result = CliRunner().invoke(
                 cli, ["config", "set", "intelligence.max_tokens", "2048"]
@@ -162,7 +162,7 @@ class TestConfigSet:
         """config set coerces float values."""
         config_file = tmp_path / "config.toml"
         config_file.write_text("")
-        env = {"OPENJARVIS_CONFIG": str(config_file)}
+        env = {"HANDYMATE_CONFIG": str(config_file)}
         with mock.patch.dict(os.environ, env):
             result = CliRunner().invoke(
                 cli, ["config", "set", "intelligence.temperature", "0.9"]
@@ -180,7 +180,7 @@ class TestConfigSet:
         """config set prints a confirmation message."""
         config_file = tmp_path / "config.toml"
         config_file.write_text("")
-        env = {"OPENJARVIS_CONFIG": str(config_file)}
+        env = {"HANDYMATE_CONFIG": str(config_file)}
         with mock.patch.dict(os.environ, env):
             result = CliRunner().invoke(
                 cli, ["config", "set", "engine.default", "vllm"]

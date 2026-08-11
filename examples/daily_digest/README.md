@@ -5,7 +5,7 @@ chosen topics and produces a concise, structured summary.
 
 ## Requirements
 
-- OpenJarvis installed (`git clone https://github.com/open-jarvis/OpenJarvis.git && cd OpenJarvis && uv sync` or `uv sync --extra dev`)
+- Handymate installed (`git clone https://github.com/codehornets/handymate.git && cd Handymate && uv sync` or `uv sync --extra dev`)
 - An inference engine running (Ollama, cloud API, vLLM, etc.)
 
 ## Usage

@@ -8,11 +8,11 @@ description: End-to-end tutorial — install skills, use them with an agent, dis
 This tutorial walks through the complete skills lifecycle: installing skills from public sources, using them with a local agent, discovering patterns from trace history, and optimizing skill descriptions with DSPy. By the end you will have a working skills setup that improves over time.
 
 !!! note "Before you begin"
-    This tutorial assumes OpenJarvis is installed with Ollama running and a model available (e.g., `qwen3.5:9b`). If you have not completed setup yet, start with the [Quick Start guide](../getting-started/quickstart.md).
+    This tutorial assumes Handymate is installed with Ollama running and a model available (e.g., `qwen3.5:9b`). If you have not completed setup yet, start with the [Quick Start guide](../getting-started/quickstart.md).
 
 ## Step 1: Install Skills from Hermes Agent
 
-OpenJarvis can import skills from the [Hermes Agent](https://github.com/NousResearch/hermes-agent) skill library maintained by NousResearch. Let's install a few useful ones.
+Handymate can import skills from the [Hermes Agent](https://github.com/NousResearch/hermes-agent) skill library maintained by NousResearch. Let's install a few useful ones.
 
 ```bash
 # Install individual skills
@@ -23,7 +23,7 @@ handy skill install hermes:github-pr-workflow
 handy skill sync hermes --category research
 ```
 
-The first install clones the Hermes repo to `~/.openjarvis/skill-cache/hermes/` (one-time, ~5s). Subsequent installs reuse the cache.
+The first install clones the Hermes repo to `~/.handymate/skill-cache/hermes/` (one-time, ~5s). Subsequent installs reuse the cache.
 
 Verify what's installed:
 
@@ -46,13 +46,13 @@ This shows the skill's metadata — author, description, tags, capabilities, whe
 You can also inspect the raw SKILL.md:
 
 ```bash
-cat ~/.openjarvis/skills/hermes/arxiv/SKILL.md | head -40
+cat ~/.handymate/skills/hermes/arxiv/SKILL.md | head -40
 ```
 
 The `.source` file records provenance:
 
 ```bash
-cat ~/.openjarvis/skills/hermes/arxiv/.source
+cat ~/.handymate/skills/hermes/arxiv/.source
 ```
 
 This shows the source (`hermes:arxiv`), the git commit it was imported from, which tool names were translated (e.g., `Edit→file_edit`), and the install timestamp.
@@ -86,19 +86,19 @@ This time the agent invokes `skill_math-solver`, which executes a deterministic 
 Create a new skill directory:
 
 ```bash
-mkdir -p ~/.openjarvis/skills/my-reviewer
+mkdir -p ~/.handymate/skills/my-reviewer
 ```
 
 Write a SKILL.md:
 
 ```bash
-cat > ~/.openjarvis/skills/my-reviewer/SKILL.md << 'EOF'
+cat > ~/.handymate/skills/my-reviewer/SKILL.md << 'EOF'
 ---
 name: my-reviewer
 description: Review code changes with a security-first approach
 license: MIT
 metadata:
-  openjarvis:
+  handymate:
     version: "0.1.0"
     author: me
     tags: [coding, review, security]
@@ -143,7 +143,7 @@ handy ask "Use math-solver to compute 2**10"
 handy ask "Use code-explainer to explain: [x for x in range(10) if x % 2 == 0]"
 ```
 
-Each query produces a trace in `~/.openjarvis/traces.db` with skill metadata tags (`skill`, `skill_source`, `skill_kind`).
+Each query produces a trace in `~/.handymate/traces.db` with skill metadata tags (`skill`, `skill_source`, `skill_kind`).
 
 ## Step 6: Discover Patterns from Traces
 
@@ -157,7 +157,7 @@ handy skill discover --dry-run --min-frequency 2
 handy skill discover --min-frequency 2
 ```
 
-Discovered skills land in `~/.openjarvis/skills/discovered/` and automatically appear in `handy skill list` on the next session.
+Discovered skills land in `~/.handymate/skills/discovered/` and automatically appear in `handy skill list` on the next session.
 
 ## Step 7: Optimize Skills with DSPy
 
@@ -171,7 +171,7 @@ handy optimize skills --dry-run
 handy optimize skills --policy dspy --min-traces 3
 ```
 
-This produces overlay files at `~/.openjarvis/learning/skills/<skill-name>/optimized.toml` with improved descriptions and few-shot examples extracted from your best traces.
+This produces overlay files at `~/.handymate/learning/skills/<skill-name>/optimized.toml` with improved descriptions and few-shot examples extracted from your best traces.
 
 Inspect what was produced:
 
@@ -195,7 +195,7 @@ This runs the PinchBench benchmark in four conditions (no skills, skills on, DSP
 
 ## Step 9: Configure Auto-Import and Auto-Optimization
 
-For a hands-off experience, add this to `~/.openjarvis/config.toml`:
+For a hands-off experience, add this to `~/.handymate/config.toml`:
 
 ```toml
 [skills]

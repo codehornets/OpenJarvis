@@ -11,10 +11,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.channels._stubs import ChannelStatus
-from openjarvis.channels.sendblue import SendBlueChannel
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.registry import ChannelRegistry
+from handymate.channels._stubs import ChannelStatus
+from handymate.channels.sendblue import SendBlueChannel
+from handymate.core.events import EventBus, EventType
+from handymate.core.registry import ChannelRegistry
 from tests.channels.channel_test_helpers import make_common_channel_tests
 
 

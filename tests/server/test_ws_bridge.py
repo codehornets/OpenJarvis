@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from openjarvis.core.events import EventBus, EventType
+from handymate.core.events import EventBus, EventType
 
 try:
     from fastapi import FastAPI
@@ -28,7 +28,7 @@ def event_bus():
 
 @pytest.fixture
 def app(event_bus):
-    from openjarvis.server.ws_bridge import create_ws_router
+    from handymate.server.ws_bridge import create_ws_router
 
     app = FastAPI()
     router = create_ws_router(event_bus)
@@ -65,7 +65,7 @@ class TestWSBridge:
 
     def test_client_disconnect_stops_handler(self, event_bus):
         async def exercise():
-            from openjarvis.server.ws_bridge import create_ws_router
+            from handymate.server.ws_bridge import create_ws_router
 
             class FakeWebSocket:
                 app = SimpleNamespace(state=SimpleNamespace(api_key=""))
@@ -85,7 +85,7 @@ class TestWSBridge:
 
     def test_simultaneous_client_message_does_not_drop_event(self, event_bus):
         async def exercise():
-            from openjarvis.server.ws_bridge import create_ws_router
+            from handymate.server.ws_bridge import create_ws_router
 
             class FakeWebSocket:
                 def __init__(self):
@@ -124,7 +124,7 @@ class TestWSBridge:
 
     def test_cancelling_handler_cleans_up_child_tasks(self, event_bus):
         async def exercise():
-            from openjarvis.server.ws_bridge import create_ws_router
+            from handymate.server.ws_bridge import create_ws_router
 
             class FakeWebSocket:
                 def __init__(self):

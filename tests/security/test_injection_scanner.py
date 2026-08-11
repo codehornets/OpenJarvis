@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from openjarvis.security.injection_scanner import InjectionScanner
-from openjarvis.security.types import ThreatLevel
+from handymate.security.injection_scanner import InjectionScanner
+from handymate.security.types import ThreatLevel
 
 
 class TestInjectionScanner:

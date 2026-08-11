@@ -6,8 +6,8 @@ from unittest import mock
 
 from click.testing import CliRunner
 
-from openjarvis.channels._stubs import ChannelStatus
-from openjarvis.cli import cli
+from handymate.channels._stubs import ChannelStatus
+from handymate.cli import cli
 
 
 def _patch_channel(
@@ -25,11 +25,11 @@ def _patch_channel(
     bridge_instance.status.return_value = status_return
 
     config_patch = mock.patch(
-        "openjarvis.core.config.load_config",
+        "handymate.core.config.load_config",
         return_value=cfg,
     )
     get_channel_patch = mock.patch(
-        "openjarvis.cli.channel_cmd._get_channel",
+        "handymate.cli.channel_cmd._get_channel",
         return_value=bridge_instance,
     )
     return config_patch, get_channel_patch, bridge_instance

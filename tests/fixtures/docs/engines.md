@@ -1,6 +1,6 @@
 # Inference Engines
 
-OpenJarvis supports several inference backends.
+Handymate supports several inference backends.
 
 ## Ollama
 

@@ -11,7 +11,7 @@ import os
 
 import pytest
 
-from openjarvis.tools.templates.loader import (
+from handymate.tools.templates.loader import (
     ToolTemplate,
     discover_templates,
     safe_eval_expr,

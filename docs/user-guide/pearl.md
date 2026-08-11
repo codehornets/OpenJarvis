@@ -1,6 +1,6 @@
 # Pearl CLI Integration
 
-OpenJarvis includes a thin `handy pearl` wrapper for Pearl's native command
+Handymate includes a thin `handy pearl` wrapper for Pearl's native command
 line tools. It does not replace Pearl's node or wallet; it makes the common
 commands discoverable from the same CLI users use for mining.
 
@@ -26,7 +26,7 @@ handy pearl ctl -- --help
 
 These map directly to:
 
-| OpenJarvis command | Pearl binary |
+| Handymate command | Pearl binary |
 |---|---|
 | `handy pearl node` | `pearld` |
 | `handy pearl wallet` | `oyster` |
@@ -53,6 +53,6 @@ serving TLS with a local certificate.
 
 ## Boundary
 
-`handy mine` is the OpenJarvis mining lifecycle. `handy pearl` is an escape
+`handy mine` is the Handymate mining lifecycle. `handy pearl` is an escape
 hatch to Pearl's native node, wallet, and RPC tools. For advanced node or
 wallet administration, Pearl's own help output is the source of truth.

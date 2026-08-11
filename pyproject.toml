@@ -136,7 +136,7 @@ eval-sheets = ["gspread>=6.0", "google-auth>=2.0"]
 mining-pearl-cpu = [
     # Pearl Python packages (py-pearl-mining, miner-base, pearl-gateway) are
     # not on PyPI yet. They are installed at first `mine init` via the
-    # build-from-pin path in src/openjarvis/mining/_install.py:build_from_pin().
+    # build-from-pin path in src/handymate/mining/_install.py:build_from_pin().
     # When Pearl publishes wheels, replace the line below with version pins.
     #
     # The extra remains as a feature-flag namespace so users can run
@@ -153,9 +153,9 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/codehornets/Handymate"
+Homepage = "https://github.com/codehornets/handymate"
 Documentation = "https://codehornets.github.io/handymate/"
-Repository = "https://github.com/codehornets/Handymate"
+Repository = "https://github.com/codehornets/handymate"
 Issues = "https://github.com/codehornets/handymate/issues"
 
 [project.scripts]
@@ -182,19 +182,19 @@ git_describe_command = [
 ]
 # Builds without a git checkout (e.g. the `COPY src/ src/` Docker stages, which
 # never include .git) can't run `git describe`. Without a fallback that would
-# hard-fail the build. Mirror the runtime sentinel in src/openjarvis/__init__.py.
+# hard-fail the build. Mirror the runtime sentinel in src/handymate/__init__.py.
 # Such builds can inject the real version via SETUPTOOLS_SCM_PRETEND_VERSION.
 fallback_version = "0.0.0+unknown"
 
 [tool.uv.sources]
-openjarvis-rust = { path = "rust/crates/openjarvis-python" }
+handymate-rust = { path = "rust/crates/handymate-python" }
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/openjarvis"]
+packages = ["src/handymate"]
 
 [tool.hatch.build.targets.wheel.force-include]
-"src/openjarvis/agents/claude_code_runner" = "_node_modules/claude_code_runner"
-"src/openjarvis/channels/whatsapp_baileys_bridge" = "_node_modules/whatsapp_baileys_bridge"
+"src/handymate/agents/claude_code_runner" = "_node_modules/claude_code_runner"
+"src/handymate/channels/whatsapp_baileys_bridge" = "_node_modules/whatsapp_baileys_bridge"
 "scripts/install" = "_install_scripts"
 "deploy/windows" = "_deploy/windows"
 
@@ -223,27 +223,27 @@ src = ["src", "tests"]
 select = ["E", "F", "I", "W"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/openjarvis/evals/datasets/*.py" = ["E501"]
-"src/openjarvis/evals/scorers/*.py" = ["E501"]
+"src/handymate/evals/datasets/*.py" = ["E501"]
+"src/handymate/evals/scorers/*.py" = ["E501"]
 # hybrid/ is research code with long prompt strings and paradigm-specific
 # config dicts — same relaxation as evals research code above. The ``**`` glob
 # also covers subpackages (e.g. hybrid/skillorchestra/), which the prior
 # ``hybrid/*.py`` glob missed.
-"src/openjarvis/agents/hybrid/**/*.py" = ["E501"]
+"src/handymate/agents/hybrid/**/*.py" = ["E501"]
 # research_loop.py carries long prompt strings too (documented in CLAUDE.md);
 # the ignore was missing here.
-"src/openjarvis/agents/research_loop.py" = ["E501"]
+"src/handymate/agents/research_loop.py" = ["E501"]
 
 [dependency-groups]
 dev = [
     "maturin>=1.12.6",
 ]
-# openjarvis_rust is the native PyO3 extension, built from the local Rust
+# handymate_rust is the native PyO3 extension, built from the local Rust
 # workspace. It lives in a uv dependency group (PEP 735) — not the published
 # `desktop` extra — so `uv sync --group desktop-native` builds it from source
-# for the desktop app, while `pip install openjarvis[desktop]` from PyPI does
-# NOT try to resolve openjarvis-rust from PyPI, where it isn't published
+# for the desktop app, while `pip install handymate[desktop]` from PyPI does
+# NOT try to resolve handymate-rust from PyPI, where it isn't published
 # (dependency groups are excluded from wheel metadata). See #584 / #615.
 desktop-native = [
-    "openjarvis-rust",
+    "handymate-rust",
 ]

@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from openjarvis.core.registry import ModelRegistry
-from openjarvis.core.types import ModelSpec
-from openjarvis.learning._stubs import RoutingContext
-from openjarvis.learning.routing.router import (
+from handymate.core.registry import ModelRegistry
+from handymate.core.types import ModelSpec
+from handymate.learning._stubs import RoutingContext
+from handymate.learning.routing.router import (
     HeuristicRouter,
     build_routing_context,
 )

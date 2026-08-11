@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from openjarvis.skills.security import (
+from handymate.skills.security import (
     TrustTier,
     classify_trust_tier,
     has_dangerous_capabilities,
     validate_capabilities,
 )
-from openjarvis.skills.types import SkillManifest
+from handymate.skills.types import SkillManifest
 
 
 class TestTrustTiers:

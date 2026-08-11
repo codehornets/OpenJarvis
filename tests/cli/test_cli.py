@@ -10,8 +10,8 @@ from unittest import mock
 
 from click.testing import CliRunner
 
-import openjarvis
-from openjarvis.cli import cli, main
+import handymate
+from handymate.cli import cli, main
 
 
 class TestMainEntryPoint:
@@ -27,7 +27,7 @@ class TestMainEntryPoint:
             mock.patch.object(sys, "platform", "win32"),
             mock.patch.object(sys, "stdout", stdout_mock),
             mock.patch.object(sys, "stderr", stderr_mock),
-            mock.patch("openjarvis.cli.cli") as cli_mock,
+            mock.patch("handymate.cli.cli") as cli_mock,
         ):
             main()
         stdout_mock.reconfigure.assert_called_once_with(
@@ -44,7 +44,7 @@ class TestMainEntryPoint:
         with (
             mock.patch.object(sys, "platform", "linux"),
             mock.patch.object(sys, "stdout", stdout_mock),
-            mock.patch("openjarvis.cli.cli") as cli_mock,
+            mock.patch("handymate.cli.cli") as cli_mock,
         ):
             main()
         stdout_mock.reconfigure.assert_not_called()
@@ -55,12 +55,12 @@ class TestCLI:
     def test_help(self) -> None:
         result = CliRunner().invoke(cli, ["--help"])
         assert result.exit_code == 0
-        assert "OpenJarvis" in result.output
+        assert "Handymate" in result.output
 
     def test_version(self) -> None:
         result = CliRunner().invoke(cli, ["--version"])
         assert result.exit_code == 0
-        assert openjarvis.__version__ in result.output
+        assert handymate.__version__ in result.output
 
     def test_ask_requires_query(self) -> None:
         result = CliRunner().invoke(cli, ["ask"])
@@ -123,12 +123,12 @@ class TestCLI:
         assert "list" in result.output
 
     def test_init_creates_config(self, tmp_path: Path) -> None:
-        config_dir = tmp_path / ".openjarvis"
+        config_dir = tmp_path / ".handymate"
         config_path = config_dir / "config.toml"
         with (
-            mock.patch("openjarvis.cli.init_cmd.DEFAULT_CONFIG_DIR", config_dir),
-            mock.patch("openjarvis.cli.init_cmd.DEFAULT_CONFIG_PATH", config_path),
-            mock.patch("openjarvis.cli.init_cmd.PrivacyScanner"),
+            mock.patch("handymate.cli.init_cmd.DEFAULT_CONFIG_DIR", config_dir),
+            mock.patch("handymate.cli.init_cmd.DEFAULT_CONFIG_PATH", config_path),
+            mock.patch("handymate.cli.init_cmd.PrivacyScanner"),
         ):
             result = CliRunner().invoke(
                 cli, ["init", "--engine", "ollama", "--no-download"]
@@ -140,7 +140,7 @@ class TestCLI:
 
     def test_init_preset_uses_utf8_for_config_copy(self, tmp_path: Path) -> None:
         """Preset installation reads and writes shipped TOML as UTF-8."""
-        config_dir = tmp_path / ".openjarvis"
+        config_dir = tmp_path / ".handymate"
         config_path = config_dir / "config.toml"
         original_read_text = Path.read_text
         original_write_text = Path.write_text
@@ -156,8 +156,8 @@ class TestCLI:
             return original_write_text(path, data, *args, **kwargs)
 
         with (
-            mock.patch("openjarvis.cli.init_cmd.DEFAULT_CONFIG_DIR", config_dir),
-            mock.patch("openjarvis.cli.init_cmd.DEFAULT_CONFIG_PATH", config_path),
+            mock.patch("handymate.cli.init_cmd.DEFAULT_CONFIG_DIR", config_dir),
+            mock.patch("handymate.cli.init_cmd.DEFAULT_CONFIG_PATH", config_path),
             mock.patch.object(Path, "read_text", autospec=True, side_effect=read_text),
             mock.patch.object(
                 Path, "write_text", autospec=True, side_effect=write_text
@@ -183,7 +183,7 @@ class TestStartupResilience:
         # Run in a fresh subprocess: the pytest session itself almost certainly
         # has numpy loaded from other tests, so an in-process check is useless.
         code = (
-            "import openjarvis.cli, sys; "
+            "import handymate.cli, sys; "
             "leaked=[m for m in sys.modules if m=='numpy' or m.startswith('numpy.')]; "
             "assert not leaked, leaked; "
             "print('numpy-free')"
@@ -192,6 +192,6 @@ class TestStartupResilience:
             [sys.executable, "-c", code], capture_output=True, text=True
         )
         assert result.returncode == 0, (
-            "importing openjarvis.cli pulled in numpy (a broken numpy would then "
+            "importing handymate.cli pulled in numpy (a broken numpy would then "
             f"crash `handy serve`):\nstdout={result.stdout}\nstderr={result.stderr}"
         )

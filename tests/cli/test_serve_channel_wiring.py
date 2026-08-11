@@ -8,11 +8,11 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from openjarvis.channels._stubs import ChannelMessage
-from openjarvis.core.config import JarvisConfig
-from openjarvis.core.events import EventBus
-from openjarvis.sessions.session import SessionStore
-from openjarvis.system import JarvisSystem
+from handymate.channels._stubs import ChannelMessage
+from handymate.core.config import JarvisConfig
+from handymate.core.events import EventBus
+from handymate.sessions.session import SessionStore
+from handymate.system import JarvisSystem
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -291,7 +291,7 @@ class TestChannelToolLoading:
 
     def test_tool_using_agent_receives_tools(self, tmp_path):
         """JarvisSystem built with a tool list passes tools to the agent via ask()."""
-        from openjarvis.tools._stubs import BaseTool, ToolSpec
+        from handymate.tools._stubs import BaseTool, ToolSpec
 
         # Minimal fake tool
         class _FakeTool(BaseTool):

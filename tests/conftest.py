@@ -9,9 +9,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.core.config import GpuInfo, HardwareInfo
-from openjarvis.core.events import EventBus, reset_event_bus
-from openjarvis.core.registry import (
+from handymate.core.config import GpuInfo, HardwareInfo
+from handymate.core.events import EventBus, reset_event_bus
+from handymate.core.registry import (
     AgentRegistry,
     BenchmarkRegistry,
     ChannelRegistry,
@@ -40,7 +40,7 @@ def _no_update_check(monkeypatch: pytest.MonkeyPatch) -> None:
     set, but that only helps in CI; locally (e.g. a dev with a stale
     version-check cache and network access) it fires for real.
     """
-    monkeypatch.setenv("OPENJARVIS_NO_UPDATE_CHECK", "1")
+    monkeypatch.setenv("HANDYMATE_NO_UPDATE_CHECK", "1")
 
 
 @pytest.fixture(autouse=True)

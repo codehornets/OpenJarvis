@@ -1,7 +1,7 @@
 """Smoke test: every shipped preset config must load cleanly.
 
 Presets are installed via `handy init --preset <name>`, which copies
-`configs/openjarvis/examples/<name>.toml` to `~/.openjarvis/config.toml`.
+`configs/handymate/examples/<name>.toml` to `~/.handymate/config.toml`.
 A preset that fails to parse via `load_config()` would break first-time
 setup, so we validate the whole set on every commit.
 """
@@ -12,10 +12,10 @@ from pathlib import Path
 
 import pytest
 
-from openjarvis.core.config import JarvisConfig, load_config
+from handymate.core.config import JarvisConfig, load_config
 
 PRESETS_DIR = (
-    Path(__file__).resolve().parents[2] / "configs" / "openjarvis" / "examples"
+    Path(__file__).resolve().parents[2] / "configs" / "handymate" / "examples"
 )
 
 

@@ -1,6 +1,6 @@
 # Agents
 
-Agents are the agentic logic layer of OpenJarvis. They determine how a query is processed -- whether it goes directly to a model, through a tool-calling loop, via ReAct reasoning, CodeAct code execution, recursive decomposition, or an external agent runtime. All agents implement the `BaseAgent` ABC and are registered via the `AgentRegistry`.
+Agents are the agentic logic layer of Handymate. They determine how a query is processed -- whether it goes directly to a model, through a tool-calling loop, via ReAct reasoning, CodeAct code execution, recursive decomposition, or an external agent runtime. All agents implement the `BaseAgent` ABC and are registered via the `AgentRegistry`.
 
 ## Overview
 
@@ -36,18 +36,18 @@ This persona is distinct from the retrieval [memory backend](memory.md): the per
 By default the files are read from the config directory:
 
 ```
-~/.openjarvis/SOUL.md
-~/.openjarvis/MEMORY.md
-~/.openjarvis/USER.md
+~/.handymate/SOUL.md
+~/.handymate/MEMORY.md
+~/.handymate/USER.md
 ```
 
-(The config directory honors `$OPENJARVIS_HOME` / `$XDG_DATA_HOME` when set.) The paths are configurable under `[memory_files]`:
+(The config directory honors `$HANDYMATE_HOME` / `$XDG_DATA_HOME` when set.) The paths are configurable under `[memory_files]`:
 
 ```toml
 [memory_files]
-soul_path    = "~/.openjarvis/SOUL.md"
-memory_path  = "~/.openjarvis/MEMORY.md"
-user_path    = "~/.openjarvis/USER.md"
+soul_path    = "~/.handymate/SOUL.md"
+memory_path  = "~/.handymate/MEMORY.md"
+user_path    = "~/.handymate/USER.md"
 persona_name = ""    # optional named persona -- see below
 ```
 
@@ -64,9 +64,9 @@ At the start of each conversation, `SystemPromptBuilder` reads each file as UTF-
 A single install can answer as different personas without changing global config. A named persona lives in its own directory:
 
 ```
-~/.openjarvis/personas/<name>/SOUL.md
-~/.openjarvis/personas/<name>/MEMORY.md
-~/.openjarvis/personas/<name>/USER.md
+~/.handymate/personas/<name>/SOUL.md
+~/.handymate/personas/<name>/MEMORY.md
+~/.handymate/personas/<name>/USER.md
 ```
 
 Select one per invocation, or opt out entirely:
@@ -80,7 +80,7 @@ Set `persona_name` under `[memory_files]` to make a named persona the default. `
 
 ### Editing them
 
-`SOUL.md`, `MEMORY.md`, and `USER.md` are plain Markdown -- open them in any editor. `MEMORY.md` and `USER.md` can also be updated by the agent itself through the `memory_manage` and `user_profile_manage` tools when those are enabled, so the agent can record a new fact mid-conversation. These tools always target the default `MEMORY.md` and `USER.md` (under `~/.openjarvis/`), never a named persona's copies -- edit those by hand.
+`SOUL.md`, `MEMORY.md`, and `USER.md` are plain Markdown -- open them in any editor. `MEMORY.md` and `USER.md` can also be updated by the agent itself through the `memory_manage` and `user_profile_manage` tools when those are enabled, so the agent can record a new fact mid-conversation. These tools always target the default `MEMORY.md` and `USER.md` (under `~/.handymate/`), never a named persona's copies -- edit those by hand.
 
 ---
 
@@ -90,7 +90,7 @@ All agents extend the abstract `BaseAgent` class.
 
 ```python
 from abc import ABC, abstractmethod
-from openjarvis.agents._stubs import AgentContext, AgentResult
+from handymate.agents._stubs import AgentContext, AgentResult
 
 class BaseAgent(ABC):
     agent_id: str
@@ -231,7 +231,7 @@ The `NativeReActAgent` implements a **Thought-Action-Observation** loop followin
 **When to use:** For queries that benefit from explicit step-by-step reasoning with tool use, where you want visibility into the agent's thought process.
 
 !!! note "Backward compatibility"
-    The registry alias `"react"` maps to `NativeReActAgent`. The old import `from openjarvis.agents.react import ReActAgent` also still works.
+    The registry alias `"react"` maps to `NativeReActAgent`. The old import `from handymate.agents.react import ReActAgent` also still works.
 
 ---
 
@@ -356,7 +356,7 @@ handy ask --agent openhands "Fix the bug in test_utils.py"
 ### Via Python SDK
 
 ```python
-from openjarvis import Jarvis
+from handymate import Jarvis
 
 j = Jarvis()
 
@@ -397,14 +397,14 @@ j.close()
 The `ClaudeCodeAgent` wraps the `@anthropic-ai/claude-code` SDK via a bundled Node.js subprocess bridge. Unlike the other agents, inference is handled entirely by the Claude Agent SDK -- the `engine` parameter is accepted only for `BaseAgent` interface conformance and is not used.
 
 !!! warning "Requirements"
-    Requires Node.js 22+ on `PATH` and an `ANTHROPIC_API_KEY` environment variable (or pass `api_key=` directly). The bundled runner is auto-installed to `~/.openjarvis/claude_code_runner/` on first use via `npm install`.
+    Requires Node.js 22+ on `PATH` and an `ANTHROPIC_API_KEY` environment variable (or pass `api_key=` directly). The bundled runner is auto-installed to `~/.handymate/claude_code_runner/` on first use via `npm install`.
 
 **How it works:**
 
-1. On first call, copies the bundled `claude_code_runner/` to `~/.openjarvis/claude_code_runner/` and runs `npm install --production` if `node_modules` is missing.
+1. On first call, copies the bundled `claude_code_runner/` to `~/.handymate/claude_code_runner/` and runs `npm install --production` if `node_modules` is missing.
 2. Builds a JSON request payload (prompt, API key, workspace, allowed tools, system prompt, session ID) and sends it to `stdin` of a `node dist/index.js` subprocess.
 3. The Node.js runner calls the Claude Agent SDK and writes sentinel-delimited JSON to `stdout`.
-4. The Python side parses the output between `---OPENJARVIS_OUTPUT_START---` and `---OPENJARVIS_OUTPUT_END---` markers, extracting content, tool results, and metadata.
+4. The Python side parses the output between `---HANDYMATE_OUTPUT_START---` and `---HANDYMATE_OUTPUT_END---` markers, extracting content, tool results, and metadata.
 5. Returns an `AgentResult` with `turns=1`.
 
 **Constructor parameters:**
@@ -423,10 +423,10 @@ The `ClaudeCodeAgent` wraps the `@anthropic-ai/claude-code` SDK via a bundled No
 | `system_prompt`  | `str`             | `""`                | Additional system prompt for the agent           |
 | `timeout`        | `int`             | `300`               | Subprocess timeout in seconds                    |
 
-**When to use:** For software engineering tasks where the Claude Agent SDK's built-in tools (code editing, bash execution, file operations) provide capabilities beyond what OpenJarvis tool-calling agents support.
+**When to use:** For software engineering tasks where the Claude Agent SDK's built-in tools (code editing, bash execution, file operations) provide capabilities beyond what Handymate tool-calling agents support.
 
 ```python
-from openjarvis.agents.claude_code import ClaudeCodeAgent
+from handymate.agents.claude_code import ClaudeCodeAgent
 
 agent = ClaudeCodeAgent(
     engine=None,          # not used
@@ -445,20 +445,20 @@ handy ask --agent claude_code "Refactor the tests to use pytest fixtures"
 ```
 
 !!! info "accepts_tools = False"
-    `ClaudeCodeAgent` does not accept OpenJarvis tools via `--tools`. Tool access for the Claude agent is configured separately via the `allowed_tools` constructor parameter, which passes tool names understood by the Claude Agent SDK itself.
+    `ClaudeCodeAgent` does not accept Handymate tools via `--tools`. Tool access for the Claude agent is configured separately via the `allowed_tools` constructor parameter, which passes tool names understood by the Claude Agent SDK itself.
 
 ---
 
 ## OpenCodeAgent
 
-The `OpenCodeAgent` delegates coding tasks to [opencode](https://opencode.ai), the open-source coding agent, running it **on your local engine**. opencode handles the agentic loop, file edits, and tool use; OpenJarvis supplies the model — keeping coding-agent work local-first.
+The `OpenCodeAgent` delegates coding tasks to [opencode](https://opencode.ai), the open-source coding agent, running it **on your local engine**. opencode handles the agentic loop, file edits, and tool use; Handymate supplies the model — keeping coding-agent work local-first.
 
 !!! warning "Requirements"
-    Requires the `opencode` binary on `PATH` (`npm i -g opencode-ai` or `brew install anomalyco/tap/opencode`). It is **not** bundled; `run()` returns a clear error if it is missing. No `ANTHROPIC_API_KEY` needed — inference goes through your OpenJarvis engine.
+    Requires the `opencode` binary on `PATH` (`npm i -g opencode-ai` or `brew install anomalyco/tap/opencode`). It is **not** bundled; `run()` returns a clear error if it is missing. No `ANTHROPIC_API_KEY` needed — inference goes through your Handymate engine.
 
 **How it works:**
 
-1. Derives an OpenAI-compatible base URL from the `engine` (e.g. Ollama/vLLM/llama.cpp at `<host>/v1`) and writes an `opencode.json` in the workspace registering it as an `@ai-sdk/openai-compatible` provider (`openjarvis/<model>`).
+1. Derives an OpenAI-compatible base URL from the `engine` (e.g. Ollama/vLLM/llama.cpp at `<host>/v1`) and writes an `opencode.json` in the workspace registering it as an `@ai-sdk/openai-compatible` provider (`handymate/<model>`).
 2. Spawns a headless `opencode serve` (loopback, random port) and waits for `/global/health`.
 3. Creates a session (`POST /session`) and sends the task (`POST /session/{id}/message`) with `model={providerID, modelID}` and the selected `agent` (`build` or `plan`).
 4. Parses the returned message `parts` — text parts → `content`, tool parts → `tool_results` — into an `AgentResult`.
@@ -473,13 +473,13 @@ The `OpenCodeAgent` delegates coding tasks to [opencode](https://opencode.ai), t
 | `workspace`         | `str`             | `os.getcwd()`    | Directory opencode operates in                           |
 | `agent`             | `str`             | `"build"`        | opencode agent: `build` (full access) or `plan` (read-only) |
 | `provider_base_url` | `str`             | derived          | Override the engine-derived OpenAI base URL              |
-| `provider_id`       | `str`             | `"openjarvis"`   | opencode provider id to register/use                     |
+| `provider_id`       | `str`             | `"handymate"`   | opencode provider id to register/use                     |
 | `model_id`          | `str`             | `model`          | Model id within the provider                             |
 | `server_password`   | `str`             | `$OPENCODE_SERVER_PASSWORD` | Optional basic-auth for the opencode server   |
 | `timeout`           | `int`             | `600`            | HTTP timeout in seconds                                  |
 
 ```python
-from openjarvis.agents.opencode import OpenCodeAgent
+from handymate.agents.opencode import OpenCodeAgent
 
 agent = OpenCodeAgent(engine, "qwen3:8b", workspace="/path/to/project", agent="build")
 result = agent.run("Add type hints to utils.py and run the tests")
@@ -539,7 +539,7 @@ The `OperativeAgent` is a persistent, scheduled autonomous agent with built-in s
 **When to use:** For autonomous agents that run on a schedule (e.g., via `TaskScheduler`) and need to maintain state between invocations. The agent automatically manages session history and state persistence across ticks.
 
 ```python
-from openjarvis.agents.operative import OperativeAgent
+from handymate.agents.operative import OperativeAgent
 
 agent = OperativeAgent(
     engine,
@@ -606,7 +606,7 @@ The `MonitorOperativeAgent` is a long-horizon agent with four configurable strat
 **When to use:** For long-horizon benchmark evaluation and complex multi-step tasks that benefit from configurable strategies for memory management, context compression, and task decomposition. Particularly useful for benchmarks like GAIA, FRAMES, and LifelongAgent where strategy selection impacts performance.
 
 ```python
-from openjarvis.agents.monitor_operative import MonitorOperativeAgent
+from handymate.agents.monitor_operative import MonitorOperativeAgent
 
 agent = MonitorOperativeAgent(
     engine,
@@ -657,13 +657,13 @@ See also the [`ContainerRunner`](#containerrunner) reference below, which manage
 | `bus`                  | `EventBus`        | `None`       | Event bus for telemetry                           |
 
 ```python
-from openjarvis.sandbox import ContainerRunner, SandboxedAgent
-from openjarvis.agents.simple import SimpleAgent
+from handymate.sandbox import ContainerRunner, SandboxedAgent
+from handymate.agents.simple import SimpleAgent
 
 runner = ContainerRunner(
-    image="openjarvis-sandbox:latest",
+    image="handymate-sandbox:latest",
     timeout=60,
-    mount_allowlist_path="/etc/openjarvis/mount_allowlist.json",
+    mount_allowlist_path="/etc/handymate/mount_allowlist.json",
 )
 inner = SimpleAgent(engine, model="qwen3:8b")
 agent = SandboxedAgent(
@@ -684,7 +684,7 @@ result = agent.run("Summarize the CSV files in /home/user/data")
 
 | Parameter              | Type   | Default                      | Description                                    |
 |------------------------|--------|------------------------------|------------------------------------------------|
-| `image`                | `str`  | `"openjarvis-sandbox:latest"`| Docker image to run                            |
+| `image`                | `str`  | `"handymate-sandbox:latest"`| Docker image to run                            |
 | `timeout`              | `int`  | `300`                        | Max container execution time in seconds        |
 | `mount_allowlist_path` | `str`  | `""`                         | Path to JSON mount-allowlist file              |
 | `max_concurrent`       | `int`  | `5`                          | Max concurrent containers (informational)      |
@@ -714,7 +714,7 @@ If `mount_allowlist_path` is not set, no root restriction is applied. Blocked pa
 Agents are registered via the `@AgentRegistry.register()` decorator. This makes them discoverable by name at runtime:
 
 ```python
-from openjarvis.core.registry import AgentRegistry
+from handymate.core.registry import AgentRegistry
 
 # Check if an agent is registered
 AgentRegistry.contains("orchestrator")  # True

@@ -6,12 +6,12 @@ from collections import Counter
 
 import pytest
 
-from openjarvis.agents import tool_resolver
-from openjarvis.connectors.store import KnowledgeStore
-from openjarvis.core.registry import ToolRegistry
-from openjarvis.core.types import ToolResult
-from openjarvis.tools import description_loader
-from openjarvis.tools._stubs import BaseTool, ToolSpec
+from handymate.agents import tool_resolver
+from handymate.connectors.store import KnowledgeStore
+from handymate.core.registry import ToolRegistry
+from handymate.core.types import ToolResult
+from handymate.tools import description_loader
+from handymate.tools._stubs import BaseTool, ToolSpec
 
 
 class _AlphaTool(BaseTool):

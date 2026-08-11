@@ -1,7 +1,7 @@
-from openjarvis.agents._stubs import AgentResult
-from openjarvis.agents.executor import AgentExecutor
-from openjarvis.agents.manager import AgentManager
-from openjarvis.core.events import EventBus, EventType
+from handymate.agents._stubs import AgentResult
+from handymate.agents.executor import AgentExecutor
+from handymate.agents.manager import AgentManager
+from handymate.core.events import EventBus, EventType
 
 
 def test_budget_exceeded_sets_status(tmp_path):

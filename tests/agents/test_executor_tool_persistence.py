@@ -6,11 +6,11 @@ import json
 
 import pytest
 
-from openjarvis.agents._stubs import AgentResult
-from openjarvis.agents.executor import AgentExecutor, _tool_calls_for_storage
-from openjarvis.agents.manager import AgentManager
-from openjarvis.core.events import EventBus
-from openjarvis.core.types import ToolResult
+from handymate.agents._stubs import AgentResult
+from handymate.agents.executor import AgentExecutor, _tool_calls_for_storage
+from handymate.agents.manager import AgentManager
+from handymate.core.events import EventBus
+from handymate.core.types import ToolResult
 
 
 def test_tool_results_are_serialized_for_managed_messages() -> None:

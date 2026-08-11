@@ -10,20 +10,20 @@ import pytest
 
 # All connectors that should be testable without credentials
 _LOCAL_CONNECTORS = [
-    ("apple_notes", "openjarvis.connectors.apple_notes", "AppleNotesConnector"),
-    ("imessage", "openjarvis.connectors.imessage", "IMessageConnector"),
+    ("apple_notes", "handymate.connectors.apple_notes", "AppleNotesConnector"),
+    ("imessage", "handymate.connectors.imessage", "IMessageConnector"),
 ]
 
 _TOKEN_CONNECTORS = [
-    ("gmail_imap", "openjarvis.connectors.gmail_imap", "GmailIMAPConnector"),
-    ("outlook", "openjarvis.connectors.outlook", "OutlookConnector"),
-    ("slack", "openjarvis.connectors.slack_connector", "SlackConnector"),
-    ("notion", "openjarvis.connectors.notion", "NotionConnector"),
-    ("granola", "openjarvis.connectors.granola", "GranolaConnector"),
-    ("gdrive", "openjarvis.connectors.gdrive", "GDriveConnector"),
-    ("gcalendar", "openjarvis.connectors.gcalendar", "GCalendarConnector"),
-    ("gcontacts", "openjarvis.connectors.gcontacts", "GContactsConnector"),
-    ("dropbox", "openjarvis.connectors.dropbox", "DropboxConnector"),
+    ("gmail_imap", "handymate.connectors.gmail_imap", "GmailIMAPConnector"),
+    ("outlook", "handymate.connectors.outlook", "OutlookConnector"),
+    ("slack", "handymate.connectors.slack_connector", "SlackConnector"),
+    ("notion", "handymate.connectors.notion", "NotionConnector"),
+    ("granola", "handymate.connectors.granola", "GranolaConnector"),
+    ("gdrive", "handymate.connectors.gdrive", "GDriveConnector"),
+    ("gcalendar", "handymate.connectors.gcalendar", "GCalendarConnector"),
+    ("gcontacts", "handymate.connectors.gcontacts", "GContactsConnector"),
+    ("dropbox", "handymate.connectors.dropbox", "DropboxConnector"),
 ]
 
 _ALL_CONNECTORS = _LOCAL_CONNECTORS + _TOKEN_CONNECTORS
@@ -124,8 +124,8 @@ def test_knowledge_store_has_data() -> None:
 
     Skips if the DB is missing or has no indexed rows (fresh install / empty store).
     """
-    from openjarvis.connectors.store import KnowledgeStore
-    from openjarvis.core.config import DEFAULT_CONFIG_DIR
+    from handymate.connectors.store import KnowledgeStore
+    from handymate.core.config import DEFAULT_CONFIG_DIR
 
     db_path = DEFAULT_CONFIG_DIR / "knowledge.db"
     if not db_path.exists():
@@ -152,8 +152,8 @@ def test_knowledge_store_sources_have_chunks() -> None:
 
     Skips if the DB is missing or empty (same as test_knowledge_store_has_data).
     """
-    from openjarvis.connectors.store import KnowledgeStore
-    from openjarvis.core.config import DEFAULT_CONFIG_DIR
+    from handymate.connectors.store import KnowledgeStore
+    from handymate.core.config import DEFAULT_CONFIG_DIR
 
     db_path = DEFAULT_CONFIG_DIR / "knowledge.db"
     if not db_path.exists():

@@ -7,9 +7,9 @@ from typing import Any, Dict, List, Optional
 
 import pytest
 
-from openjarvis.core.config import JarvisConfig
-from openjarvis.core.events import EventBus
-from openjarvis.system import QueryOrchestrator
+from handymate.core.config import JarvisConfig
+from handymate.core.events import EventBus
+from handymate.system import QueryOrchestrator
 
 
 class _FakeEngine:
@@ -121,7 +121,7 @@ class TestDetectAgentIntent:
         ],
     )
     def test_morning_digest_triggers(self, query):
-        from openjarvis.core.registry import AgentRegistry
+        from handymate.core.registry import AgentRegistry
 
         # Register a stub so the intent check returns the name.
         try:

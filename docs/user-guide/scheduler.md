@@ -3,7 +3,7 @@
 The task scheduler lets you run agent queries automatically on a schedule -- once at a future time, on a recurring interval, or via a cron expression. Scheduled tasks are persisted in SQLite so they survive process restarts, and execution is handled by a background daemon thread that polls for due tasks every 60 seconds.
 
 !!! note "Optional component"
-    The scheduler is a standalone module (`openjarvis.scheduler`). It is not wired into the default `Jarvis` / `JarvisSystem` startup. You enable it explicitly via `SystemBuilder` or by starting the CLI daemon with `handy scheduler start`.
+    The scheduler is a standalone module (`handymate.scheduler`). It is not wired into the default `Jarvis` / `JarvisSystem` startup. You enable it explicitly via `SystemBuilder` or by starting the CLI daemon with `handy scheduler start`.
 
 ---
 
@@ -115,14 +115,14 @@ Run 2: started=2026-02-24T08:00:00Z finished=2026-02-24T08:00:05Z success=True
 ## Python API
 
 ```python title="scheduler_example.py"
-from openjarvis.scheduler.store import SchedulerStore
-from openjarvis.scheduler.scheduler import TaskScheduler
+from handymate.scheduler.store import SchedulerStore
+from handymate.scheduler.scheduler import TaskScheduler
 
 # Set up storage
-store = SchedulerStore(db_path="~/.openjarvis/scheduler.db")  # (1)!
+store = SchedulerStore(db_path="~/.handymate/scheduler.db")  # (1)!
 
 # Wire in a JarvisSystem for task execution
-from openjarvis import Jarvis
+from handymate import Jarvis
 handy = Jarvis()
 
 scheduler = TaskScheduler(
@@ -197,7 +197,7 @@ handy ask --agent orchestrator \
 ```
 
 ```python
-from openjarvis import Jarvis
+from handymate import Jarvis
 
 j = Jarvis()
 response = j.ask(
@@ -214,12 +214,12 @@ See [Scheduler Tools](tools.md#scheduler-tools) for full parameter reference.
 
 ## Configuration
 
-Scheduler settings live in the `[scheduler]` section of `~/.openjarvis/config.toml`.
+Scheduler settings live in the `[scheduler]` section of `~/.handymate/config.toml`.
 
-```toml title="~/.openjarvis/config.toml"
+```toml title="~/.handymate/config.toml"
 [scheduler]
 enabled = false
-db_path = "~/.openjarvis/scheduler.db"
+db_path = "~/.handymate/scheduler.db"
 poll_interval = 60
 default_agent = "simple"
 ```
@@ -227,7 +227,7 @@ default_agent = "simple"
 | Key              | Type   | Default                          | Description                                |
 |------------------|--------|----------------------------------|--------------------------------------------|
 | `enabled`        | `bool` | `false`                          | Start the scheduler daemon automatically   |
-| `db_path`        | `str`  | `~/.openjarvis/scheduler.db`     | SQLite database path                       |
+| `db_path`        | `str`  | `~/.handymate/scheduler.db`     | SQLite database path                       |
 | `poll_interval`  | `int`  | `60`                             | Seconds between polling cycles             |
 | `default_agent`  | `str`  | `"simple"`                       | Default agent for tasks that omit `agent`  |
 

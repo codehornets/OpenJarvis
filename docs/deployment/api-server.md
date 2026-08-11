@@ -1,14 +1,14 @@
 # API Server
 
-OpenJarvis includes an OpenAI-compatible API server built on FastAPI and uvicorn. It exposes chat completion, model listing, and health check endpoints, making it a drop-in replacement for the OpenAI API when working with local models.
+Handymate includes an OpenAI-compatible API server built on FastAPI and uvicorn. It exposes chat completion, model listing, and health check endpoints, making it a drop-in replacement for the OpenAI API when working with local models.
 
 ## Starting the Server
 
 The server requires the `[server]` extra (FastAPI + uvicorn):
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis
+git clone https://github.com/codehornets/handymate.git
+cd Handymate
 uv sync --extra server
 ```
 
@@ -18,7 +18,7 @@ Start with default settings:
 handy serve
 ```
 
-The server reads defaults from `~/.openjarvis/config.toml` and auto-detects available engines and models. Override any option via CLI flags:
+The server reads defaults from `~/.handymate/config.toml` and auto-detects available engines and models. Override any option via CLI flags:
 
 ```bash
 handy serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b --agent orchestrator
@@ -37,7 +37,7 @@ handy serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b --agent 
 On startup, the server prints a summary:
 
 ```
-Starting OpenJarvis API server
+Starting Handymate API server
   Engine: ollama
   Model:  qwen3:8b
   Agent:  orchestrator
@@ -159,13 +159,13 @@ Lists all models available on the configured inference engine.
       "id": "qwen3:8b",
       "object": "model",
       "created": 1740100800,
-      "owned_by": "openjarvis"
+      "owned_by": "handymate"
     },
     {
       "id": "llama3.1:8b",
       "object": "model",
       "created": 1740100800,
-      "owned_by": "openjarvis"
+      "owned_by": "handymate"
     }
   ]
 }
@@ -422,7 +422,7 @@ Response headers include `Cache-Control: no-cache` and `Connection: keep-alive` 
 
 ## Configuration via `config.toml`
 
-The `[server]` section of `~/.openjarvis/config.toml` controls default server behavior:
+The `[server]` section of `~/.handymate/config.toml` controls default server behavior:
 
 ```toml
 [server]
@@ -451,7 +451,7 @@ The server also reads from other config sections at startup:
 
 ## Running Behind a Reverse Proxy
 
-For production deployments, run OpenJarvis behind a reverse proxy like Nginx or Caddy for TLS termination, rate limiting, and authentication.
+For production deployments, run Handymate behind a reverse proxy like Nginx or Caddy for TLS termination, rate limiting, and authentication.
 
 ### Nginx
 

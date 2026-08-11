@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.core.types import ToolResult
-from openjarvis.learning.intelligence.orchestrator.environment import (
+from handymate.core.types import ToolResult
+from handymate.learning.intelligence.orchestrator.environment import (
     OrchestratorEnvironment,
 )
-from openjarvis.learning.intelligence.orchestrator.types import OrchestratorAction
-from openjarvis.tools._stubs import BaseTool, ToolSpec
+from handymate.learning.intelligence.orchestrator.types import OrchestratorAction
+from handymate.tools._stubs import BaseTool, ToolSpec
 
 # -- Mock tool ---------------------------------------------------------------
 

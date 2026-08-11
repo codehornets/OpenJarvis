@@ -1,4 +1,4 @@
-"""Tests for the persistent fact store (openjarvis.memory.store)."""
+"""Tests for the persistent fact store (handymate.memory.store)."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ import json
 
 import pytest
 
-from openjarvis.core.registry import FactStoreRegistry
-from openjarvis.memory.store import LocalFactStore, create_fact_store
+from handymate.core.registry import FactStoreRegistry
+from handymate.memory.store import LocalFactStore, create_fact_store
 
 
 def test_add_and_list(tmp_path):
@@ -133,8 +133,8 @@ def test_create_fact_store_uses_fact_store_registry(tmp_path):
     assert isinstance(store, CustomFactStore)
 
 
-def test_create_fact_store_default_path_uses_openjarvis_home(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENJARVIS_HOME", str(tmp_path))
+def test_create_fact_store_default_path_uses_handymate_home(tmp_path, monkeypatch):
+    monkeypatch.setenv("HANDYMATE_HOME", str(tmp_path))
 
     store = create_fact_store("local")
 

@@ -7,13 +7,13 @@ An orchestrator agent with code execution, file I/O, and shell access. It can wr
 ### 1. Install and initialize
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis
+git clone https://github.com/codehornets/handymate.git
+cd Handymate
 uv sync --extra dev
 handy init --preset code-assistant
 ```
 
-This writes a pre-configured `~/.openjarvis/config.toml` for the code assistant.
+This writes a pre-configured `~/.handymate/config.toml` for the code assistant.
 
 ### 2. Start a local LLM via Ollama
 
@@ -54,7 +54,7 @@ handy chat
 
 ## Configuration Reference
 
-The preset writes this to `~/.openjarvis/config.toml`:
+The preset writes this to `~/.handymate/config.toml`:
 
 ```toml
 [engine]
@@ -100,7 +100,7 @@ enabled = ["code_interpreter", "file_read", "file_write", "shell_exec", "web_sea
 handy ask "Write a Python script that converts YAML to JSON"
 
 # Explain existing code
-handy ask "Read src/openjarvis/core/events.py and explain the EventBus pattern"
+handy ask "Read src/handymate/core/events.py and explain the EventBus pattern"
 
 # Debug a failing test
 handy ask "Run pytest tests/test_memory.py -v and fix any failures"
@@ -109,7 +109,7 @@ handy ask "Run pytest tests/test_memory.py -v and fix any failures"
 handy ask "Read utils.py and refactor the parse_config function to use dataclasses"
 
 # Generate tests
-handy ask "Read src/openjarvis/tools/calculator.py and write unit tests for it"
+handy ask "Read src/handymate/tools/calculator.py and write unit tests for it"
 
 # Shell tasks
 handy ask "Find all Python files larger than 100KB in this repo"

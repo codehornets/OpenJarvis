@@ -11,9 +11,9 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-import openjarvis.engine.ollama as ollama_mod
-from openjarvis.core.types import Message, Role
-from openjarvis.engine._base import messages_to_dicts
+import handymate.engine.ollama as ollama_mod
+from handymate.core.types import Message, Role
+from handymate.engine._base import messages_to_dicts
 
 
 def test_message_defaults_to_no_images() -> None:
@@ -54,7 +54,7 @@ def test_default_num_ctx_default_and_override(monkeypatch) -> None:
 
 def test_guardrails_preserves_images_when_sanitizing() -> None:
     """A flagged message gets rewritten; its image must survive the rewrite."""
-    from openjarvis.security.guardrails import GuardrailsEngine
+    from handymate.security.guardrails import GuardrailsEngine
 
     class _RecordingEngine:
         """Captures the messages the guardrail forwards to the real engine."""

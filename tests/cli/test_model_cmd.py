@@ -7,11 +7,11 @@ from unittest import mock
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
-from openjarvis.core.config import JarvisConfig
+from handymate.cli import cli
+from handymate.core.config import JarvisConfig
 
 # Import the actual module (not the Click group attribute)
-_model_mod = importlib.import_module("openjarvis.cli.model")
+_model_mod = importlib.import_module("handymate.cli.model")
 
 
 def _mock_engine():
