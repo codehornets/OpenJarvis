@@ -47,12 +47,21 @@ export default function App() {
   const markOptInModalSeen = useAppStore((s) => s.markOptInModalSeen);
   const savings = useAppStore((s) => s.savings);
 
-  // Apply theme class to <html>
+  // Apply theme class to <html>. 'system' resolves via the media query and
+  // stays live through its change listener — the root always carries an
+  // explicit .dark or .light class (Tailwind `dark:` + HUD styles need it).
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove('dark', 'light');
-    if (settings.theme === 'dark') root.classList.add('dark');
-    else if (settings.theme === 'light') root.classList.add('light');
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => {
+      const dark = settings.theme === 'dark' || (settings.theme === 'system' && media.matches);
+      root.classList.toggle('dark', dark);
+      root.classList.toggle('light', !dark);
+    };
+    apply();
+    if (settings.theme !== 'system') return;
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
   }, [settings.theme]);
 
   // Sync overlay conversations into the main app

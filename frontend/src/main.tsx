@@ -8,18 +8,20 @@ import { initAnalytics } from './lib/analytics';
 import './index.css';
 
 function applyTheme() {
+  // 'system' is resolved here (and kept live by App.tsx's media listener) so
+  // <html> ALWAYS carries an explicit .dark or .light class — Tailwind's
+  // `dark:` variant and all .dark-scoped HUD styles depend on it.
+  let theme = 'dark'; // fresh installs get the Neural OS look
   try {
     const raw = localStorage.getItem('handymate-settings');
     const settings = raw ? JSON.parse(raw) : {};
-    const theme = settings.theme || 'system';
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else if (theme === 'light') {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-    }
-  } catch { /* use system default */ }
+    theme = settings.theme || 'dark';
+  } catch { /* fall through to dark */ }
+  const dark =
+    theme === 'dark' ||
+    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.classList.toggle('dark', dark);
+  document.documentElement.classList.toggle('light', !dark);
 }
 
 applyTheme();

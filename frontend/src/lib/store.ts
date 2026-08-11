@@ -85,7 +85,9 @@ interface Settings {
 
 function loadSettings(): Settings {
   const defaults: Settings = {
-    theme: 'system',
+    // Dark is the flagship Neural OS experience; users who previously chose
+    // a theme keep it via the {...defaults, ...saved} merge below.
+    theme: 'dark',
     apiUrl: '',
     apiKey: '',
     fontSize: 'default',
