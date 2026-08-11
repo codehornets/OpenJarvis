@@ -23,11 +23,13 @@ function buildWsUrl(agentId?: string): string {
 }
 
 /**
- * Subscribe to agent events over WebSocket.
- * Auto-reconnects with backoff when the socket drops.
+ * Shared socket effect. `agentId` set → that agent's feed; `agentId`
+ * undefined → no connection (per-agent hook) or the unfiltered global feed
+ * (all-events hook), controlled by `connectWithoutId`.
  */
-export function useAgentEvents(
+function useAgentEventsSocket(
   agentId: string | undefined,
+  connectWithoutId: boolean,
   onEvent: (event: AgentEvent) => void,
   eventTypes?: readonly string[],
 ): void {
@@ -37,7 +39,7 @@ export function useAgentEvents(
   typesRef.current = eventTypes;
 
   useEffect(() => {
-    if (!agentId) return;
+    if (!agentId && !connectWithoutId) return;
     let ws: WebSocket | null = null;
     let closed = false;
     let retry = 0;
@@ -86,5 +88,28 @@ export function useAgentEvents(
       if (reconnectTimer) clearTimeout(reconnectTimer);
       ws?.close();
     };
-  }, [agentId]);
+  }, [agentId, connectWithoutId]);
+}
+
+/**
+ * Subscribe to one agent's events over WebSocket.
+ * Auto-reconnects with backoff when the socket drops.
+ */
+export function useAgentEvents(
+  agentId: string | undefined,
+  onEvent: (event: AgentEvent) => void,
+  eventTypes?: readonly string[],
+): void {
+  useAgentEventsSocket(agentId, false, onEvent, eventTypes);
+}
+
+/**
+ * Subscribe to the unfiltered global event feed (every agent, plus chat
+ * inference events that carry no agent key — callers must filter).
+ */
+export function useAllAgentEvents(
+  onEvent: (event: AgentEvent) => void,
+  eventTypes?: readonly string[],
+): void {
+  useAgentEventsSocket(undefined, true, onEvent, eventTypes);
 }

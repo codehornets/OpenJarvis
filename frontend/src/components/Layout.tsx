@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router';
+import { AgentStatusHost } from './AgentStatusHost';
 import { ApprovalBell } from './ApprovalBell';
 import { Sidebar } from './Sidebar/Sidebar';
 import { SystemPulse } from './SystemPulse';
@@ -33,6 +34,7 @@ export function Layout() {
         <div className="hud-bloom hud-bloom--emerald" style={{ bottom: '-14vw', right: '-10vw' }} />
       </div>
       <SystemPulse apiReachable={apiReachable} />
+      <AgentStatusHost />
       <ApprovalBell />
 
       {/* Health check banner */}
