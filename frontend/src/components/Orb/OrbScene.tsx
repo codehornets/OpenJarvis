@@ -14,7 +14,8 @@ import { useEffect, useMemo, useRef } from 'react';
 import type { RefObject } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { stepEnvelope, useOrbEnvelope } from './useOrbEnvelope';
+import { readRms } from '../../lib/audio-reactive';
+import { stepEnvelopeLive, useOrbEnvelope } from './useOrbEnvelope';
 
 const PARTICLE_COUNT = 900;
 const GOLDEN_ANGLE = Math.PI * (1 + Math.sqrt(5));
@@ -86,6 +87,9 @@ function OrbCore({ connected, speaking, activeRef }: OrbCoreProps) {
 
   const envelopeRef = useOrbEnvelope();
   const scaleRef = useRef(SCALE_DISCONNECTED);
+  // Handed to readRms and handed straight back, so the sample buffer is
+  // allocated once per analyser rather than once per frame.
+  const rmsScratchRef = useRef<Uint8Array | null>(null);
 
   const { directions, positions, shades } = useMemo(() => {
     const dirs = buildDirections();
@@ -101,7 +105,9 @@ function OrbCore({ connected, speaking, activeRef }: OrbCoreProps) {
     if (!activeRef.current) return;
 
     const t = state.clock.elapsedTime;
-    const env = stepEnvelope(envelopeRef.current, speaking, t);
+    const reading = readRms(rmsScratchRef.current);
+    if (reading) rmsScratchRef.current = reading.scratch;
+    const env = stepEnvelopeLive(envelopeRef.current, speaking, t, reading ? reading.rms : null);
     envelopeRef.current = env;
 
     const points = pointsRef.current;
