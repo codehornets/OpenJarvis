@@ -7,9 +7,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from openjarvis.agents.research_loop import DEFAULT_PLANNER_MODEL
-from openjarvis.core.config import JarvisConfig
-from openjarvis.server import research_router
+pytest.importorskip("fastapi")
+
+from openjarvis.agents.research_loop import DEFAULT_PLANNER_MODEL  # noqa: E402
+from openjarvis.core.config import JarvisConfig  # noqa: E402
+from openjarvis.server import research_router  # noqa: E402
 
 
 class _DummyEngine:
