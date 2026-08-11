@@ -19,6 +19,7 @@ import { track, hashId } from './lib/analytics';
 import { MotionConfig } from 'motion/react';
 import { sfx, unlockAudio } from './lib/sfx';
 import { BootSequence } from './components/Boot/BootSequence';
+import { OverlayHost } from './components/Overlays/OverlayHost';
 
 export default function App() {
   const [setupDone, setSetupDone] = useState(!isTauri());
@@ -215,6 +216,7 @@ export default function App() {
         </Route>
       </Routes>
       <Toaster position="bottom-right" />
+      <OverlayHost />
       {commandPaletteOpen && <CommandPalette />}
       {optInModalOpen && (
         <OptInModal onClose={() => setOptInModalOpen(false)} />

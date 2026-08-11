@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, Cpu, X, Download, Loader2, Trash2, Check, Cloud, Key, Eye, EyeOff } from 'lucide-react';
+import { Search, Cpu, X, Download, Loader2, Trash2, Check, Cloud, Key, Eye, EyeOff, Terminal } from 'lucide-react';
 import { useAppStore } from '../lib/store';
+import { useOverlayStore } from '../lib/overlay-bus';
 import {
   pullModel,
   deleteModel,
@@ -75,6 +76,9 @@ const CLOUD_PROVIDERS: CloudProvider[] = [
 
 type Tab = 'installed' | 'catalogue' | 'cloud';
 
+/** Non-model actions offered alongside the installed list. */
+const AGENT_CONSOLE_LABEL = 'Show agent console';
+
 export function CommandPalette() {
   const [query, setQuery] = useState('');
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -124,6 +128,10 @@ export function CommandPalette() {
       )
     : []; // cloud tab doesn't use filtered
 
+  const showAgentConsoleAction =
+    tab === 'installed' &&
+    (!query || AGENT_CONSOLE_LABEL.toLowerCase().includes(query.toLowerCase()));
+
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
@@ -161,6 +169,11 @@ export function CommandPalette() {
         setModelLoading(false);
       }
     }
+  };
+
+  const handleShowAgentConsole = () => {
+    useOverlayStore.getState().show('agent-console', { pinned: true });
+    setCommandPaletteOpen(false);
   };
 
   const refreshModels = async () => {
@@ -346,6 +359,18 @@ export function CommandPalette() {
 
         {/* Results */}
         <div className="max-h-[400px] overflow-y-auto py-2">
+          {showAgentConsoleAction && (
+            <button
+              onClick={handleShowAgentConsole}
+              className="flex items-center gap-3 w-full px-4 py-2.5 text-left cursor-pointer transition-colors"
+              style={{ background: 'transparent', border: 'none' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg-secondary)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <Terminal size={16} style={{ color: 'var(--color-text-tertiary)' }} />
+              <span className="text-sm" style={{ color: 'var(--color-text)' }}>{AGENT_CONSOLE_LABEL}</span>
+            </button>
+          )}
           {tab === 'installed' ? (
             filtered.length === 0 ? (
               <div className="px-4 py-6 text-center text-sm" style={{ color: 'var(--color-text-tertiary)' }}>
