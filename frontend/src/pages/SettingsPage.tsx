@@ -201,11 +201,11 @@ function CloudProviderStatus({ label, keyName }: { label: string; keyName: strin
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div
-      className="rounded-xl p-5"
-      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-    >
-      <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--color-text)' }}>
+    <div className="hud-panel p-5">
+      <h3
+        className="text-sm font-semibold mb-4"
+        style={{ color: 'var(--color-text)', fontFamily: 'var(--font-display)', letterSpacing: '0.04em' }}
+      >
         {title}
       </h3>
       {children}
@@ -376,7 +376,15 @@ export function SettingsPage() {
       <div className="max-w-2xl mx-auto">
         <header className="mb-6">
           <div className="flex items-center justify-between gap-3">
-            <h1 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+            <h1
+              className="text-lg font-bold"
+              style={{
+                color: 'var(--color-text)',
+                fontFamily: 'var(--font-display)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+              }}
+            >
               Settings
             </h1>
             {saved && (

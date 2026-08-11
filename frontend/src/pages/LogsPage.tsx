@@ -34,11 +34,20 @@ export function LogsPage() {
       <div className="max-w-4xl mx-auto w-full flex flex-col flex-1 overflow-hidden">
         <header className="mb-6 shrink-0">
           <div className="flex items-center justify-between gap-3">
-            <h1 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
-              Logs
+            <h1
+              className="text-lg font-bold"
+              style={{
+                color: 'var(--color-text)',
+                fontFamily: 'var(--font-display)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+              }}
+            >
+              System Log
+              <span className="hud-caret" aria-hidden="true" />
             </h1>
             <div className="flex items-center gap-2">
-              <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+              <span className="hud-mono text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
                 {logEntries.length} entries
               </span>
               <button
@@ -64,27 +73,44 @@ export function LogsPage() {
 
         {/* Log entries */}
         <div
-          className="flex-1 overflow-y-auto rounded-xl p-4 font-mono text-xs leading-relaxed"
-          style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+          className="hud-panel flex-1 overflow-y-auto p-4 text-xs leading-relaxed"
+          style={{ fontFamily: 'var(--font-hud)' }}
         >
           {logEntries.length === 0 ? (
             <div className="text-center py-12" style={{ color: 'var(--color-text-tertiary)' }}>
               No log entries yet. Logs appear as you chat, switch models, and interact with the app.
             </div>
           ) : (
-            logEntries.map((entry, i) => (
-              <div key={i} className="py-0.5">
-                <span style={{ color: 'var(--color-text-tertiary)' }}>{formatTime(entry.timestamp)}</span>
-                {' '}
-                <span style={{ color: LEVEL_COLORS[entry.level] || 'var(--color-text)' }}>
-                  [{entry.category}]
-                </span>
-                {' '}
-                <span style={{ color: LEVEL_COLORS[entry.level] || 'var(--color-text)' }}>
-                  {entry.message}
-                </span>
-              </div>
-            ))
+            logEntries.map((entry, i) => {
+              const isLast = i === logEntries.length - 1;
+              return (
+                <div key={i} className="py-0.5">
+                  <span style={{ color: 'var(--color-text-tertiary)' }}>
+                    {formatTime(entry.timestamp)}
+                  </span>{' '}
+                  <span
+                    className="uppercase"
+                    style={{
+                      color: LEVEL_COLORS[entry.level] || 'var(--color-text-secondary)',
+                      letterSpacing: '0.08em',
+                      fontSize: 10,
+                    }}
+                  >
+                    [{entry.category}]
+                  </span>{' '}
+                  <span
+                    className={isLast ? 'hud-text-glow' : undefined}
+                    style={{
+                      color: isLast
+                        ? 'var(--color-accent)'
+                        : LEVEL_COLORS[entry.level] || 'var(--color-text)',
+                    }}
+                  >
+                    {entry.message}
+                  </span>
+                </div>
+              );
+            })
           )}
           <div ref={bottomRef} />
         </div>

@@ -11,10 +11,19 @@ export function DashboardPage() {
       <div className="max-w-5xl mx-auto">
         <header className="mb-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+            <h1
+              className="text-lg font-bold"
+              style={{
+                color: 'var(--color-text)',
+                fontFamily: 'var(--font-display)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+              }}
+            >
               System Overview
+              <span className="hud-caret" aria-hidden="true" />
             </h1>
-            <div className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+            <div className="hud-mono text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
               {stamp}
             </div>
           </div>
