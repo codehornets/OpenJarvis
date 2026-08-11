@@ -60,12 +60,20 @@ else
   echo $! >"$FRONTEND_PID_FILE"
   disown
   popd >/dev/null
-  sleep 2
-  if alive "$(cat "$FRONTEND_PID_FILE")"; then
-    ok "Frontend starting — check $FRONTEND_LOG for the actual port (pid $(cat "$FRONTEND_PID_FILE"))"
+  # Port is pinned (5273 + strictPort in vite.config.ts), so wait until it
+  # answers and print a real URL instead of "check the log".
+  for _ in $(seq 10); do
+    curl -sf http://localhost:5273 &>/dev/null && break
+    alive "$(cat "$FRONTEND_PID_FILE")" || break
+    sleep 1
+  done
+  if curl -sf http://localhost:5273 &>/dev/null; then
+    ok "Frontend running at http://localhost:5273 (pid $(cat "$FRONTEND_PID_FILE"))"
+  elif alive "$(cat "$FRONTEND_PID_FILE")"; then
+    warn "Frontend still starting — expected at http://localhost:5273 shortly. See $FRONTEND_LOG"
   else
     rm -f "$FRONTEND_PID_FILE"
-    fail "Frontend exited during startup. See $FRONTEND_LOG"
+    fail "Frontend exited during startup (port 5273 busy? vite runs strictPort). See $FRONTEND_LOG"
   fi
 fi
 
