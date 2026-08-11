@@ -136,6 +136,9 @@ interface AppState {
   // Models & server
   models: ModelInfo[];
   modelsLoading: boolean;
+  /** Set when the models fetch failed — distinguishes "server down" from
+   * "no models installed" in pickers (LoadState discipline). */
+  modelsError: boolean;
   selectedModel: string;
   serverInfo: ServerInfo | null;
   savings: SavingsData | null;
@@ -192,6 +195,7 @@ interface AppState {
   // Actions: models & server
   setModels: (models: ModelInfo[]) => void;
   setModelsLoading: (loading: boolean) => void;
+  setModelsError: (error: boolean) => void;
   setSelectedModel: (model: string) => void;
   setServerInfo: (info: ServerInfo | null) => void;
   setSavings: (data: SavingsData | null) => void;
@@ -265,6 +269,7 @@ export const useAppStore = create<AppState>((set, get) => {
 
     models: [],
     modelsLoading: true,
+    modelsError: false,
     selectedModel: '',
     serverInfo: null,
     savings: null,
@@ -497,6 +502,7 @@ export const useAppStore = create<AppState>((set, get) => {
         return { models };
       }),
     setModelsLoading: (loading: boolean) => set({ modelsLoading: loading }),
+    setModelsError: (error: boolean) => set({ modelsError: error }),
     setSelectedModel: (model: string) => set({ selectedModel: model }),
     setServerInfo: (info: ServerInfo | null) => set({ serverInfo: info }),
     setSavings: (data: SavingsData | null) => set({ savings: data }),

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Bell, CheckCircle, ChevronDown, ChevronUp, Clock, XCircle } from 'lucide-react';
+import { Bell, CheckCircle, ChevronDown, ChevronUp, Clock, WifiOff, XCircle } from 'lucide-react';
 import { approveAction, denyAction, fetchPendingApprovals } from '../lib/api';
 import type { PendingApproval } from '../lib/api';
 
@@ -25,13 +25,16 @@ export function ApprovalBell() {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [processing, setProcessing] = useState<Record<string, boolean>>({});
+  const [offline, setOffline] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
     try {
       setApprovals(await fetchPendingApprovals());
+      setOffline(false);
     } catch {
-      // backend may not be running yet
+      // An unreachable backend must not read as "nothing pending".
+      setOffline(true);
     }
   }, []);
 
@@ -99,6 +102,13 @@ export function ApprovalBell() {
             {count > 99 ? '99+' : count}
           </span>
         )}
+        {offline && (
+          <span
+            className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full"
+            style={{ background: 'var(--color-text-tertiary)' }}
+            title="Approvals unavailable — backend unreachable"
+          />
+        )}
       </button>
 
       {/* Dropdown */}
@@ -140,9 +150,13 @@ export function ApprovalBell() {
           <div className="overflow-y-auto flex-1">
             {count === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2">
-                <CheckCircle size={26} style={{ color: 'var(--color-text-secondary)', opacity: 0.35 }} />
+                {offline ? (
+                  <WifiOff size={26} style={{ color: 'var(--color-text-secondary)', opacity: 0.35 }} />
+                ) : (
+                  <CheckCircle size={26} style={{ color: 'var(--color-text-secondary)', opacity: 0.35 }} />
+                )}
                 <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                  No pending approvals
+                  {offline ? 'Backend unreachable' : 'No pending approvals'}
                 </span>
               </div>
             ) : (

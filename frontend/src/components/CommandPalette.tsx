@@ -375,7 +375,9 @@ export function CommandPalette() {
             filtered.length === 0 ? (
               <div className="px-4 py-6 text-center text-sm" style={{ color: 'var(--color-text-tertiary)' }}>
                 {models.length === 0
-                  ? 'No models available — switch to "Download" to get started'
+                  ? useAppStore.getState().modelsError
+                    ? 'Backend unreachable — model list unavailable. Check that the server is running.'
+                    : 'No models available — switch to "Download" to get started'
                   : 'No matching models'}
               </div>
             ) : (

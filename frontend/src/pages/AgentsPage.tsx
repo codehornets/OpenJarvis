@@ -61,12 +61,15 @@ import {
   Check,
   Pencil,
   Loader2,
+  LayoutGrid,
+  Columns3,
 } from 'lucide-react';
 import { SOURCE_CATALOG } from '../types/connectors';
 import type { ConnectRequest } from '../types/connectors';
 import { listConnectors, connectSource } from '../lib/connectors-api';
 import type { ToolCallInfo } from '../types';
 import { ToolCallCard } from '../components/Chat/ToolCallCard';
+import { AgentBoard } from '../components/agents/AgentBoard';
 
 // ---------------------------------------------------------------------------
 // Status helpers
@@ -3430,15 +3433,29 @@ export function AgentsPage() {
   const [templates, setTemplates] = useState<AgentTemplate[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [detailTab, setDetailTab] = useState<'overview' | 'interact' | 'channels' | 'messaging' | 'tasks' | 'memory' | 'learning' | 'logs'>('interact');
+  const [agentsError, setAgentsError] = useState<string | null>(null);
+  const [listView, setListView] = useState<'grid' | 'board'>(
+    () => (localStorage.getItem('handymate-agents-view') as 'grid' | 'board') ?? 'grid',
+  );
+
+  const selectListView = (view: 'grid' | 'board') => {
+    setListView(view);
+    localStorage.setItem('handymate-agents-view', view);
+  };
 
   const refresh = useCallback(async () => {
     try {
       const agents = await fetchManagedAgents();
       setManagedAgents(agents);
       setAgentManagerAvailable(true);
+      setAgentsError(null);
     } catch (err: any) {
       if (err.message?.includes('404')) {
+        // Feature is off, not broken — the empty state is the right answer.
         setAgentManagerAvailable(false);
+        setAgentsError(null);
+      } else {
+        setAgentsError(err?.message ?? 'Failed to reach the agent manager.');
       }
       setManagedAgents([]);
     } finally {
@@ -3923,17 +3940,43 @@ export function AgentsPage() {
           <h1 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
             Agents
           </h1>
-          <button
-            onClick={() => agentManagerAvailable && setShowWizard(true)}
-            disabled={agentManagerAvailable === false}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{
-              background: agentManagerAvailable === false ? 'var(--color-bg-tertiary)' : 'var(--color-accent)',
-              color: agentManagerAvailable === false ? 'var(--color-text-tertiary)' : 'var(--color-on-accent)',
-            }}
-          >
-            <Plus size={15} /> New Agent
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Grid / session-board toggle */}
+            <div
+              className="flex items-center rounded-lg p-0.5 gap-0.5"
+              style={{ background: 'var(--color-bg-tertiary)' }}
+            >
+              {([
+                { id: 'grid' as const, Icon: LayoutGrid, title: 'Card grid' },
+                { id: 'board' as const, Icon: Columns3, title: 'Session board' },
+              ]).map(({ id, Icon, title }) => (
+                <button
+                  key={id}
+                  onClick={() => selectListView(id)}
+                  className="p-1.5 rounded cursor-pointer transition-colors"
+                  title={title}
+                  aria-pressed={listView === id}
+                  style={{
+                    background: listView === id ? 'var(--color-bg-secondary)' : 'transparent',
+                    color: listView === id ? 'var(--color-accent)' : 'var(--color-text-tertiary)',
+                  }}
+                >
+                  <Icon size={14} />
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => agentManagerAvailable && setShowWizard(true)}
+              disabled={agentManagerAvailable === false}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                background: agentManagerAvailable === false ? 'var(--color-bg-tertiary)' : 'var(--color-accent)',
+                color: agentManagerAvailable === false ? 'var(--color-text-tertiary)' : 'var(--color-on-accent)',
+              }}
+            >
+              <Plus size={15} /> New Agent
+            </button>
+          </div>
         </div>
         <p className="text-sm mt-2 max-w-2xl" style={{ color: 'var(--color-text-secondary)' }}>
           Long-running autonomous agents that can monitor sources, run tasks on a schedule, and message you through connected channels.
@@ -3955,33 +3998,70 @@ export function AgentsPage() {
       )}
 
       {/* Agent cards grid */}
-      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-        {managedAgents.map((a) => (
-          <AgentCard
-            key={a.id}
-            agent={a}
-            onClick={() => {
-              setSelectedAgentId(a.id);
-              setDetailTab('overview');
-            }}
-            onPause={handlePause}
-            onResume={handleResume}
-            onRun={handleRun}
-            onRecover={handleRecover}
-            onDelete={handleDelete}
-            onChat={(id) => {
-              setSelectedAgentId(id);
-              setDetailTab('interact');
-            }}
-            onEdit={(id) => {
+      {listView === 'board' ? (
+        managedAgents.length > 0 && (
+          <AgentBoard
+            agents={managedAgents}
+            onSelect={(id) => {
               setSelectedAgentId(id);
               setDetailTab('overview');
             }}
           />
-        ))}
-      </div>
+        )
+      ) : (
+        <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+          {managedAgents.map((a) => (
+            <AgentCard
+              key={a.id}
+              agent={a}
+              onClick={() => {
+                setSelectedAgentId(a.id);
+                setDetailTab('overview');
+              }}
+              onPause={handlePause}
+              onResume={handleResume}
+              onRun={handleRun}
+              onRecover={handleRecover}
+              onDelete={handleDelete}
+              onChat={(id) => {
+                setSelectedAgentId(id);
+                setDetailTab('interact');
+              }}
+              onEdit={(id) => {
+                setSelectedAgentId(id);
+                setDetailTab('overview');
+              }}
+            />
+          ))}
+        </div>
+      )}
 
-      {managedAgents.length === 0 && (
+      {managedAgents.length === 0 && agentsError !== null && (
+        <div className="hud-panel p-4 mt-2">
+          <div className="flex items-center gap-2 mb-2" style={{ color: 'var(--color-error)' }}>
+            <span className="hud-glow-dot" />
+            <span className="hud-label" style={{ color: 'var(--color-error)' }}>
+              Backend unreachable
+            </span>
+          </div>
+          <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>
+            {agentsError}
+          </p>
+          <button
+            onClick={() => refresh()}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer"
+            style={{
+              background: 'var(--color-bg-tertiary)',
+              color: 'var(--color-text-secondary)',
+              border: '1px solid var(--color-border)',
+            }}
+          >
+            <RefreshCw size={12} /> Retry
+          </button>
+        </div>
+      )}
+
+      {managedAgents.length === 0 && agentsError === null && (
         <div className="text-center py-16" style={{ color: 'var(--color-text-tertiary)' }}>
           <Bot size={48} className="mx-auto mb-4 opacity-30" />
           <p className="mb-2 font-medium" style={{ color: 'var(--color-text-secondary)' }}>

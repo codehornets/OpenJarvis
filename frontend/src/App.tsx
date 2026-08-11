@@ -82,8 +82,14 @@ export default function App() {
     fetchModels()
       .then((m) => {
         setModels(m);
+        useAppStore.getState().setModelsError(false);
       })
-      .catch(() => setModels([]))
+      .catch(() => {
+        // Server unreachable ≠ no models installed — pickers show a
+        // distinct message via modelsError.
+        setModels([]);
+        useAppStore.getState().setModelsError(true);
+      })
       .finally(() => setModelsLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
