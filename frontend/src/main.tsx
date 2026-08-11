@@ -5,6 +5,16 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import App from './App';
 import { initApiBase } from './lib/api';
 import { initAnalytics } from './lib/analytics';
+// HUD fonts (bundled — the Tauri app must never hit a font CDN).
+// Chakra Petch = display headlines (--font-display); IBM Plex Mono =
+// telemetry/labels (--font-hud). Chakra Petch tops out at weight 700, so
+// headlines use font-bold — font-black would be browser-synthesized mush.
+import '@fontsource/chakra-petch/500.css';
+import '@fontsource/chakra-petch/600.css';
+import '@fontsource/chakra-petch/700.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/ibm-plex-mono/600.css';
 import './index.css';
 
 function applyTheme() {

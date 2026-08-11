@@ -662,6 +662,9 @@
 }
 @theme inline {
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Expose HUD font tokens as Tailwind utilities: font-display / font-hud */
+  --font-display: 'Chakra Petch', 'Space Grotesk', system-ui, sans-serif;
+  --font-hud: 'IBM Plex Mono', 'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
   /* shadcn component tokens — namespaced to avoid collision with Handymate design tokens */
   --color-cn-sidebar-ring: var(--sidebar-ring);
   --color-cn-sidebar-border: var(--sidebar-border);
