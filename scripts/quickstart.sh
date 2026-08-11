@@ -24,14 +24,40 @@ warn()  { echo -e "${YELLOW}[warn]${NC}  $*"; }
 fail()  { echo -e "${RED}[fail]${NC}  $*"; exit 1; }
 
 CLEANUP_PIDS=()
+CLEANUP_RUNNING=0
 cleanup() {
+  if [[ "$CLEANUP_RUNNING" == "1" ]]; then
+    # Already shutting down and the user is impatient — hard-kill and bail.
+    warn "Forcing shutdown..."
+    for pid in "${CLEANUP_PIDS[@]}"; do
+      pkill -KILL -P "$pid" 2>/dev/null || true
+      kill -KILL "$pid" 2>/dev/null || true
+    done
+    exit 1
+  fi
+  CLEANUP_RUNNING=1
   echo ""
   info "Shutting down..."
   for pid in "${CLEANUP_PIDS[@]}"; do
-    kill "$pid" 2>/dev/null || true
+    # Kill the whole subtree (npm -> vite, uv run -> python), not just the wrapper.
+    pkill -TERM -P "$pid" 2>/dev/null || true
+    kill -TERM "$pid" 2>/dev/null || true
   done
-  wait 2>/dev/null || true
+  # Give processes a bounded grace period instead of blocking on `wait` forever.
+  for _ in $(seq 1 20); do
+    alive=0
+    for pid in "${CLEANUP_PIDS[@]}"; do
+      kill -0 "$pid" 2>/dev/null && alive=1
+    done
+    [[ "$alive" == "0" ]] && break
+    sleep 0.2
+  done
+  for pid in "${CLEANUP_PIDS[@]}"; do
+    pkill -KILL -P "$pid" 2>/dev/null || true
+    kill -KILL "$pid" 2>/dev/null || true
+  done
   ok "Done."
+  exit 0
 }
 trap cleanup EXIT INT TERM
 
@@ -39,6 +65,13 @@ trap cleanup EXIT INT TERM
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
+
+# ── Log setup ────────────────────────────────────────────────────────
+LOG_DIR="$REPO_ROOT/logs"
+mkdir -p "$LOG_DIR"
+OLLAMA_LOG="$LOG_DIR/ollama.log"
+BACKEND_LOG="$LOG_DIR/backend.log"
+FRONTEND_LOG="$LOG_DIR/frontend.log"
 
 echo -e "${BOLD}"
 echo "  ┌──────────────────────────────────┐"
@@ -125,8 +158,9 @@ if curl -sf http://localhost:11434/api/tags &>/dev/null; then
   ok "Ollama is running"
 else
   info "Starting Ollama..."
-  ollama serve &>/dev/null &
+  ollama serve >"$OLLAMA_LOG" 2>&1 &
   CLEANUP_PIDS+=($!)
+  info "Ollama logs: $OLLAMA_LOG"
   sleep 3
   if curl -sf http://localhost:11434/api/tags &>/dev/null; then
     ok "Ollama started"
@@ -168,23 +202,25 @@ info "Starting backend API server on port 8000..."
 if curl -sf http://localhost:8000/health &>/dev/null; then
   fail "An OpenJarvis server is already running on port 8000. Stop it before re-running quickstart so updated environment variables are applied."
 fi
-uv run jarvis serve --port 8000 &>/dev/null &
+uv run jarvis serve --port 8000 >"$BACKEND_LOG" 2>&1 &
 BACKEND_PID=$!
 CLEANUP_PIDS+=("$BACKEND_PID")
+info "Backend logs: $BACKEND_LOG"
 sleep 3
 
 if ! kill -0 "$BACKEND_PID" 2>/dev/null; then
-  fail "Backend exited during startup. Run 'uv run jarvis serve --port 8000' to see the error."
+  fail "Backend exited during startup. See $BACKEND_LOG for the error."
 elif curl -sf http://localhost:8000/health &>/dev/null; then
   ok "Backend running at http://localhost:8000"
 else
-  warn "Backend may still be starting..."
+  warn "Backend may still be starting... check $BACKEND_LOG"
 fi
 
 # ── 10. Start frontend ──────────────────────────────────────────────
 info "Starting frontend dev server on port 5173..."
-(cd frontend && npm run dev) &>/dev/null &
+(cd frontend && npm run dev) >"$FRONTEND_LOG" 2>&1 &
 CLEANUP_PIDS+=($!)
+info "Frontend logs: $FRONTEND_LOG"
 sleep 3
 ok "Frontend running at http://localhost:5173"
 
@@ -204,6 +240,11 @@ echo ""
 echo "  Chat UI:  http://localhost:5173"
 echo "  API:      http://localhost:8000"
 echo "  Model:    $MODEL"
+echo ""
+echo "  Logs:"
+echo "    Ollama:    $OLLAMA_LOG"
+echo "    Backend:   $BACKEND_LOG"
+echo "    Frontend:  $FRONTEND_LOG"
 echo ""
 echo "  Press Ctrl+C to stop all services."
 echo ""

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import faulthandler
 import logging
+import os
+import signal
 import sys
 
 import click
@@ -725,5 +728,26 @@ def serve(
             "enabled on non-loopback interface. This allows any website to make "
             "authenticated requests to your instance."
         )
+
+    # A blocking call inside an `async def` route wedges the whole event loop:
+    # uvicorn stops accepting connections, every request hangs, and the process
+    # looks alive but silent. SIGUSR1 dumps every thread's stack to stderr (the
+    # backend log), so the offending frame can be identified from a live hang
+    # instead of having to reproduce it. ``chain`` must stay False: SIGUSR1's
+    # default disposition is to terminate, so chaining would kill the very
+    # process being diagnosed.
+    if hasattr(signal, "SIGUSR1"):
+        try:
+            faulthandler.register(signal.SIGUSR1, all_threads=True, chain=False)
+        except (ValueError, OSError):
+            # stderr has no file descriptor (captured or redirected to a
+            # pseudo-stream) — the dump hook is a diagnostic, not a
+            # prerequisite for serving.
+            logger.debug("Could not register SIGUSR1 stack-dump handler")
+        else:
+            console.print(
+                f"  Debug:  [cyan]kill -USR1 {os.getpid()}[/cyan] "
+                "dumps thread stacks (use if the server stops responding)"
+            )
 
     uvicorn.run(app, host=bind_host, port=bind_port, log_level="info")

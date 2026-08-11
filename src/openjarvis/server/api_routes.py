@@ -927,7 +927,12 @@ async def speech_health(request: Request):
     if backend is None:
         return {"available": False, "reason": "No speech backend configured"}
     try:
-        available = backend.health()
+        # ``health()`` lazily constructs the Whisper model, which downloads it
+        # from the HuggingFace Hub on a cold cache. Awaiting that inline froze
+        # the event loop for the whole download: uvicorn stopped accepting
+        # connections and every unrelated request hung until the process was
+        # killed. Same off-loop treatment as ``transcribe`` above.
+        available = await asyncio.to_thread(backend.health)
         reason = None
     except Exception as exc:
         logger.exception("Speech health check failed")
