@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '../../lib/store';
 import { getBase } from '../../lib/api';
+import { ContextMeter } from '../hud/ContextMeter';
 
 interface EnergyData {
   total_energy_j?: number;
@@ -133,7 +134,10 @@ export function SystemPanel() {
       <div className="flex flex-col gap-4 p-4">
         {/* Session Stats */}
         <section>
-          <h4 className="hud-label mb-2">Session</h4>
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="hud-label">Session</h4>
+            <ContextMeter compact />
+          </div>
           <div className="grid grid-cols-2 gap-2">
             <MiniStat
               icon={Hash}

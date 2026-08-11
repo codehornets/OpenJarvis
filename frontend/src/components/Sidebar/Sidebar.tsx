@@ -19,6 +19,7 @@ import {
   Database,
 } from 'lucide-react';
 import { ConversationList } from './ConversationList';
+import { OrbDot } from '../Orb/OrbDot';
 import { useAppStore } from '../../lib/store';
 
 export function Sidebar() {
@@ -34,6 +35,7 @@ export function Sidebar() {
   const setCommandPaletteOpen = useAppStore((s) => s.setCommandPaletteOpen);
   const modelLoading = useAppStore((s) => s.modelLoading);
   const deepResearch = useAppStore((s) => s.deepResearch);
+  const isStreaming = useAppStore((s) => s.streamState.isStreaming);
 
   const settings = useAppStore((s) => s.settings);
   const updateSettings = useAppStore((s) => s.updateSettings);
@@ -146,15 +148,8 @@ export function Sidebar() {
             {modelLoading ? (
               <Loader2 size={14} className="animate-spin" style={{ color: 'var(--color-accent)' }} />
             ) : serverInfo ? (
-              // Emerald heartbeat = backend alive (color contract: emerald = online)
-              <span
-                className="hud-heartbeat"
-                aria-hidden="true"
-                style={{
-                  background: 'var(--color-accent-2)',
-                  ['--color-accent-glow' as string]: 'var(--color-accent-2-glow)',
-                }}
-              />
+              // Mini AI core: green = backend alive, shifts cyan while streaming
+              <OrbDot connected speaking={isStreaming} size={14} />
             ) : (
               <Cpu size={14} />
             )}

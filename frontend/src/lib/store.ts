@@ -152,6 +152,10 @@ interface AppState {
   // System panel
   systemPanelOpen: boolean;
 
+  // Mic capture state, mirrored from InputArea's useSpeech so distant
+  // consumers (orb, sidebar) can react without threading props.
+  micRecording: boolean;
+
   // Opt-in sharing
   optInEnabled: boolean;
   optInDisplayName: string;
@@ -208,6 +212,7 @@ interface AppState {
   setSidebarOpen: (open: boolean) => void;
   toggleSystemPanel: () => void;
   setSystemPanelOpen: (open: boolean) => void;
+  setMicRecording: (recording: boolean) => void;
 
   // Data sources (cached between visits to avoid empty-state flicker)
   cachedConnectors: CachedConnector[] | null;
@@ -269,6 +274,7 @@ export const useAppStore = create<AppState>((set, get) => {
     commandPaletteOpen: false,
     sidebarOpen: true,
     systemPanelOpen: true,
+    micRecording: false,
 
     optInEnabled: localStorage.getItem(OPTIN_KEY) === 'true',
     optInDisplayName: localStorage.getItem(OPTIN_NAME_KEY) || '',
@@ -532,6 +538,8 @@ export const useAppStore = create<AppState>((set, get) => {
     toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
     setSidebarOpen: (open: boolean) => set({ sidebarOpen: open }),
     toggleSystemPanel: () => set((s) => ({ systemPanelOpen: !s.systemPanelOpen })),
+    setMicRecording: (recording: boolean) =>
+      set((s) => (s.micRecording === recording ? s : { micRecording: recording })),
     setSystemPanelOpen: (open: boolean) => set({ systemPanelOpen: open }),
 
     // ── Agents ─────────────────────────────────────────────────────

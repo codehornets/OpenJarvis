@@ -4,7 +4,8 @@ import { MessageBubble } from './MessageBubble';
 import { InputArea } from './InputArea';
 import { StreamingDots } from './StreamingDots';
 import { useAppStore } from '../../lib/store';
-import { Sparkles, PanelRightOpen, PanelRightClose, Database, MessageSquare, X } from 'lucide-react';
+import { PanelRightOpen, PanelRightClose, Database, MessageSquare, X } from 'lucide-react';
+import { Orb } from '../Orb/Orb';
 import { listConnectors } from '../../lib/connectors-api';
 
 function getGreeting(): string {
@@ -121,10 +122,10 @@ export function ChatArea() {
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center h-full px-4">
             <div
-              className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
-              style={{ background: 'var(--color-accent-subtle)', color: 'var(--color-accent)' }}
+              className="flex items-center justify-center mb-2"
             >
-              <Sparkles size={24} />
+              {/* The one WebGL orb in the app — unmounts when a chat starts */}
+              <Orb size={180} />
             </div>
             <h2
               className="text-xl font-bold mb-2"

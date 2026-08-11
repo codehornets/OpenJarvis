@@ -10,8 +10,7 @@ import { useAppStore } from '../../lib/store';
 
 export function useOrbState(): { connected: boolean; speaking: boolean } {
   const connected = useAppStore((s) => !!s.serverInfo);
-  // TODO: OR in the mic-recording flag once the voice-capture slice lands.
-  const speaking = useAppStore((s) => s.streamState.isStreaming);
+  const speaking = useAppStore((s) => s.streamState.isStreaming || s.micRecording);
 
   return { connected, speaking };
 }

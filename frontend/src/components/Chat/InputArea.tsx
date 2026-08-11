@@ -7,6 +7,8 @@ import { fetchSavings, getBase } from '../../lib/api';
 import { listConnectors, getSyncStatus } from '../../lib/connectors-api';
 import { MicButton } from './MicButton';
 import { CornerBrackets } from '../hud/CornerBrackets';
+import { ContextMeter } from '../hud/ContextMeter';
+import { sfx } from '../../lib/sfx';
 import { useSpeech } from '../../hooks/useSpeech';
 import type {
   ChatMessage,
@@ -132,12 +134,22 @@ export function InputArea() {
 
   useEffect(() => {
     if (speechError) {
+      sfx.error();
       toast.error(speechError, { duration: 8000 });
     }
   }, [speechError]);
 
+  // Mirror the local speech state into the store so the orb (rendered in
+  // ChatArea/Sidebar, far from this component) can react to the mic.
+  const setMicRecording = useAppStore((s) => s.setMicRecording);
+  useEffect(() => {
+    setMicRecording(speechState === 'recording');
+    return () => setMicRecording(false);
+  }, [speechState, setMicRecording]);
+
   const handleMicClick = useCallback(async () => {
     if (speechState === 'recording') {
+      sfx.micOff();
       try {
         const text = await stopRecording();
         if (text) {
@@ -147,6 +159,7 @@ export function InputArea() {
         // Error is captured in useSpeech
       }
     } else {
+      sfx.micOn();
       await startRecording();
     }
   }, [speechState, startRecording, stopRecording]);
@@ -175,6 +188,7 @@ export function InputArea() {
       return;
     }
 
+    sfx.select();
     setInput('');
 
     let convId = activeId;
@@ -217,6 +231,7 @@ export function InputArea() {
     abortRef.current = controller;
 
     let accumulatedContent = '';
+    let streamOutcome: 'ok' | 'aborted' | 'failed' = 'ok';
     let usage: TokenUsage | undefined;
     let complexity: { score: number; tier: string; suggested_max_tokens: number } | undefined;
     const toolCalls: ToolCallInfo[] = [];
@@ -450,8 +465,11 @@ export function InputArea() {
     } catch (err: any) {
       if (err.name === 'AbortError') {
         // User cancelled or model switch — keep whatever was accumulated
+        streamOutcome = 'aborted';
         if (!accumulatedContent) accumulatedContent = '(Generation stopped)';
       } else {
+        streamOutcome = 'failed';
+        sfx.error();
         const errMsg = err?.message || String(err);
         accumulatedContent =
           accumulatedContent || `Error: ${errMsg}`;
@@ -514,6 +532,7 @@ export function InputArea() {
         timerRef.current = null;
       }
       resetStream();
+      if (streamOutcome === 'ok') sfx.done();
       useAppStore.getState().addLogEntry({
         timestamp: Date.now(), level: 'info', category: 'chat',
         message: `Response: ${accumulatedContent.length} chars`,
@@ -636,11 +655,14 @@ export function InputArea() {
           )}
         </div>
       </div>
-      <div className="flex items-center justify-center mt-2 text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
+      <div className="relative flex items-center justify-center mt-2 text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
         <span>
           <kbd style={{ fontFamily: 'var(--font-hud)' }}>Enter</kbd> to send &middot;{' '}
           <kbd style={{ fontFamily: 'var(--font-hud)' }}>Shift+Enter</kbd> for new line
         </span>
+        <div className="absolute right-0">
+          <ContextMeter />
+        </div>
       </div>
     </div>
   );
