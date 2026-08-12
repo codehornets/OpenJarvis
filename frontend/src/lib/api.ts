@@ -38,6 +38,42 @@ export async function saveCloudKey(keyName: string, keyValue: string): Promise<v
   }
 }
 
+// ---------------------------------------------------------------------------
+// Claude subscription OAuth (desktop only) — drives `claude setup-token`
+// server-side so the user can connect a Claude subscription without opening
+// a terminal. See src/handymate/server/claude_oauth_routes.py.
+// ---------------------------------------------------------------------------
+
+export type ClaudeOAuthStatus =
+  | 'idle'
+  | 'starting'
+  | 'awaiting_browser'
+  | 'success'
+  | 'error';
+
+export interface ClaudeOAuthState {
+  status: ClaudeOAuthStatus;
+  url: string | null;
+  error: string | null;
+  token: string | null;
+}
+
+export async function startClaudeOAuth(): Promise<ClaudeOAuthState> {
+  const resp = await apiFetch('/v1/cloud/claude-subscription/connect', { method: 'POST' });
+  if (!resp.ok) throw new Error(`Failed to start sign-in (${resp.status})`);
+  return resp.json();
+}
+
+export async function pollClaudeOAuthStatus(): Promise<ClaudeOAuthState> {
+  const resp = await apiFetch('/v1/cloud/claude-subscription/status');
+  if (!resp.ok) throw new Error(`Failed to check sign-in status (${resp.status})`);
+  return resp.json();
+}
+
+export async function cancelClaudeOAuth(): Promise<void> {
+  await apiFetch('/v1/cloud/claude-subscription/cancel', { method: 'POST' });
+}
+
 // Cached API base URL fetched from the Tauri backend at startup.
 // This avoids hardcoding the port — the Rust backend is the single
 // source of truth for JARVIS_PORT.

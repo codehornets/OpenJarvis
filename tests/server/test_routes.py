@@ -977,6 +977,27 @@ class TestHealthEndpoint:
 
 
 # ---------------------------------------------------------------------------
+# Cloud reload tests
+# ---------------------------------------------------------------------------
+
+
+class TestCloudReload:
+    def test_submitted_keys_accept_oauth_token(self, client, monkeypatch):
+        import os
+
+        monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "")
+        monkeypatch.setenv("NOT_A_KEY", "")
+
+        client.post(
+            "/v1/cloud/reload",
+            json={"keys": {"CLAUDE_CODE_OAUTH_TOKEN": "sk-ant-oat-x", "NOT_A_KEY": "y"}},
+        )
+
+        assert os.environ["CLAUDE_CODE_OAUTH_TOKEN"] == "sk-ant-oat-x"
+        assert os.environ["NOT_A_KEY"] == ""
+
+
+# ---------------------------------------------------------------------------
 # App creation tests
 # ---------------------------------------------------------------------------
 

@@ -1011,7 +1011,7 @@ async def reload_cloud_engine(request: Request):
             submitted_keys = {
                 str(k): str(v)
                 for k, v in raw_keys.items()
-                if str(k).endswith("_API_KEY")
+                if str(k).endswith("_API_KEY") or str(k) == "CLAUDE_CODE_OAUTH_TOKEN"
             }
     except Exception:
         submitted_keys = None

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Palette,
   Globe,
@@ -31,7 +31,11 @@ import {
   saveToolCredentials,
   deleteToolCredential,
   isTauri,
+  startClaudeOAuth,
+  pollClaudeOAuthStatus,
+  cancelClaudeOAuth,
   type InferenceSource,
+  type ClaudeOAuthStatus,
 } from '../lib/api';
 import { isAutoUpdateDisabled, setAutoUpdateDisabled } from '../components/Desktop/UpdateChecker';
 
@@ -196,6 +200,120 @@ function CloudProviderStatus({ label, keyName }: { label: string; keyName: strin
       }} />
       {label}
     </span>
+  );
+}
+
+function ClaudeSubscriptionConnect() {
+  const [status, setStatus] = useState<ClaudeOAuthStatus>('idle');
+  const [url, setUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const pollRef = useRef<number | null>(null);
+
+  const stopPolling = () => {
+    if (pollRef.current !== null) {
+      window.clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+  };
+
+  useEffect(() => stopPolling, []);
+
+  const poll = useCallback(async () => {
+    try {
+      const s = await pollClaudeOAuthStatus();
+      setStatus(s.status);
+      setUrl(s.url);
+      if (s.status === 'success' && s.token) {
+        stopPolling();
+        try {
+          await saveCloudKey('CLAUDE_CODE_OAUTH_TOKEN', s.token);
+          window.dispatchEvent(new Event(CLOUD_KEY_STATUS_CHANGED));
+          setError(null);
+        } catch (e: any) {
+          setStatus('error');
+          setError(e?.message || 'Signed in, but failed to save the token securely.');
+        }
+      } else if (s.status === 'error') {
+        stopPolling();
+        setError(s.error);
+      }
+    } catch (e: any) {
+      stopPolling();
+      setStatus('error');
+      setError(e?.message || 'Failed to check sign-in status');
+    }
+  }, []);
+
+  const start = async () => {
+    setError(null);
+    setUrl(null);
+    setStatus('starting');
+    try {
+      await startClaudeOAuth();
+      stopPolling();
+      pollRef.current = window.setInterval(poll, 1500);
+    } catch (e: any) {
+      setStatus('error');
+      setError(e?.message || 'Failed to start sign-in');
+    }
+  };
+
+  const cancel = async () => {
+    stopPolling();
+    setStatus('idle');
+    setUrl(null);
+    setError(null);
+    try { await cancelClaudeOAuth(); } catch { /* best-effort */ }
+  };
+
+  if (!isTauri()) return null;
+
+  const busy = status === 'starting' || status === 'awaiting_browser';
+
+  return (
+    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+      {!busy && (
+        <button
+          onClick={() => void start()}
+          className="text-[11px] px-2 py-1 rounded cursor-pointer"
+          style={{ background: 'var(--color-bg-tertiary)', color: 'var(--color-text)', border: '1px solid var(--color-border)' }}
+        >
+          Connect with Claude.ai
+        </button>
+      )}
+      {status === 'starting' && (
+        <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Starting sign-in…</span>
+      )}
+      {status === 'awaiting_browser' && (
+        <>
+          <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
+            Waiting for you to finish signing in…
+          </span>
+          {url && (
+            <button
+              onClick={() => window.open(url, '_blank', 'width=600,height=700')}
+              className="text-[10px] px-2 py-0.5 rounded cursor-pointer underline"
+              style={{ color: 'var(--color-text)', border: '1px solid var(--color-border)' }}
+            >
+              Open sign-in page
+            </button>
+          )}
+          <button
+            onClick={() => void cancel()}
+            className="text-[10px] px-2 py-0.5 rounded cursor-pointer"
+            style={{ color: 'var(--color-error)', border: '1px solid var(--color-error)' }}
+          >
+            Cancel
+          </button>
+        </>
+      )}
+      {status === 'success' && (
+        <span className="text-[10px]" style={{ color: 'var(--color-success)' }}>Connected!</span>
+      )}
+      {status === 'error' && error && (
+        <span className="text-[10px]" style={{ color: 'var(--color-error)' }}>{error}</span>
+      )}
+    </div>
   );
 }
 
@@ -554,6 +672,7 @@ export function SettingsPage() {
                 <CloudProviderStatus label="Anthropic" keyName="ANTHROPIC_API_KEY" />
                 <CloudProviderStatus label="Google" keyName="GEMINI_API_KEY" />
                 <CloudProviderStatus label="OpenRouter" keyName="OPENROUTER_API_KEY" />
+                <CloudProviderStatus label="Claude subscription" keyName="CLAUDE_CODE_OAUTH_TOKEN" />
               </div>
             </SettingRow>
           </Section>
@@ -566,6 +685,16 @@ export function SettingsPage() {
             <SettingRow label="Anthropic" description="Claude models">
               <ApiKeyInput keyName="ANTHROPIC_API_KEY" placeholder="sk-ant-..." />
             </SettingRow>
+            <SettingRow
+              label="Claude subscription"
+              description="OAuth token from `claude setup-token`, used in place of an Anthropic API key"
+            >
+              <ApiKeyInput keyName="CLAUDE_CODE_OAUTH_TOKEN" placeholder="paste token here" />
+            </SettingRow>
+            <ClaudeSubscriptionConnect />
+            <div className="text-xs mt-2 px-1" style={{ color: 'var(--color-text-tertiary)' }}>
+              If an Anthropic API key is set above, it takes precedence over the Claude subscription token
+            </div>
             <SettingRow label="Google" description="Gemini models">
               <ApiKeyInput keyName="GEMINI_API_KEY" placeholder="AI..." />
             </SettingRow>

@@ -1951,6 +1951,7 @@ const MANAGED_CLOUD_KEY_NAMES: &[&str] = &[
     "OPENROUTER_API_KEY",
     "MINIMAX_API_KEY",
     "TAVILY_API_KEY",
+    "CLAUDE_CODE_OAUTH_TOKEN",
 ];
 
 /// Legacy path used by older desktop builds. New saves never write here.
@@ -1964,7 +1965,7 @@ fn legacy_cloud_keys_path() -> std::path::PathBuf {
 fn validate_cloud_key_name(key_name: &str) -> Result<(), String> {
     let valid = !key_name.is_empty()
         && key_name.len() <= 128
-        && key_name.ends_with("_API_KEY")
+        && (key_name.ends_with("_API_KEY") || key_name == "CLAUDE_CODE_OAUTH_TOKEN")
         && key_name
             .chars()
             .all(|ch| ch.is_ascii_uppercase() || ch.is_ascii_digit() || ch == '_');
