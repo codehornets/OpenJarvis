@@ -51,6 +51,7 @@ def _load_keys() -> dict[str, str]:
     for name in (
         "OPENAI_API_KEY",
         "ANTHROPIC_API_KEY",
+        "CLAUDE_CODE_OAUTH_TOKEN",
         "GEMINI_API_KEY",
         "GOOGLE_API_KEY",
         "OPENROUTER_API_KEY",
@@ -191,8 +192,13 @@ async def _stream_anthropic(
 ) -> AsyncIterator[str]:
     keys = _load_keys()
     api_key = keys.get("ANTHROPIC_API_KEY", "")
-    if not api_key:
-        raise ValueError("ANTHROPIC_API_KEY not set — add it in the Cloud Models tab")
+    oauth_token = keys.get("CLAUDE_CODE_OAUTH_TOKEN", "")
+    if not api_key and not oauth_token:
+        raise ValueError(
+            "ANTHROPIC_API_KEY not set — add it in the Cloud Models tab, "
+            "or set CLAUDE_CODE_OAUTH_TOKEN (via `claude setup-token`) to "
+            "use a Claude subscription instead"
+        )
 
     system_text, chat_msgs = _to_anthropic_msgs(messages)
     payload: dict[str, Any] = {
@@ -205,16 +211,23 @@ async def _stream_anthropic(
     if system_text:
         payload["system"] = system_text
 
+    # API key takes precedence when both are set; otherwise use Bearer auth
+    # with the Claude subscription OAuth token.
+    headers = {
+        "anthropic-version": "2023-06-01",
+        "Content-Type": "application/json",
+    }
+    if api_key:
+        headers["x-api-key"] = api_key
+    else:
+        headers["Authorization"] = f"Bearer {oauth_token}"
+
     async with httpx.AsyncClient(timeout=180) as client:
         async with client.stream(
             "POST",
             "https://api.anthropic.com/v1/messages",
             json=payload,
-            headers={
-                "x-api-key": api_key,
-                "anthropic-version": "2023-06-01",
-                "Content-Type": "application/json",
-            },
+            headers=headers,
         ) as resp:
             resp.raise_for_status()
             async for line in resp.aiter_lines():

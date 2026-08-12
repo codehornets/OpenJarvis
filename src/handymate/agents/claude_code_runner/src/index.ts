@@ -5,7 +5,7 @@
  * and writes sentinel-wrapped JSON output to stdout.
  *
  * Input (JSON on stdin):
- *   { prompt, api_key, workspace, allowed_tools, system_prompt, session_id }
+ *   { prompt, api_key, oauth_token, workspace, allowed_tools, system_prompt, session_id }
  *
  * Output (on stdout, between sentinels):
  *   ---HANDYMATE_OUTPUT_START---
@@ -21,6 +21,7 @@ const OUTPUT_END = "---HANDYMATE_OUTPUT_END---";
 interface RunnerRequest {
   prompt: string;
   api_key: string;
+  oauth_token: string;
   workspace: string;
   allowed_tools: string[];
   system_prompt: string;
@@ -80,9 +81,13 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  // Set the API key in the environment for the SDK
+  // Set auth in the environment for the SDK. api_key (ANTHROPIC_API_KEY)
+  // takes precedence when both are provided, matching the Claude Code
+  // CLI's own auth resolution order.
   if (request.api_key) {
     process.env.ANTHROPIC_API_KEY = request.api_key;
+  } else if (request.oauth_token) {
+    process.env.CLAUDE_CODE_OAUTH_TOKEN = request.oauth_token;
   }
 
   try {

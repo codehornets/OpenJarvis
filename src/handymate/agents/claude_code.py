@@ -66,6 +66,7 @@ class ClaudeCodeAgent(BaseAgent):
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         api_key: str = "",
+        oauth_token: str = "",
         workspace: str = "",
         session_id: str = "",
         allowed_tools: Optional[List[str]] = None,
@@ -80,6 +81,9 @@ class ClaudeCodeAgent(BaseAgent):
             max_tokens=max_tokens,
         )
         self._api_key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+        self._oauth_token = oauth_token or os.environ.get(
+            "CLAUDE_CODE_OAUTH_TOKEN", ""
+        )
         self._workspace = workspace or os.getcwd()
         self._session_id = session_id
         self._allowed_tools = allowed_tools
@@ -155,6 +159,7 @@ class ClaudeCodeAgent(BaseAgent):
         request = {
             "prompt": input,
             "api_key": self._api_key,
+            "oauth_token": self._oauth_token,
             "workspace": self._workspace,
             "allowed_tools": self._allowed_tools or [],
             "system_prompt": self._system_prompt,

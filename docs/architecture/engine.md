@@ -165,6 +165,9 @@ The Cloud backend provides access to OpenAI, Anthropic, and Google models via th
     Cloud models require API keys set as environment variables:
     `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY` (or `GOOGLE_API_KEY`).
     The cloud engine is only registered if the corresponding SDK packages are installed.
+    For Claude models, `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) can be
+    used instead of `ANTHROPIC_API_KEY` to authenticate via a Claude subscription;
+    `ANTHROPIC_API_KEY` takes precedence when both are set.
 
 ### MLX
 

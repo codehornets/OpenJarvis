@@ -397,7 +397,7 @@ j.close()
 The `ClaudeCodeAgent` wraps the `@anthropic-ai/claude-code` SDK via a bundled Node.js subprocess bridge. Unlike the other agents, inference is handled entirely by the Claude Agent SDK -- the `engine` parameter is accepted only for `BaseAgent` interface conformance and is not used.
 
 !!! warning "Requirements"
-    Requires Node.js 22+ on `PATH` and an `ANTHROPIC_API_KEY` environment variable (or pass `api_key=` directly). The bundled runner is auto-installed to `~/.handymate/claude_code_runner/` on first use via `npm install`.
+    Requires Node.js 22+ on `PATH` and either an `ANTHROPIC_API_KEY` environment variable (or `api_key=` directly) for pay-per-token billing, or a `CLAUDE_CODE_OAUTH_TOKEN` environment variable (or `oauth_token=` directly) generated via `claude setup-token` to use an existing Claude subscription instead. The bundled runner is auto-installed to `~/.handymate/claude_code_runner/` on first use via `npm install`.
 
 **How it works:**
 
@@ -416,7 +416,8 @@ The `ClaudeCodeAgent` wraps the `@anthropic-ai/claude-code` SDK via a bundled No
 | `bus`            | `EventBus`        | `None`              | Event bus for telemetry                          |
 | `temperature`    | `float`           | `0.7`               | Accepted for interface conformance; not used     |
 | `max_tokens`     | `int`             | `1024`              | Accepted for interface conformance; not used     |
-| `api_key`        | `str`             | `$ANTHROPIC_API_KEY`| Anthropic API key                                |
+| `api_key`        | `str`             | `$ANTHROPIC_API_KEY`| Anthropic API key. Takes precedence over `oauth_token` if both are set |
+| `oauth_token`    | `str`             | `$CLAUDE_CODE_OAUTH_TOKEN` | Subscription OAuth token from `claude setup-token`, used when no API key is set |
 | `workspace`      | `str`             | `os.getcwd()`       | Working directory for the Claude agent           |
 | `session_id`     | `str`             | `""`                | Optional session ID for conversation continuity  |
 | `allowed_tools`  | `list[str]`       | `None` (all)        | Claude Code tool names to allow                  |

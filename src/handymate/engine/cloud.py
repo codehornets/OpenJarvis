@@ -337,11 +337,21 @@ class CloudEngine(InferenceEngine):
                 self._openai_client = openai.OpenAI()
             except ImportError:
                 pass
-        if os.environ.get("ANTHROPIC_API_KEY"):
+        anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
+        anthropic_oauth_token = os.environ.get("CLAUDE_CODE_OAUTH_TOKEN")
+        if anthropic_key or anthropic_oauth_token:
             try:
                 import anthropic
 
-                self._anthropic_client = anthropic.Anthropic()
+                # API key takes precedence when both are set. Otherwise fall
+                # back to a Claude subscription OAuth token (`claude
+                # setup-token`) via the SDK's Bearer-auth `auth_token` param.
+                if anthropic_key:
+                    self._anthropic_client = anthropic.Anthropic()
+                else:
+                    self._anthropic_client = anthropic.Anthropic(
+                        api_key=None, auth_token=anthropic_oauth_token
+                    )
             except ImportError:
                 pass
         gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get(
