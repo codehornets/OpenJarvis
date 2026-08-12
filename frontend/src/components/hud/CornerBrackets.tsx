@@ -1,6 +1,6 @@
 /**
  * Sci-fi corner brackets — four L-shaped corners over any relative parent
- * (the iris/jarvis-cv targeting-reticle treatment for inputs, camera feeds
+ * (the iris/handy-cv targeting-reticle treatment for inputs, camera feeds
  * and hero panels). Purely decorative: hidden in light mode, aria-hidden,
  * never intercepts pointer events.
  */

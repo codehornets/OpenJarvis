@@ -126,7 +126,7 @@
     opacity: 0.35;
   }
 
-  /* Chamfered sci-fi corners (jarvis-cv clip-corner pattern). */
+  /* Chamfered sci-fi corners (handy-cv clip-corner pattern). */
   .hud-clip-tr {
     clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
   }
@@ -159,7 +159,7 @@
   /* ── Composer shell ────────────────────────────────────────────────── */
 
   /* Chat composer shell — glass surface with an accent glow on focus,
-     modeled on the jarvis-cv LocationSearch focus treatment. */
+     modeled on the handy-cv LocationSearch focus treatment. */
   .chat-input-shell {
     background: color-mix(in srgb, var(--color-input-bg) 88%, transparent);
     backdrop-filter: blur(12px);

@@ -20,7 +20,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       manifest: {
         name: 'Handymate',
-        short_name: 'Jarvis',
+        short_name: 'Handy',
         description: 'On-device AI assistant',
         theme_color: '#161618',
         background_color: '#161618',

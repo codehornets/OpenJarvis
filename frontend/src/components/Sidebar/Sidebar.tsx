@@ -106,7 +106,7 @@ export function Sidebar() {
               <PanelLeftClose size={18} />
             </button>
             <span className="hud-label hud-text-glow select-none" style={{ color: 'var(--color-text-secondary)' }}>
-              Jarvis // Neural OS
+              Handy // Neural OS
               <span className="hud-caret" aria-hidden="true" />
             </span>
             <div className="flex items-center gap-1">

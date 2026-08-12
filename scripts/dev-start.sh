@@ -69,6 +69,7 @@ else
   done
   if curl -sf http://localhost:5273 &>/dev/null; then
     ok "Frontend running at http://localhost:5273 (pid $(cat "$FRONTEND_PID_FILE"))"
+    echo "[dev-start] Frontend running at http://localhost:5273 (pid $(cat "$FRONTEND_PID_FILE"))" >>"$FRONTEND_LOG"
   elif alive "$(cat "$FRONTEND_PID_FILE")"; then
     warn "Frontend still starting — expected at http://localhost:5273 shortly. See $FRONTEND_LOG"
   else

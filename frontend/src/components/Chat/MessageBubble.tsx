@@ -182,7 +182,7 @@ export function MessageBubble({ message, isLive = false }: Props) {
               aria-hidden="true"
               style={{ color: isLive ? 'var(--color-accent-2)' : 'var(--color-text-tertiary)' }}
             />
-            Jarvis
+            Handy
           </div>
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}

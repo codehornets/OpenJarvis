@@ -63,7 +63,7 @@ const getSettingsApiUrl = (): string => {
       const parsed = JSON.parse(raw);
       if (parsed.apiUrl) return parsed.apiUrl.replace(/\/+$/, '');
     }
-  } catch {}
+  } catch { }
   return '';
 };
 
@@ -75,7 +75,7 @@ export const getBase = (): string => {
   return '';
 };
 
-// Resolve the local server API key (HANDYMATE_API_KEY). When `jarvis serve`
+// Resolve the local server API key (HANDYMATE_API_KEY). When `handy serve`
 // is started with a key, AuthMiddleware 401s every /v1 and /api request that
 // lacks a Bearer token — so the frontend must send it (#266). Sourced from the
 // same settings blob as the API URL, with an optional build-time env override.
@@ -87,7 +87,7 @@ export const getApiKey = (): string => {
       const parsed = JSON.parse(raw);
       if (parsed.apiKey) return String(parsed.apiKey);
     }
-  } catch {}
+  } catch { }
   if (import.meta.env.VITE_HANDYMATE_API_KEY) {
     return import.meta.env.VITE_HANDYMATE_API_KEY as string;
   }
@@ -286,7 +286,7 @@ export async function fetchEnergy(): Promise<unknown> {
   if (isTauri()) {
     try {
       return await tauriInvoke('fetch_energy', { apiUrl: getBase() });
-    } catch {}
+    } catch { }
   }
   const res = await apiFetch(`/v1/telemetry/energy`);
   if (!res.ok) throw new Error(`Failed: ${res.status}`);
@@ -297,7 +297,7 @@ export async function fetchTelemetry(): Promise<unknown> {
   if (isTauri()) {
     try {
       return await tauriInvoke('fetch_telemetry', { apiUrl: getBase() });
-    } catch {}
+    } catch { }
   }
   const res = await apiFetch(`/v1/telemetry/stats`);
   if (!res.ok) throw new Error(`Failed: ${res.status}`);
@@ -308,7 +308,7 @@ export async function fetchTraces(limit: number = 50): Promise<unknown> {
   if (isTauri()) {
     try {
       return await tauriInvoke('fetch_traces', { apiUrl: getBase(), limit });
-    } catch {}
+    } catch { }
   }
   const res = await apiFetch(`/v1/traces?limit=${limit}`);
   if (!res.ok) throw new Error(`Failed: ${res.status}`);
