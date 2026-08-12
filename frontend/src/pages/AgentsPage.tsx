@@ -3937,8 +3937,17 @@ export function AgentsPage() {
 
       <header className="mb-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+          <h1
+            className="text-lg font-bold"
+            style={{
+              color: 'var(--color-text)',
+              fontFamily: 'var(--font-display)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+            }}
+          >
             Agents
+            <span className="hud-caret" aria-hidden="true" />
           </h1>
           <div className="flex items-center gap-2">
             {/* Grid / session-board toggle */}
