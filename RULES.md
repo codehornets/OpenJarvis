@@ -1,7 +1,31 @@
 ## RULES
 
-1. Ask, don't assume. If something is unclear, ask before writing a single line. Never make silent assumptions about intent, architecture, or requirements. When running unattended, pick the most reasonable interpretation, proceed, and record the assumption rather than blocking.
-2. Implement the simplest solution for simple problems, better solutions for harder problems. Do not over-engineer or add flexibility that isn't needed yet.
-3. Don't touch unrelated code but please do surface bad code or design smells you discover with me so we can address them as a separate issue.
-4. Flag uncertainty explicitly. If you're unsure about something, see point 1 above. If it makes sense to do so, conduct a small, localised and low-risk experiment and bring the hypothesis and results to me to discuss. Confidence without certainty causes more damage than admitting a gap.
-5. I'm always open to ideas on better ways to do things. Please don't hesitate to suggest a better way, or one that has long lasting impact over a tactical change. (as a few examples)
+1. Read this first. Handymate is a single repository with three main surfaces:
+   - `src/handymate/`: the Python package, CLI, and backend runtime.
+   - `frontend/`: the Vite + React + Tauri application. Use npm here.
+   - `rust/`: the native Rust/PyO3 extension and Tauri-side crates.
+   Supporting code lives in `docs/`, `scripts/`, `deploy/`, `examples/`, `configs/`, and `tests/`.
+
+2. Use the right package manager for the right surface.
+   - Python work uses `uv`.
+   - Frontend work uses `npm ci` in `frontend/`, then `npm run typecheck` and `npm run build`.
+   - Do not introduce pnpm or yarn unless the repo is explicitly migrated.
+
+3. Formatting is repo-level, not ad hoc.
+   - Python formatting and import order are owned by Ruff.
+   - `.editorconfig` enforces UTF-8, LF, and the local indentation defaults.
+   - Keep YAML, JSON, and TOML files whitespace-clean and syntactically valid.
+
+4. Verify the smallest useful slice before claiming success.
+   - Prefer targeted checks over full-suite runs when the change is scoped.
+   - For Python, use Ruff, pytest, or the smallest relevant command.
+   - For frontend changes, use `npm run typecheck` and `npm run build`.
+
+5. Keep changes scoped.
+   - Do not touch unrelated files.
+   - If a requirement is ambiguous, note the assumption and proceed with the most reasonable local fix when running unattended.
+   - Surface architecture or workflow issues you discover, but do not fold unrelated cleanup into the same change.
+
+6. For local repo context, prefer `bash scripts/context.sh` or the
+   `.codex/skills/context` skill. It should show branch, status, recent commits,
+   and PR metadata when `gh` is available.

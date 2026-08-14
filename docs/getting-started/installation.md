@@ -43,7 +43,7 @@ If you prefer to run each step yourself:
     cd Handymate
     uv sync --extra desktop
     uv run maturin develop -m rust/crates/handymate-python/Cargo.toml
-    cd frontend && npm install && cd ..
+    cd frontend && npm ci && cd ..
     ```
 
     !!! note "Prerequisites"
@@ -117,7 +117,7 @@ The app connects to `http://localhost:8000` automatically.
 ```bash
 git clone https://github.com/codehornets/handymate.git
 cd Handymate/desktop
-npm install
+npm ci
 npm run tauri build
 ```
 

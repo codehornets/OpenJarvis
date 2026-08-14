@@ -71,7 +71,7 @@ The backend (Ollama, Python API server, inference) runs separately on your machi
 ```bash
 git clone https://github.com/codehornets/handymate.git
 cd Handymate/desktop
-npm install
+npm ci
 npm run tauri build
 ```
 
@@ -94,11 +94,11 @@ cd Handymate
 
 The script handles everything:
 
-1. Checks for Python 3.10–3.13 and Node.js 18+
-2. Installs Ollama if not present and pulls a starter model
-3. Installs Python and frontend dependencies
-4. Starts the backend API server and frontend dev server
-5. Opens `http://localhost:5273` in your browser
+    1. Checks for Python 3.10–3.13 and Node.js 18+
+    2. Installs Ollama if not present and pulls a starter model
+    3. Installs Python and frontend dependencies
+    4. Starts the backend API server and frontend dev server
+    5. Opens `http://localhost:5273` in your browser
 
 ### Manual setup
 
@@ -110,7 +110,7 @@ If you prefer to run each step yourself:
     git clone https://github.com/codehornets/handymate.git
     cd Handymate
     uv sync --extra desktop
-    cd frontend && npm install && cd ..
+    cd frontend && npm ci && cd ..
     ```
 
 === "Step 2: Start Ollama"

@@ -78,7 +78,7 @@ To avoid wasted effort, note that PRs in these categories are unlikely to be mer
 |---|---|---|
 | Python | 3.10+ | Required |
 | [uv](https://docs.astral.sh/uv/) | Latest | Package manager |
-| Node.js | 22+ | Only needed for ClaudeCodeAgent and WhatsApp channel |
+| Node.js | 22+ | Needed for the frontend, ClaudeCodeAgent, and WhatsApp channel |
 
 ### Setup
 
@@ -86,6 +86,13 @@ To avoid wasted effort, note that PRs in these categories are unlikely to be mer
 git clone https://github.com/codehornets/handymate.git
 cd Handymate
 uv sync --extra dev
+```
+
+If your change touches `frontend/`, also install its dependencies with `npm ci`:
+
+```bash
+cd frontend
+npm ci
 ```
 
 ### Pre-commit Hooks
@@ -97,6 +104,14 @@ uv run pre-commit install
 ```
 
 This installs Git hooks that automatically run [Ruff](https://docs.astral.sh/ruff/) on every commit. If the hooks fail, fix the issues and commit again.
+
+For frontend changes, also run:
+
+```bash
+cd frontend
+npm run typecheck
+npm run build
+```
 
 For detailed development setup, code conventions, and project structure, see the [Development Guide](docs/development/contributing.md).
 
@@ -146,8 +161,15 @@ Use the appropriate [issue template](https://github.com/codehornets/handymate/is
    ```bash
    uv run ruff format --check src/ tests/
    ```
-4. Add tests for new functionality
-5. Follow the [registry pattern](docs/development/contributing.md#registry-pattern) for new components
+4. If your change touches `frontend/`, run:
+   ```bash
+   cd frontend
+   npm ci
+   npm run typecheck
+   npm run build
+   ```
+5. Add tests for new functionality
+6. Follow the [registry pattern](docs/development/contributing.md#registry-pattern) for new components
 
 ### Commit Messages
 

@@ -142,6 +142,15 @@ uv run pre-commit install
 uv run pytest tests/ -v
 ```
 
+If you are working on `frontend/`, install its dependencies with:
+
+```bash
+cd frontend
+npm ci
+npm run typecheck
+npm run build
+```
+
 Browse the [Roadmap](https://codehornets.github.io/handymate/development/roadmap/) for areas where help is needed. Comment **"take"** on any issue to get auto-assigned.
 
 ## About

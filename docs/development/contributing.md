@@ -13,7 +13,7 @@ contribute code to Handymate.
 |---|---|---|
 | Python | 3.10+ | Required |
 | [uv](https://docs.astral.sh/uv/) | Latest | Package manager |
-| Node.js | 22+ | Only needed for ClaudeCodeAgent and WhatsApp channel |
+| Node.js | 22+ | Needed for the frontend, ClaudeCodeAgent, and WhatsApp channel |
 
 ### Clone and Install
 
@@ -21,6 +21,13 @@ contribute code to Handymate.
 git clone https://github.com/codehornets/handymate.git
 cd Handymate
 uv sync --extra dev
+```
+
+If you are working on `frontend/`, install its dependencies with:
+
+```bash
+cd frontend
+npm ci
 ```
 
 This installs the package in editable mode along with all development
@@ -48,6 +55,14 @@ dependencies (pytest, ruff, respx, pytest-asyncio, pytest-cov).
 ```bash
 uv run handy --version   # Should print 0.1.0
 uv run handy --help      # Show all subcommands
+```
+
+For frontend changes, also run:
+
+```bash
+cd frontend
+npm run typecheck
+npm run build
 ```
 
 ---
