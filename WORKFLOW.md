@@ -1,6 +1,8 @@
 ---
 tracker:
   kind: linear
+  provider:
+    project_slug: "handymate-openjarvis-e8d52baf1b1c"
   required_labels: ["repo:handymate"]
   active_states:
     - Todo
