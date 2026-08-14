@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import type {
-  Conversation,
   ChatMessage,
+  Conversation,
   LiveEnergyMetrics,
   LogEntry,
-  ModelInfo,
   MessageTelemetry,
+  ModelInfo,
+  Project,
   ResearchSearchTrace,
   ResearchSource,
   SavingsData,
@@ -14,7 +15,20 @@ import type {
   ToolCallInfo,
   TokenUsage,
 } from '../types';
-import type { ManagedAgent } from './api';
+import type { ApiConversation, ApiMessage, ManagedAgent } from './api';
+import {
+  createConversationApi,
+  createMessage,
+  createProject as apiCreateProject,
+  deleteConversationApi,
+  deleteProject as apiDeleteProject,
+  fetchConversation,
+  fetchConversations,
+  fetchProjects,
+  updateConversationApi,
+  updateMessage,
+  updateProject as apiUpdateProject,
+} from './api';
 import { isEmbedOnlyModel } from './model-capabilities';
 
 export interface CachedConnector {
@@ -30,9 +44,24 @@ export interface AgentEvent {
   data: Record<string, unknown>;
 }
 
-// ── localStorage persistence ──────────────────────────────────────────
+// ── Conversations: in-memory cache backed by the server ────────────────
+//
+// Conversations/messages/projects are persisted server-side (COD-835) —
+// there is no localStorage source of truth anymore. But every store action
+// below (createConversation, addMessage, ...) is called synchronously by
+// callers that expect the mutation to be reflected in `useAppStore`'s state
+// immediately (see e.g. `InputArea.tsx`'s `sendMessage`, and
+// `store.stream-ownership.test.ts`). To keep those signatures unchanged, an
+// in-memory cache (`_cache`) plays the role localStorage used to play: every
+// action mutates it synchronously, updates reactive state from it, and
+// *separately* fires a best-effort background API call to persist the same
+// change server-side. The cache is hydrated once from the server (plus a
+// one-time localStorage migration for pre-COD-835 installs) via
+// `initConversations()`, which the app calls on boot.
 
-const CONVERSATIONS_KEY = 'handymate-conversations';
+const LEGACY_CONVERSATIONS_KEY = 'handymate-conversations';
+const MIGRATED_KEY = 'handymate-migrated-v1';
+const ACTIVE_ID_KEY = 'handymate-active-conversation-id';
 const SETTINGS_KEY = 'handymate-settings';
 const OPTIN_KEY = 'handymate-optin';
 const OPTIN_NAME_KEY = 'handymate-display-name';
@@ -40,8 +69,7 @@ const OPTIN_EMAIL_KEY = 'handymate-email';
 const OPTIN_ANONID_KEY = 'handymate-anon-id';
 const OPTIN_SEEN_KEY = 'handymate-optin-seen';
 
-interface ConversationStore {
-  version: 1;
+interface ConversationCache {
   conversations: Record<string, Conversation>;
   activeId: string | null;
 }
@@ -50,20 +78,174 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-function loadConversations(): ConversationStore {
+let _cache: ConversationCache = { conversations: {}, activeId: null };
+
+function readCache(): ConversationCache {
+  return _cache;
+}
+
+function writeCache(next: ConversationCache): void {
+  _cache = next;
   try {
-    const raw = localStorage.getItem(CONVERSATIONS_KEY);
-    if (!raw) return { version: 1, conversations: {}, activeId: null };
-    const parsed = JSON.parse(raw);
-    if (parsed.version === 1) return parsed;
-    return { version: 1, conversations: {}, activeId: null };
+    if (next.activeId) localStorage.setItem(ACTIVE_ID_KEY, next.activeId);
+    else localStorage.removeItem(ACTIVE_ID_KEY);
   } catch {
-    return { version: 1, conversations: {}, activeId: null };
+    // localStorage unavailable (e.g. private browsing) — cache still works.
   }
 }
 
-function saveConversations(store: ConversationStore): void {
-  localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(store));
+function sortedConversations(cache: ConversationCache): Conversation[] {
+  return Object.values(cache.conversations).sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+// Extra ChatMessage fields beyond role/content are packed into the backend
+// message's `metadata` JSON blob rather than getting dedicated columns.
+function messageMetadata(m: Partial<ChatMessage>): Record<string, unknown> {
+  const meta: Record<string, unknown> = {};
+  if (m.toolCalls) meta.toolCalls = m.toolCalls;
+  if (m.usage) meta.usage = m.usage;
+  if (m.telemetry) meta.telemetry = m.telemetry;
+  if (m.audio) meta.audio = m.audio;
+  if (m.researchTraces) meta.researchTraces = m.researchTraces;
+  if (m.researchSources) meta.researchSources = m.researchSources;
+  if (m.isResearch) meta.isResearch = m.isResearch;
+  return meta;
+}
+
+function apiMessageToChatMessage(m: ApiMessage): ChatMessage {
+  const meta = (m.metadata || {}) as Record<string, unknown>;
+  return {
+    id: m.id,
+    role: m.role === 'assistant' ? 'assistant' : 'user',
+    content: m.content,
+    timestamp: m.timestamp * 1000,
+    toolCalls: meta.toolCalls as ToolCallInfo[] | undefined,
+    usage: meta.usage as TokenUsage | undefined,
+    telemetry: meta.telemetry as MessageTelemetry | undefined,
+    audio: meta.audio as { url: string } | undefined,
+    researchTraces: meta.researchTraces as ResearchSearchTrace[] | undefined,
+    researchSources: meta.researchSources as ResearchSource[] | undefined,
+    isResearch: meta.isResearch as boolean | undefined,
+  };
+}
+
+function apiConversationToConversation(c: ApiConversation, messages: ChatMessage[]): Conversation {
+  return {
+    id: c.id,
+    title: c.title,
+    createdAt: c.created_at * 1000,
+    updatedAt: c.updated_at * 1000,
+    model: c.model,
+    messages,
+    projectId: c.project_id,
+  };
+}
+
+// conversationId -> in-flight (or resolved) backend create for the current
+// assistant placeholder message, so `updateLastAssistant` can PATCH the
+// right row once the POST from `addMessage` resolves, however it lands.
+const _pendingAssistantMessage = new Map<string, Promise<ApiMessage | null>>();
+
+/** One-time migration of pre-COD-835 localStorage conversations to the server. */
+async function migrateLegacyConversations(): Promise<void> {
+  let alreadyMigrated = false;
+  try {
+    alreadyMigrated = localStorage.getItem(MIGRATED_KEY) === '1';
+  } catch {
+    return;
+  }
+  if (alreadyMigrated) return;
+
+  let raw: string | null = null;
+  try {
+    raw = localStorage.getItem(LEGACY_CONVERSATIONS_KEY);
+  } catch {
+    return;
+  }
+  if (!raw) {
+    try {
+      localStorage.setItem(MIGRATED_KEY, '1');
+    } catch {
+      // ignore
+    }
+    return;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as {
+      conversations?: Record<string, Omit<Conversation, 'projectId'>>;
+    };
+    const legacyConvs = Object.values(parsed.conversations || {});
+    for (const conv of legacyConvs) {
+      try {
+        await createConversationApi({ id: conv.id, title: conv.title, model: conv.model });
+        for (const msg of conv.messages) {
+          await createMessage(conv.id, {
+            role: msg.role,
+            content: msg.content,
+            metadata: messageMetadata(msg),
+          });
+        }
+      } catch {
+        // Best-effort per-conversation — one bad record shouldn't block the rest.
+      }
+    }
+    localStorage.setItem(MIGRATED_KEY, '1');
+  } catch {
+    // Malformed legacy blob — nothing to migrate, don't retry forever.
+    try {
+      localStorage.setItem(MIGRATED_KEY, '1');
+    } catch {
+      // ignore
+    }
+  }
+}
+
+async function bootstrapConversations(): Promise<{ cache: ConversationCache; projects: Project[] }> {
+  await migrateLegacyConversations();
+
+  let projects: Project[] = [];
+  try {
+    projects = await fetchProjects();
+  } catch {
+    // Backend unreachable — degrade to an empty projects list rather than crash.
+  }
+
+  let summaries: ApiConversation[] = [];
+  try {
+    summaries = await fetchConversations();
+  } catch {
+    return { cache: { conversations: {}, activeId: null }, projects };
+  }
+
+  const conversations: Record<string, Conversation> = {};
+  await Promise.all(
+    summaries.map(async (summary) => {
+      try {
+        const detail = await fetchConversation(summary.id);
+        conversations[summary.id] = apiConversationToConversation(
+          detail,
+          detail.messages.map(apiMessageToChatMessage),
+        );
+      } catch {
+        conversations[summary.id] = apiConversationToConversation(summary, []);
+      }
+    }),
+  );
+
+  let activeId: string | null = null;
+  try {
+    const saved = localStorage.getItem(ACTIVE_ID_KEY);
+    if (saved && conversations[saved]) activeId = saved;
+  } catch {
+    // ignore
+  }
+  if (!activeId) {
+    const sorted = Object.values(conversations).sort((a, b) => b.updatedAt - a.updatedAt);
+    activeId = sorted[0]?.id ?? null;
+  }
+
+  return { cache: { conversations, activeId }, projects };
 }
 
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -132,6 +314,11 @@ interface AppState {
   activeId: string | null;
   messages: ChatMessage[];
   streamState: StreamState;
+  conversationsLoading: boolean;
+
+  // Projects
+  projects: Project[];
+  projectsLoading: boolean;
 
   // Models & server
   models: ModelInfo[];
@@ -168,9 +355,10 @@ interface AppState {
   optInModalOpen: boolean;
 
   // Actions: conversations
+  initConversations: () => Promise<void>;
   loadConversations: () => void;
   importOverlayConversation: () => Promise<void>;
-  createConversation: (model?: string) => string;
+  createConversation: (model?: string, projectId?: string | null) => string;
   selectConversation: (id: string) => void;
   deleteConversation: (id: string) => void;
   loadMessages: (conversationId: string | null) => void;
@@ -187,6 +375,20 @@ interface AppState {
   ) => void;
   setStreamState: (state: Partial<StreamState>) => void;
   resetStream: () => void;
+
+  // Actions: projects
+  createProjectAction: (body: {
+    name: string;
+    description?: string;
+    custom_instructions?: string;
+    color?: string;
+  }) => Promise<Project>;
+  updateProjectAction: (
+    projectId: string,
+    body: Partial<{ name: string; description: string; custom_instructions: string; color: string }>,
+  ) => Promise<Project>;
+  deleteProjectAction: (projectId: string) => Promise<void>;
+  moveConversationToProject: (conversationId: string, projectId: string | null) => void;
 
   // Deep Research toggle
   deepResearch: boolean;
@@ -253,19 +455,15 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set, get) => {
-  const initial = loadConversations();
-  const convList = Object.values(initial.conversations).sort(
-    (a, b) => b.updatedAt - a.updatedAt,
-  );
-
   return {
-    conversations: convList,
-    activeId: initial.activeId,
-    messages:
-      initial.activeId && initial.conversations[initial.activeId]
-        ? initial.conversations[initial.activeId].messages
-        : [],
+    conversations: [],
+    activeId: null,
+    messages: [],
     streamState: INITIAL_STREAM,
+    conversationsLoading: true,
+
+    projects: [],
+    projectsLoading: true,
 
     models: [],
     modelsLoading: true,
@@ -290,13 +488,36 @@ export const useAppStore = create<AppState>((set, get) => {
 
     // ── Conversations ───────────────────────────────────────────────
 
-    loadConversations: () => {
-      const store = loadConversations();
+    initConversations: async () => {
+      set({ conversationsLoading: true, projectsLoading: true });
+      const { cache, projects } = await bootstrapConversations();
+      writeCache(cache);
+      const activeConv = cache.activeId ? cache.conversations[cache.activeId] : null;
       set({
-        conversations: Object.values(store.conversations).sort(
-          (a, b) => b.updatedAt - a.updatedAt,
-        ),
-        activeId: store.activeId,
+        conversations: sortedConversations(cache),
+        activeId: cache.activeId,
+        messages: activeConv ? activeConv.messages : [],
+        conversationsLoading: false,
+        projects,
+        projectsLoading: false,
+      });
+    },
+
+    // Re-syncs from the server. Historically this re-read the localStorage
+    // blob after SettingsPage's import/export/clear tools touched it
+    // directly; those tools now operate on legacy, pre-migration data only
+    // (full server-side export/import is a future addition), so this is
+    // effectively a manual refresh.
+    loadConversations: () => {
+      bootstrapConversations().then(({ cache, projects }) => {
+        writeCache(cache);
+        const activeConv = cache.activeId ? cache.conversations[cache.activeId] : null;
+        set({
+          conversations: sortedConversations(cache),
+          activeId: cache.activeId,
+          messages: activeConv ? activeConv.messages : [],
+          projects,
+        });
       });
     },
 
@@ -307,8 +528,8 @@ export const useAppStore = create<AppState>((set, get) => {
         if (!raw || raw === '[]') return;
         const overlay = JSON.parse(raw);
         if (!overlay.id || !overlay.messages?.length) return;
-        const store = loadConversations();
-        const existing = store.conversations[overlay.id];
+        const cache = readCache();
+        const existing = cache.conversations[overlay.id];
         // Only update if the overlay has newer/more messages
         if (existing && existing.messages.length >= overlay.messages.length) return;
         // Track first use of overlay for this conversation
@@ -317,27 +538,33 @@ export const useAppStore = create<AppState>((set, get) => {
             track('feature_used', { feature_name: 'overlay' });
           });
         }
-        store.conversations[overlay.id] = {
+        const conv: Conversation = {
           id: overlay.id,
           title: overlay.title || 'Overlay chat',
           createdAt: overlay.createdAt || Date.now(),
           updatedAt: overlay.updatedAt || Date.now(),
           model: overlay.model || 'default',
           messages: overlay.messages,
+          projectId: existing?.projectId ?? null,
         };
-        saveConversations(store);
-        set({
-          conversations: Object.values(store.conversations).sort(
-            (a, b) => b.updatedAt - a.updatedAt,
-          ),
-        });
+        const next = { ...cache, conversations: { ...cache.conversations, [conv.id]: conv } };
+        writeCache(next);
+        set({ conversations: sortedConversations(next) });
+        if (!existing) {
+          createConversationApi({ id: conv.id, title: conv.title, model: conv.model }).catch(() => {});
+        }
+        for (const msg of conv.messages) {
+          createMessage(conv.id, { role: msg.role, content: msg.content, metadata: messageMetadata(msg) }).catch(
+            () => {},
+          );
+        }
       } catch {
         // Overlay command unavailable (non-Tauri or no overlay data)
       }
     },
 
-    createConversation: (model?: string) => {
-      const store = loadConversations();
+    createConversation: (model?: string, projectId: string | null = null) => {
+      const cache = readCache();
       const conv: Conversation = {
         id: generateId(),
         title: 'New chat',
@@ -345,25 +572,26 @@ export const useAppStore = create<AppState>((set, get) => {
         updatedAt: Date.now(),
         model: model || get().selectedModel || 'default',
         messages: [],
+        projectId,
       };
-      store.conversations[conv.id] = conv;
-      store.activeId = conv.id;
-      saveConversations(store);
+      const next = { conversations: { ...cache.conversations, [conv.id]: conv }, activeId: conv.id };
+      writeCache(next);
       set({
-        conversations: Object.values(store.conversations).sort(
-          (a, b) => b.updatedAt - a.updatedAt,
-        ),
+        conversations: sortedConversations(next),
         activeId: conv.id,
         messages: [],
       });
+      createConversationApi({ id: conv.id, title: conv.title, model: conv.model, project_id: projectId }).catch(
+        () => {},
+      );
       return conv.id;
     },
 
     selectConversation: (id: string) => {
-      const store = loadConversations();
-      store.activeId = id;
-      saveConversations(store);
-      const conv = store.conversations[id];
+      const cache = readCache();
+      const next = { ...cache, activeId: id };
+      writeCache(next);
+      const conv = cache.conversations[id];
       set({
         activeId: id,
         messages: conv ? conv.messages : [],
@@ -374,24 +602,23 @@ export const useAppStore = create<AppState>((set, get) => {
       const streamState = get().streamState;
       if (streamState.isStreaming && streamState.conversationId === id) return;
 
-      const store = loadConversations();
-      delete store.conversations[id];
-      if (store.activeId === id) {
-        const remaining = Object.keys(store.conversations);
-        store.activeId = remaining.length > 0 ? remaining[0] : null;
+      const cache = readCache();
+      const conversations = { ...cache.conversations };
+      delete conversations[id];
+      let activeId = cache.activeId;
+      if (activeId === id) {
+        const remaining = Object.keys(conversations);
+        activeId = remaining.length > 0 ? remaining[0] : null;
       }
-      saveConversations(store);
-      const convList = Object.values(store.conversations).sort(
-        (a, b) => b.updatedAt - a.updatedAt,
-      );
-      const activeConv = store.activeId
-        ? store.conversations[store.activeId]
-        : null;
+      const next = { conversations, activeId };
+      writeCache(next);
+      const activeConv = activeId ? conversations[activeId] : null;
       set({
-        conversations: convList,
-        activeId: store.activeId,
+        conversations: sortedConversations(next),
+        activeId,
         messages: activeConv ? activeConv.messages : [],
       });
+      deleteConversationApi(id).catch(() => {});
     },
 
     loadMessages: (conversationId: string | null) => {
@@ -399,30 +626,46 @@ export const useAppStore = create<AppState>((set, get) => {
         set({ messages: [] });
         return;
       }
-      const store = loadConversations();
-      const conv = store.conversations[conversationId];
+      const cache = readCache();
+      const conv = cache.conversations[conversationId];
       set({ messages: conv ? conv.messages : [] });
     },
 
     addMessage: (conversationId: string, message: ChatMessage) => {
-      const store = loadConversations();
-      const conv = store.conversations[conversationId];
+      const cache = readCache();
+      const conv = cache.conversations[conversationId];
       if (!conv) return;
-      conv.messages.push(message);
-      conv.updatedAt = Date.now();
-      if (message.role === 'user' && conv.title === 'New chat') {
-        conv.title =
-          message.content.slice(0, 50) +
-          (message.content.length > 50 ? '...' : '');
-      }
-      saveConversations(store);
-      const conversations = Object.values(store.conversations).sort(
-        (a, b) => b.updatedAt - a.updatedAt,
-      );
+      const renamed = message.role === 'user' && conv.title === 'New chat';
+      const title = renamed
+        ? message.content.slice(0, 50) + (message.content.length > 50 ? '...' : '')
+        : conv.title;
+      const updatedConv: Conversation = {
+        ...conv,
+        title,
+        updatedAt: Date.now(),
+        messages: [...conv.messages, message],
+      };
+      const next = {
+        conversations: { ...cache.conversations, [conversationId]: updatedConv },
+        activeId: cache.activeId,
+      };
+      writeCache(next);
       if (get().activeId === conversationId) {
-        set({ messages: [...conv.messages], conversations });
+        set({ messages: updatedConv.messages, conversations: sortedConversations(next) });
       } else {
-        set({ conversations });
+        set({ conversations: sortedConversations(next) });
+      }
+
+      const created = createMessage(conversationId, {
+        role: message.role,
+        content: message.content,
+        metadata: messageMetadata(message),
+      }).catch(() => null);
+      if (message.role === 'assistant') {
+        _pendingAssistantMessage.set(conversationId, created);
+      }
+      if (renamed) {
+        updateConversationApi(conversationId, { title }).catch(() => {});
       }
     },
 
@@ -436,23 +679,45 @@ export const useAppStore = create<AppState>((set, get) => {
       researchTraces?: ResearchSearchTrace[],
       researchSources?: ResearchSource[],
     ) => {
-      const store = loadConversations();
-      const conv = store.conversations[conversationId];
+      const cache = readCache();
+      const conv = cache.conversations[conversationId];
       if (!conv) return;
       const lastMsg = conv.messages[conv.messages.length - 1];
-      if (lastMsg && lastMsg.role === 'assistant') {
-        lastMsg.content = content;
-        if (toolCalls) lastMsg.toolCalls = toolCalls;
-        if (usage) lastMsg.usage = usage;
-        if (telemetry) lastMsg.telemetry = telemetry;
-        if (audio) lastMsg.audio = audio;
-        if (researchTraces) lastMsg.researchTraces = researchTraces;
-        if (researchSources) lastMsg.researchSources = researchSources;
-        conv.updatedAt = Date.now();
-        saveConversations(store);
-        if (get().activeId === conversationId) {
-          set({ messages: [...conv.messages] });
-        }
+      if (!lastMsg || lastMsg.role !== 'assistant') return;
+
+      const updatedLastMsg: ChatMessage = {
+        ...lastMsg,
+        content,
+        ...(toolCalls ? { toolCalls } : {}),
+        ...(usage ? { usage } : {}),
+        ...(telemetry ? { telemetry } : {}),
+        ...(audio ? { audio } : {}),
+        ...(researchTraces ? { researchTraces } : {}),
+        ...(researchSources ? { researchSources } : {}),
+      };
+      const updatedConv: Conversation = {
+        ...conv,
+        updatedAt: Date.now(),
+        messages: [...conv.messages.slice(0, -1), updatedLastMsg],
+      };
+      const next = {
+        conversations: { ...cache.conversations, [conversationId]: updatedConv },
+        activeId: cache.activeId,
+      };
+      writeCache(next);
+      if (get().activeId === conversationId) {
+        set({ messages: updatedConv.messages });
+      }
+
+      const pending = _pendingAssistantMessage.get(conversationId);
+      if (pending) {
+        pending.then((saved) => {
+          if (!saved) return;
+          updateMessage(conversationId, saved.id, {
+            content,
+            metadata: messageMetadata(updatedLastMsg),
+          }).catch(() => {});
+        });
       }
     },
 
@@ -462,6 +727,57 @@ export const useAppStore = create<AppState>((set, get) => {
 
     resetStream: () => {
       set({ streamState: INITIAL_STREAM });
+    },
+
+    // ── Projects ─────────────────────────────────────────────────────
+
+    createProjectAction: async (body) => {
+      const project = await apiCreateProject(body);
+      set((s) => ({ projects: [project, ...s.projects] }));
+      return project;
+    },
+
+    updateProjectAction: async (projectId, body) => {
+      const project = await apiUpdateProject(projectId, body);
+      set((s) => ({ projects: s.projects.map((p) => (p.id === projectId ? project : p)) }));
+      return project;
+    },
+
+    deleteProjectAction: async (projectId) => {
+      await apiDeleteProject(projectId);
+      const cache = readCache();
+      const conversations = { ...cache.conversations };
+      for (const [id, conv] of Object.entries(conversations)) {
+        if (conv.projectId === projectId) delete conversations[id];
+      }
+      let activeId = cache.activeId;
+      if (activeId && !conversations[activeId]) {
+        const remaining = Object.keys(conversations);
+        activeId = remaining.length > 0 ? remaining[0] : null;
+      }
+      const next = { conversations, activeId };
+      writeCache(next);
+      const activeConv = activeId ? conversations[activeId] : null;
+      set((s) => ({
+        projects: s.projects.filter((p) => p.id !== projectId),
+        conversations: sortedConversations(next),
+        activeId,
+        messages: activeConv ? activeConv.messages : [],
+      }));
+    },
+
+    moveConversationToProject: (conversationId, projectId) => {
+      const cache = readCache();
+      const conv = cache.conversations[conversationId];
+      if (!conv) return;
+      const updatedConv: Conversation = { ...conv, projectId, updatedAt: Date.now() };
+      const next = {
+        conversations: { ...cache.conversations, [conversationId]: updatedConv },
+        activeId: cache.activeId,
+      };
+      writeCache(next);
+      set({ conversations: sortedConversations(next) });
+      updateConversationApi(conversationId, { project_id: projectId }).catch(() => {});
     },
 
     // ── Deep Research ─────────────────────────────────────────────

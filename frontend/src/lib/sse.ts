@@ -7,6 +7,9 @@ export interface ChatRequest {
   stream: true;
   temperature?: number;
   max_tokens?: number;
+  // Lets the server resolve conversation -> project -> custom instructions
+  // and merge them into the identity system prompt (COD-835).
+  conversation_id?: string;
 }
 
 export async function* streamChat(

@@ -28,6 +28,11 @@ class ChatCompletionRequest(BaseModel):
     max_tokens: int = 1024
     stream: bool = False
     tools: Optional[List[Dict[str, Any]]] = None
+    # When set, the server resolves conversation -> project -> custom
+    # instructions and merges them into the identity system prompt (see
+    # ``routes._ensure_identity_prompt``). Optional so older clients keep
+    # working unchanged.
+    conversation_id: Optional[str] = None
 
 
 # ---------------------------------------------------------------------------

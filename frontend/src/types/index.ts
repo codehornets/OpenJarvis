@@ -136,12 +136,33 @@ export interface Conversation {
   updatedAt: number;
   model: string;
   messages: ChatMessage[];
+  /** Project this conversation is grouped under; null = ungrouped. */
+  projectId: string | null;
 }
 
 export interface ConversationStore {
   version: 1;
   conversations: Record<string, Conversation>;
   activeId: string | null;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  custom_instructions: string;
+  color: string;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface ProjectDocument {
+  id: string;
+  project_id: string;
+  title: string;
+  filename: string;
+  chunk_count: number;
+  created_at: number;
 }
 
 // --- Stream State ---

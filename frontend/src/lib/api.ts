@@ -1,4 +1,4 @@
-import type { ModelInfo, SavingsData, ServerInfo } from '../types';
+import type { ModelInfo, Project, ProjectDocument, SavingsData, ServerInfo } from '../types';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from './supabase';
 
 // ---------------------------------------------------------------------------
@@ -1141,4 +1141,207 @@ export async function setInferenceSource(
     // required…", "Could not store the API key…") as proper Error instances.
     throw new Error(e?.message ?? e ?? 'Failed to save inference source');
   }
+}
+
+// ---------------------------------------------------------------------------
+// Projects — grouped conversations, custom instructions, per-project files.
+// See COD-835. Conversation/message shapes below are the raw backend
+// (snake_case) responses; lib/store.ts maps these onto the frontend's
+// camelCase Conversation/ChatMessage types.
+// ---------------------------------------------------------------------------
+
+export interface ApiConversation {
+  id: string;
+  project_id: string | null;
+  title: string;
+  model: string;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface ApiMessage {
+  id: string;
+  conversation_id: string;
+  role: string;
+  content: string;
+  timestamp: number;
+  metadata: Record<string, unknown>;
+  seq: number;
+}
+
+export async function fetchProjects(): Promise<Project[]> {
+  const res = await apiFetch(`/v1/projects`);
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  const data = await res.json();
+  return data.projects || [];
+}
+
+export async function createProject(body: {
+  name: string;
+  description?: string;
+  custom_instructions?: string;
+  color?: string;
+}): Promise<Project> {
+  const res = await apiFetch(`/v1/projects`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  return res.json();
+}
+
+export async function updateProject(
+  projectId: string,
+  body: Partial<{
+    name: string;
+    description: string;
+    custom_instructions: string;
+    color: string;
+  }>,
+): Promise<Project> {
+  const res = await apiFetch(`/v1/projects/${projectId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  return res.json();
+}
+
+export async function deleteProject(projectId: string): Promise<void> {
+  const res = await apiFetch(`/v1/projects/${projectId}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+}
+
+/** `projectId === null` lists ungrouped only; omitted lists everything. */
+export async function fetchConversations(
+  projectId?: string | null,
+): Promise<ApiConversation[]> {
+  const params = new URLSearchParams();
+  if (projectId === null) params.set('ungrouped', 'true');
+  else if (projectId) params.set('project_id', projectId);
+  const qs = params.toString();
+  const res = await apiFetch(`/v1/conversations${qs ? `?${qs}` : ''}`);
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  const data = await res.json();
+  return data.conversations || [];
+}
+
+export async function createConversationApi(body: {
+  id?: string;
+  project_id?: string | null;
+  title?: string;
+  model?: string;
+}): Promise<ApiConversation> {
+  const res = await apiFetch(`/v1/conversations`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchConversation(
+  conversationId: string,
+): Promise<ApiConversation & { messages: ApiMessage[] }> {
+  const res = await apiFetch(`/v1/conversations/${conversationId}`);
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  return res.json();
+}
+
+export async function updateConversationApi(
+  conversationId: string,
+  body: Partial<{ title: string; project_id: string | null }>,
+): Promise<ApiConversation> {
+  const res = await apiFetch(`/v1/conversations/${conversationId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  return res.json();
+}
+
+export async function deleteConversationApi(conversationId: string): Promise<void> {
+  const res = await apiFetch(`/v1/conversations/${conversationId}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+}
+
+export async function fetchMessages(conversationId: string): Promise<ApiMessage[]> {
+  const res = await apiFetch(`/v1/conversations/${conversationId}/messages`);
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  const data = await res.json();
+  return data.messages || [];
+}
+
+export async function createMessage(
+  conversationId: string,
+  body: { role: string; content: string; metadata?: Record<string, unknown> },
+): Promise<ApiMessage> {
+  const res = await apiFetch(`/v1/conversations/${conversationId}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  return res.json();
+}
+
+export async function updateMessage(
+  conversationId: string,
+  messageId: string,
+  body: Partial<{ content: string; metadata: Record<string, unknown> }>,
+): Promise<ApiMessage> {
+  const res = await apiFetch(`/v1/conversations/${conversationId}/messages/${messageId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  return res.json();
+}
+
+export async function ingestProjectPaste(
+  projectId: string,
+  body: { title?: string; content: string },
+): Promise<{ chunks_added: number; doc_id: string }> {
+  const res = await apiFetch(`/v1/projects/${projectId}/knowledge/ingest`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  return res.json();
+}
+
+export async function ingestProjectFiles(
+  projectId: string,
+  files: File[],
+  title?: string,
+): Promise<{ chunks_added: number; doc_id: string }> {
+  const formData = new FormData();
+  for (const f of files) formData.append('files', f);
+  if (title) formData.append('title', title);
+  const res = await apiFetch(`/v1/projects/${projectId}/knowledge/ingest/files`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchProjectDocuments(projectId: string): Promise<ProjectDocument[]> {
+  const res = await apiFetch(`/v1/projects/${projectId}/knowledge/documents`);
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
+  const data = await res.json();
+  return data.documents || [];
+}
+
+export async function deleteProjectDocument(projectId: string, docId: string): Promise<void> {
+  const res = await apiFetch(`/v1/projects/${projectId}/knowledge/documents/${docId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error(`Failed: ${res.status}`);
 }

@@ -8,6 +8,7 @@ import { GetStartedPage } from './pages/GetStartedPage';
 import { AgentsPage } from './pages/AgentsPage';
 import { DataSourcesPage } from './pages/DataSourcesPage';
 import { LogsPage } from './pages/LogsPage';
+import { ProjectsPage } from './pages/ProjectsPage';
 import { CommandPalette } from './components/CommandPalette';
 import { SetupScreen } from './components/SetupScreen';
 import { Toaster } from './components/ui/sonner';
@@ -67,6 +68,15 @@ export default function App() {
     media.addEventListener('change', apply);
     return () => media.removeEventListener('change', apply);
   }, [settings.theme]);
+
+  // Hydrate conversations + projects from the server on boot (COD-835).
+  // Runs once; state starts empty until this resolves (see
+  // AppState.conversationsLoading in lib/store.ts).
+  const initConversations = useAppStore((s) => s.initConversations);
+  useEffect(() => {
+    initConversations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync overlay conversations into the main app
   const importOverlay = useAppStore((s) => s.importOverlayConversation);
@@ -214,6 +224,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route index element={<ChatPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="get-started" element={<GetStartedPage />} />
           <Route path="data-sources" element={<DataSourcesPage />} />

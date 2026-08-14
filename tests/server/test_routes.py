@@ -854,6 +854,80 @@ class TestIdentityPromptInjection:
         assert "Handymate" in msgs[0].content
 
 
+class TestProjectCustomInstructionsInjection:
+    """Custom instructions from a conversation's project get merged into the
+    same system message as the identity prompt (COD-835)."""
+
+    @pytest.fixture
+    def project_conversation(self, tmp_path, monkeypatch):
+        """Create a project + conversation in a temp ``projects.db`` and
+        point ``_resolve_custom_instructions`` (via ``get_config_dir``) at it.
+        """
+        monkeypatch.setattr("handymate.core.paths.get_config_dir", lambda: tmp_path)
+
+        from handymate.projects.store import ProjectStore
+
+        store = ProjectStore()
+        project = store.create_project("Kitchen Remodel", custom_instructions="Be Bob.")
+        conv = store.create_conversation(project_id=project["id"])
+        store.close()
+        return conv["id"]
+
+    def test_direct_merges_custom_instructions(self, project_conversation):
+        captured: list = []
+        engine = _make_capturing_engine(captured)
+        client = TestClient(create_app(engine, "test-model", config=_identity_config()))
+
+        resp = client.post(
+            "/v1/chat/completions",
+            json={
+                "model": "test-model",
+                "messages": [{"role": "user", "content": "hi"}],
+                "conversation_id": project_conversation,
+            },
+        )
+        assert resp.status_code == 200
+        msgs = engine.generate.call_args.args[0]
+        assert msgs[0].role.value == "system"
+        assert "Handymate" in msgs[0].content
+        assert "Be Bob." in msgs[0].content
+
+    def test_stream_merges_custom_instructions(self, project_conversation):
+        captured: list = []
+        engine = _make_capturing_engine(captured)
+        client = TestClient(create_app(engine, "test-model", config=_identity_config()))
+
+        resp = client.post(
+            "/v1/chat/completions",
+            json={
+                "model": "test-model",
+                "messages": [{"role": "user", "content": "hi"}],
+                "conversation_id": project_conversation,
+                "stream": True,
+            },
+        )
+        assert resp.status_code == 200
+        _ = resp.text
+        msgs = captured[-1]
+        assert "Be Bob." in msgs[0].content
+
+    def test_no_conversation_id_is_unaffected(self):
+        captured: list = []
+        engine = _make_capturing_engine(captured)
+        client = TestClient(create_app(engine, "test-model", config=_identity_config()))
+
+        resp = client.post(
+            "/v1/chat/completions",
+            json={
+                "model": "test-model",
+                "messages": [{"role": "user", "content": "hi"}],
+            },
+        )
+        assert resp.status_code == 200
+        msgs = engine.generate.call_args.args[0]
+        assert "Be Bob." not in msgs[0].content
+
+
 # ---------------------------------------------------------------------------
 # Models endpoint tests
 # ---------------------------------------------------------------------------

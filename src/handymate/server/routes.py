@@ -47,7 +47,38 @@ def _to_messages(chat_messages) -> list[Message]:
     return messages
 
 
-def _ensure_identity_prompt(messages: list[Message], app_config) -> list[Message]:
+def _resolve_custom_instructions(conversation_id: str | None) -> str:
+    """Resolve conversation -> project -> ``custom_instructions`` text.
+
+    Wrapped so a missing conversation/project or a store error degrades to
+    "no custom instructions" rather than failing the chat request — same
+    philosophy as the identity-prompt resolution below (never let optional
+    grounding crash the endpoint).
+    """
+    if not conversation_id:
+        return ""
+    try:
+        from handymate.projects.store import ProjectStore
+
+        store = ProjectStore()
+        conv = store.get_conversation(conversation_id)
+        project_id = conv.get("project_id")
+        if not project_id:
+            return ""
+        project = store.get_project(project_id)
+        return project.get("custom_instructions") or ""
+    except Exception:
+        logging.getLogger("handymate.server").debug(
+            "Custom instructions resolution failed for conversation_id=%s",
+            conversation_id,
+            exc_info=True,
+        )
+        return ""
+
+
+def _ensure_identity_prompt(
+    messages: list[Message], app_config, custom_instructions: str = ""
+) -> list[Message]:
     """Prepend Handymate's identity system prompt when the client omits one.
 
     The desktop UI's chat backend posts only user/assistant turns to
@@ -59,7 +90,13 @@ def _ensure_identity_prompt(messages: list[Message], app_config) -> list[Message
     did not. This mirrors the agent fallback in ``agents/_stubs.py``.
 
     If any message already carries a system role, the caller has supplied
-    their own grounding and we leave the list untouched (no double-prompting).
+    their own grounding and we leave the list untouched (no double-prompting,
+    and no custom-instructions injection either — an explicit client system
+    message wins outright).
+
+    ``custom_instructions`` (from the active conversation's project, see
+    ``_resolve_custom_instructions``) is appended after the identity prompt
+    so both live in a single system message rather than two competing ones.
 
     Resolution of the identity text: the config comes from ``app.state`` when
     wired, otherwise ``load_config()``; the prompt itself is assembled by
@@ -95,12 +132,12 @@ def _ensure_identity_prompt(messages: list[Message], app_config) -> list[Message
             "serving request without identity grounding",
             exc_info=True,
         )
+
+    combined = "\n\n".join(p for p in (prompt, custom_instructions) if p)
+    if not combined:
         return messages
 
-    if not prompt:
-        return messages
-
-    return [Message(role=Role.SYSTEM, content=prompt), *messages]
+    return [Message(role=Role.SYSTEM, content=combined), *messages]
 
 
 @router.post("/v1/chat/completions")
@@ -163,6 +200,8 @@ async def chat_completions(request_body: ChatCompletionRequest, request: Request
                 exc_info=True,
             )
 
+    custom_instructions = _resolve_custom_instructions(request_body.conversation_id)
+
     # Run complexity analysis on the last user message
     complexity_info = None
     query_text_for_complexity = ""
@@ -214,6 +253,7 @@ async def chat_completions(request_body: ChatCompletionRequest, request: Request
                 request_body,
                 complexity_info,
                 app_config=config,
+                custom_instructions=custom_instructions,
                 bus=getattr(request.app.state, "bus", None),
                 memory_service=getattr(request.app.state, "memory_service", None),
             )
@@ -224,6 +264,7 @@ async def chat_completions(request_body: ChatCompletionRequest, request: Request
             complexity_info,
             trace_store=getattr(request.app.state, "trace_store", None),
             app_config=config,
+            custom_instructions=custom_instructions,
             bus=getattr(request.app.state, "bus", None),
             memory_service=getattr(request.app.state, "memory_service", None),
         )
@@ -268,6 +309,7 @@ async def chat_completions(request_body: ChatCompletionRequest, request: Request
             bus=bus,
             complexity_info=complexity_info,
             app_config=config,
+            custom_instructions=custom_instructions,
         )
 
     # Hand the completed exchange to the background memory service.
@@ -373,10 +415,11 @@ def _handle_direct(
     bus=None,
     complexity_info=None,
     app_config=None,
+    custom_instructions: str = "",
 ) -> ChatCompletionResponse:
     """Direct engine call without agent."""
     messages = _to_messages(req.messages)
-    messages = _ensure_identity_prompt(messages, app_config)
+    messages = _ensure_identity_prompt(messages, app_config, custom_instructions)
     kwargs: dict[str, Any] = {}
     if req.tools:
         kwargs["tools"] = req.tools
@@ -555,6 +598,7 @@ async def _handle_stream_tools(
     complexity_info=None,
     *,
     app_config=None,
+    custom_instructions: str = "",
     bus=None,
     memory_service=None,
 ):
@@ -572,7 +616,7 @@ async def _handle_stream_tools(
     regresses non-tool-capable engines.
     """
     messages = _to_messages(req.messages)
-    messages = _ensure_identity_prompt(messages, app_config)
+    messages = _ensure_identity_prompt(messages, app_config, custom_instructions)
     chunk_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
     use_cloud = _uses_direct_cloud_router(engine, model)
     telemetry_engine = (
@@ -686,6 +730,7 @@ async def _handle_stream(
     *,
     trace_store=None,
     app_config=None,
+    custom_instructions: str = "",
     bus=None,
     memory_service=None,
 ):
@@ -702,7 +747,7 @@ async def _handle_stream(
     from handymate.server.cloud_router import stream_cloud, stream_local
 
     messages = _to_messages(req.messages)
-    messages = _ensure_identity_prompt(messages, app_config)
+    messages = _ensure_identity_prompt(messages, app_config, custom_instructions)
     chunk_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
 
     # Last user message — recorded as the trace query.
