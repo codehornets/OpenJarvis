@@ -28,6 +28,10 @@ a Vite + React + Tauri frontend, and a Rust extension layer.
   and test coverage.
 - `.codex/skills/`: repo-embedded workflows for context, pull, push, commit,
   and land tasks.
+- `WORKFLOW.md`: live configuration for the Symphony autonomous orchestrator,
+  an external daemon that polls this repo's Linear project and drives
+  unattended Codex agents through ticket automation. Not legacy content; do
+  not move, delete, or migrate it into `docs/`.
 
 ## Local overrides
 
