@@ -5,7 +5,7 @@ tracker:
   active_states:
     - Todo
     - In Progress
-    - Merging
+    - In Review
   terminal_states:
     - Closed
     - Cancelled
@@ -75,7 +75,7 @@ The agent should be able to talk to Linear, either via a configured Linear MCP s
 
 This workflow has **no `Human Review` state**. Once an issue's completion bar
 (defined below) is met, self-promote the issue directly from `In Progress` to
-`Merging` and hand off to the `land` skill loop. There is no pause for human
+`In Review` and hand off to the `land` skill loop. There is no pause for human
 approval before merge — the completion bar (real lint/test green, self-review
 done, PR pushed) is the gate instead of a person.
 
@@ -105,15 +105,15 @@ done, PR pushed) is the gate instead of a person.
 - `commit`: produce clean, logical commits during implementation.
 - `push`: keep remote branch current and publish updates (runs `make lint && make test` as the pre-push validation gate — see `.codex/skills/push/SKILL.md`).
 - `pull`: keep branch updated with latest `origin/main` before handoff.
-- `land`: when ticket reaches `Merging`, explicitly open and follow `.codex/skills/land/SKILL.md`, which includes the `land` loop.
+- `land`: when ticket reaches `In Review`, explicitly open and follow `.codex/skills/land/SKILL.md`, which includes the `land` loop.
 
 ## Status map
 
 - `Backlog` -> out of scope for this workflow; do not modify.
 - `Todo` -> queued; immediately transition to `In Progress` before active work.
-  - Special case: if a PR is already attached, treat as feedback/rework loop (run full PR feedback sweep, address or explicitly push back, revalidate, then re-check the completion bar and self-promote to `Merging` when it is met).
-- `In Progress` -> implementation actively underway. Self-promote to `Merging` once the completion bar below is met — do not wait for a human state change.
-- `Merging` -> execute the `land` skill flow (do not call `gh pr merge` directly).
+  - Special case: if a PR is already attached, treat as feedback/rework loop (run full PR feedback sweep, address or explicitly push back, revalidate, then re-check the completion bar and self-promote to `In Review` when it is met).
+- `In Progress` -> implementation actively underway. Self-promote to `In Review` once the completion bar below is met — do not wait for a human state change.
+- `In Review` -> execute the `land` skill flow (do not call `gh pr merge` directly).
 - `Done` -> terminal state; no further action required.
 
 ## Step 0: Determine current ticket state and route
@@ -125,7 +125,7 @@ done, PR pushed) is the gate instead of a person.
    - `Todo` -> immediately move to `In Progress`, then ensure bootstrap workpad comment exists (create if missing), then start execution flow.
      - If PR is already attached, start by reviewing all open PR comments and deciding required changes vs explicit pushback responses.
    - `In Progress` -> continue execution flow from current scratchpad comment.
-   - `Merging` -> on entry, open and follow `.codex/skills/land/SKILL.md`; do not call `gh pr merge` directly.
+   - `In Review` -> on entry, open and follow `.codex/skills/land/SKILL.md`; do not call `gh pr merge` directly.
    - `Done` -> do nothing and shut down.
 4. Check whether a PR already exists for the current branch and whether it is closed.
    - If a branch PR exists and is `CLOSED` or `MERGED`, treat prior branch work as non-reusable for this run.
@@ -169,7 +169,7 @@ done, PR pushed) is the gate instead of a person.
 
 ## PR feedback sweep protocol (required)
 
-When a ticket has an attached PR, run this protocol before self-promoting the issue to `Merging`:
+When a ticket has an attached PR, run this protocol before self-promoting the issue to `In Review`:
 
 1. Identify the PR number from issue links/attachments.
 2. Gather feedback from all channels:
@@ -198,7 +198,7 @@ Use this only when completion is blocked by missing required tools or missing au
   - and stop the session without moving the issue further.
 - Keep the brief concise and action-oriented; do not add extra top-level comments outside the workpad.
 
-## Step 2: Execution phase (Todo -> In Progress -> self-promote to Merging)
+## Step 2: Execution phase (Todo -> In Progress -> self-promote to In Review)
 
 1.  Determine current repo state (`branch`, `git status`, `HEAD`) and verify the kickoff `pull` sync result is already recorded in the workpad before implementation continues.
 2.  If current issue state is `Todo`, move it to `In Progress`; otherwise leave the current state unchanged.
@@ -230,26 +230,26 @@ Use this only when completion is blocked by missing required tools or missing au
     - Do not include PR URL in the workpad comment; keep PR linkage on the issue via attachment/link fields.
     - Add a short `### Confusions` section at the bottom when any part of task execution was unclear/confusing, with concise bullets.
     - Do not post any additional completion summary comment.
-11. Before self-promoting to `Merging`, poll PR feedback and checks:
+11. Before self-promoting to `In Review`, poll PR feedback and checks:
     - Run the full PR feedback sweep protocol.
     - Confirm PR checks are passing (green) after the latest changes.
     - Confirm every required ticket-provided validation/test-plan item is explicitly marked complete in the workpad.
     - Repeat this check-address-verify loop until no outstanding comments remain and checks are fully passing.
     - Re-open and refresh the workpad before state transition so `Plan`, `Acceptance Criteria`, and `Validation` exactly match completed work.
-12. Only then self-promote the issue to `Merging` and immediately open and follow `.codex/skills/land/SKILL.md` in a loop until the PR is merged.
+12. Only then self-promote the issue to `In Review` and immediately open and follow `.codex/skills/land/SKILL.md` in a loop until the PR is merged.
     - Exception: if blocked by missing required non-GitHub tools/auth per the blocked-access escape hatch, stay in `In Progress` with the blocker brief and explicit unblock actions instead of promoting.
 13. For `Todo` tickets that already had a PR attached at kickoff:
     - Ensure all existing PR feedback was reviewed and resolved, including inline review comments (code changes or explicit, justified pushback response).
     - Ensure branch was pushed with any required updates.
-    - Then self-promote to `Merging` per the completion bar above.
+    - Then self-promote to `In Review` per the completion bar above.
 
-## Step 3: Merging and land handoff
+## Step 3: In Review and land handoff
 
-1. When the issue is in `Merging`, open and follow `.codex/skills/land/SKILL.md`, then run the `land` skill in a loop until the PR is merged. Do not call `gh pr merge` directly.
+1. When the issue is in `In Review`, open and follow `.codex/skills/land/SKILL.md`, then run the `land` skill in a loop until the PR is merged. Do not call `gh pr merge` directly.
 2. If new review feedback lands mid-land-loop, address it inline per `land`'s review-handling rules — there is no separate `Rework` state to move through; keep working the issue in place.
 3. After merge is complete, move the issue to `Done`.
 
-## Completion bar (self-promotion gate, In Progress -> Merging)
+## Completion bar (self-promotion gate, In Progress -> In Review)
 
 - Step 1/2 checklist is fully complete and accurately reflected in the single workpad comment.
 - Acceptance criteria and required ticket-provided validation items are complete.
@@ -275,7 +275,7 @@ Use this only when completion is blocked by missing required tools or missing au
   than expanding current scope, and include a clear title/description/acceptance
   criteria, the `repo:handymate` label, a `related` link to the current issue,
   and `blockedBy` when the follow-up depends on the current issue.
-- Do not self-promote to `Merging` unless the `Completion bar` above is satisfied.
+- Do not self-promote to `In Review` unless the `Completion bar` above is satisfied.
 - There is no `Human Review` or `Rework` state in this workflow — do not invent
   or transition into either.
 - If state is terminal (`Done`, `Closed`, `Cancelled`, `Canceled`, `Duplicate`), do nothing and shut down.
